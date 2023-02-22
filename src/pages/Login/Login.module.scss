@@ -1,0 +1,88 @@
+.login {
+	width: 350px;
+	margin: 0 auto;
+	padding: 70px 0;
+	text-align: center;
+
+	a {
+		color: #00376b;
+	}
+}
+
+.form {
+	background-color: #fff;
+	border: 1px solid #e6e6e6;
+	padding: 40px 40px 20px;
+
+	display: flex;
+	flex-direction: column;
+
+	>h1 {
+		font-weight: 500;
+		font-size: 40px;
+		margin-bottom: 40px;
+	}
+
+	>div {
+		padding: 8px;
+		margin-bottom: 6px;
+		background-color: #fafafa;
+		border: 1px solid #e6e6e6;
+
+		height: 40px;
+		display: flex;
+
+		>input {
+			outline: none;
+			border: none;
+			background-color: unset;
+			font-size: 13px;
+			width: 100%;
+			height: 22px;
+
+			&:-webkit-autofill {
+				box-shadow: 0 0 0 30px #fff inset !important;
+			}
+
+			&::placeholder {
+				color: #8e8e8e;
+				font-size: 12px;
+			}
+		}
+
+		>span {
+			margin-left: 8px;
+			cursor: pointer;
+			user-select: none;
+			transition: .2s;
+
+			&:hover {
+				color: #8e8e8e;
+			}
+		}
+	}
+
+	>a {
+		font-size: 12px;
+	}
+
+	>p {
+		color: #ed4956;
+		margin-bottom: 14px;
+	}
+
+	>button {
+		margin: 8px 0 20px;
+	}
+}
+
+.toReg {
+	background-color: #fff;
+	border: 1px solid #e6e6e6;
+	margin: 10px;
+	padding: 10px 0;
+
+	a {
+		color: #0095f6;
+	}
+}
