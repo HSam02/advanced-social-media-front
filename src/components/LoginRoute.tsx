@@ -8,13 +8,13 @@ export const LoginRoute: React.FC = () => {
   const location = useLocation();
   
 
-  if (status === "loading:access" || status === "idle") {
-    return <LoadingPage />;
-  }
+  // if (status === "loading:access" || status === "idle") {
+  //   return <LoadingPage />;
+  // }
 
-  if (user) {
-    return <Navigate to={location.state || '/'} />;
-  }
+  // if (user) {
+  //   return <Navigate to={location.state || '/'} />;
+  // }
 
   return <Outlet />;
 };
