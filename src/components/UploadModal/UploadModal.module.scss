@@ -75,7 +75,7 @@
   // max-height: 680px;
   height: calc(100% - 40px);
 
-  // overflow: hidden;
+  overflow: hidden;
 
   >.arrow {
     position: absolute;
@@ -451,5 +451,14 @@
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       cursor: pointer;
     }
+  }
+}
+
+.croppedMedia {
+
+  >img,
+  >video {
+    width: calc(100% + 0.5px);
+    height: auto;
   }
 }

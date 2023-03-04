@@ -44,6 +44,7 @@ type mediaType = {
   //   y: number;
   // };
   // croppedArea: croppedAreaPercentType;
+  // mediaSize: { naturalWidth: number; naturalHeight: number };
   styles: {
     transform: string;
     // width: string;
@@ -131,11 +132,14 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   >(null);
   const [galleryScrollLeft, setGalleryScrollLeft] = useState(0);
   const [galleryScrollWidth, setGalleryScrollWidth] = useState(0);
+  const [isCropSuccess, setIsCropSuccess] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const galleryRef = useRef<HTMLUListElement>(null);
+  const videoRefs = useRef<Array<React.RefObject<HTMLVideoElement>>>([]);
 
   console.log(mediaData);
+  console.log(videoRefs);
 
   useEffect(() => {
     document.body.style.overflowY = "hidden";
@@ -152,6 +156,18 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         0
     );
   }, [mediaData]);
+
+  useEffect(() => {
+    videoRefs.current.forEach(({ current }, i) => {
+      if (current) {
+        current.pause();
+        if (i === currentMedia) {
+          current.currentTime = 0;
+          current.play();
+        }
+      }
+    });
+  }, [currentMedia]);
 
   const handleChangeFile = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const fileList = evt.target.files;
@@ -182,15 +198,27 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     );
   };
 
-  const handleCropChange = (location: Point) => {
-    setMediaData([
-      ...mediaData!.slice(0, currentMedia),
-      {
-        ...mediaData![currentMedia],
-        crop: location,
-      },
-      ...mediaData!.slice(currentMedia + 1),
-    ]);
+  const handleCropChange = (location: Point, index: number) => {
+    console.log("cropChange", location, mediaData![index].crop);
+    if (
+      mediaData![index].crop.x === location.x &&
+      mediaData![index].crop.y === location.y
+    ) {
+      console.log("return");
+      return;
+    }
+
+    setMediaData(
+      (mediaData) =>
+        mediaData && [
+          ...mediaData!.slice(0, index),
+          {
+            ...mediaData![index],
+            crop: location,
+          },
+          ...mediaData!.slice(index + 1),
+        ]
+    );
   };
 
   const handleZoomChange = (zoom: number) => {
@@ -207,8 +235,6 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   };
 
   const onCropComplete = (croppedArea: Area, index: number) => {
-    console.log(croppedArea, index);
-
     const scale = 100 / croppedArea.width;
     const transform = {
       x: `${-croppedArea.x * scale}%`,
@@ -222,16 +248,20 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       // width: transform.width,
       // height: transform.height
     };
-    console.log(imageStyle, index);
 
-    setMediaData((mediaData) => [
-      ...mediaData!.slice(0, index),
+    setMediaData((mediaData) => mediaData && [
+      ...mediaData.slice(0, index),
       {
-        ...mediaData![index],
+        ...mediaData[index],
         styles: imageStyle,
       },
-      ...mediaData!.slice(index + 1),
+      ...mediaData.slice(index + 1),
     ]);
+    // setMediaData((mediaData) =>
+    //   mediaData!.map((item, i) =>
+    //     i === index ? { ...item, styles: imageStyle } : item
+    //   )
+    // );
   };
 
   // const onCropComplete = async (croppedAreaPixels: Area, index: number) => {
@@ -297,36 +327,52 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     };
   };
 
-  const onMediaLoad = (mediaSize: MediaSize, index: number) => {
-    const { naturalWidth, naturalHeight } = mediaSize;
-    // const aspect = naturalWidth / naturalHeight;
-    // console.log(aspect);
-    const croppedArea = {
-      x: 0,
-      y: 0,
-      width: 100,
-      height: 100,
-    };
-    if (naturalHeight > naturalWidth) {
-      croppedArea.height = (naturalWidth / naturalHeight) * 100;
-      croppedArea.y = (naturalWidth / naturalHeight) * 38.888;
-    } else if (naturalHeight < naturalWidth) {
-      croppedArea.width = (naturalHeight / naturalWidth) * 100;
-      croppedArea.x = (naturalHeight / naturalWidth) * 38.888;
-    }
+  // const onMediaLoad = (mediaSize: MediaSize, index: number) => {
+  //   const { naturalWidth, naturalHeight } = mediaSize;
+  //   console.log(mediaSize);
+  //   // if (!mediaData![index].mediaSize) {
+  //   //   console.log("mediaSize");
 
-    onCropComplete(croppedArea, index);
+  //   //   setMediaData((mediaData) => [
+  //   //     ...mediaData!.slice(0, index),
+  //   //     {
+  //   //       ...mediaData![index],
+  //   //       mediaSize: {
+  //   //         naturalHeight,
+  //   //         naturalWidth,
+  //   //       },
+  //   //     },
+  //   //     ...mediaData!.slice(index + 1),
+  //   //   ]);
+  //   // }
+  //   // const aspect = naturalWidth / naturalHeight;
+  //   // console.log(aspect);
+  //   const croppedArea = {
+  //     x: 0,
+  //     y: 0,
+  //     width: 100,
+  //     height: 100,
+  //   };
+  //   if (naturalHeight > naturalWidth) {
+  //     croppedArea.height = (naturalWidth / naturalHeight) * 100;
+  //     croppedArea.y = (naturalWidth / naturalHeight) * 38.888;
+  //   } else if (naturalHeight < naturalWidth) {
+  //     croppedArea.width = (naturalHeight / naturalWidth) * 100;
+  //     croppedArea.x = (naturalHeight / naturalWidth) * 38.888;
+  //   }
 
-    // setMediaData([
-    //   ...mediaData!.slice(0, currentMedia),
-    //   {
-    //     ...mediaData![currentMedia],
-    //     crop: {x: 0, y: 0},
-    //     zoom: 1
-    //   },
-    //   ...mediaData!.slice(currentMedia + 1),
-    // ]);
-  };
+  //   onCropComplete(croppedArea, index);
+
+  //   // setMediaData([
+  //   //   ...mediaData!.slice(0, currentMedia),
+  //   //   {
+  //   //     ...mediaData![currentMedia],
+  //   //     crop: {x: 0, y: 0},
+  //   //     zoom: 1
+  //   //   },
+  //   //   ...mediaData!.slice(currentMedia + 1),
+  //   // ]);
+  // };
 
   const handleBGMouseDown = (evt: React.MouseEvent<HTMLDivElement>) => {
     const onMouseUp = () => {
@@ -383,7 +429,11 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
               </div>
             )}
             <h3>Create new post</h3>
-            {mediaData && <div className={scss.next}>Next</div>}
+            {mediaData && (
+              <div onClick={() => setIsCropSuccess(true)} className={scss.next}>
+                Next
+              </div>
+            )}
           </div>
           <div className={scss.box__inner}>
             {mediaData ? (
@@ -417,278 +467,318 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
               //     </li>
               //   ))}
               // </ul>
-              <>
-                <ul
-                  onMouseDown={() => setActiveIconButton(null)}
-                  className={scss.cropper}
-                >
-                  {mediaData.map((media, i) => (
-                    <li key={media.url}>
-                      <Cropper
-                        style={{
-                          containerStyle: {
-                            // display: currentMedia !== i ? "none" : undefined,
-                            opacity: currentMedia !== i ? 0 : 1,
-                            zIndex: currentMedia !== i ? 0 : 1,
-                          },
-                        }}
-                        image={media.type === "image" ? media.url : undefined}
-                        video={media.type === "video" ? media.url : undefined}
-                        crop={media.crop}
-                        zoom={media.zoom}
-                        // setInitialCrop={(cropSize) =>}
 
-                        // zoom={2}
-                        zoomWithScroll={false}
-                        // initialCroppedAreaPixels={{x: 0, y: 0, height: 0, width: 0}}
-                        aspect={aspect}
-                        onCropChange={handleCropChange}
-                        // onZoomChange={
-                        //   media.type === "image" ? handleZoomChange : undefined
-                        // }
-                        onCropComplete={(croppedArea) =>
-                          onCropComplete(croppedArea, i)
-                        }
-                        onMediaLoaded={(mediaSize) => onMediaLoad(mediaSize, i)}
-                        // onCropAreaChange={handleCropAreaChange}
+              isCropSuccess ? (
+                <div className={scss.form}>
+                  <div className={scss.croppedMedia}>
+                    {mediaData[currentMedia].type === "image" ? (
+                      <img
+                        src={mediaData[currentMedia].url}
+                        alt=""
+                        style={mediaData[currentMedia].styles}
                       />
-                    </li>
-                  ))}
-                </ul>
-                {mediaData[currentMedia].type === "video" && (
-                  <video
-                    autoPlay
-                    loop
-                    onPlay={(e) => (e.currentTarget.volume = 1)}
-                    src={mediaData[currentMedia].url}
-                    style={{ display: "none" }}
-                  />
-                )}
-                {currentMedia > 0 && (
-                  <div
-                    onClick={() => {
-                      setCurrentMedia((prev) => prev - 1);
-                      setActiveIconButton(null);
-                    }}
-                    className={`${scss.left} ${scss.icon__button} ${scss.arrow}`}
-                  >
-                    <LeftArrowCircleIcon />
+                    ) : (
+                      <video
+                        src={mediaData[currentMedia].url}
+                        style={mediaData[currentMedia].styles}
+                      />
+                    )}
                   </div>
-                )}
-                {currentMedia < mediaData.length - 1 && (
-                  <div
-                    onClick={() => {
-                      setCurrentMedia((prev) => prev + 1);
-                      setActiveIconButton(null);
-                    }}
-                    className={`${scss.right} ${scss.icon__button} ${scss.arrow}`}
-                  >
-                    <RightArrowCircleIcon />
-                  </div>
-                )}
-                <div className={scss.upload__sub}>
-                  <div>
-                    <div
-                      onClick={(e) =>
-                        setActiveIconButton((prev) =>
-                          prev === "crop" ? null : "crop"
-                        )
-                      }
-                      className={`${scss.icon__button} ${
-                        activeIconButton &&
-                        (activeIconButton === "crop"
-                          ? scss.active
-                          : scss.disabled)
-                      }`}
-                    >
-                      <CropIcon />
+                  <form>
+                    <div>
+                      <Avatar size="28px" />
+                      <p>nickname</p>
                     </div>
-                    {activeIconButton === "crop" && (
-                      <ul
-                        onClick={(e) => e.stopPropagation()}
-                        className={scss.cropMenu}
-                      >
-                        <li
-                          onClick={() => setAspect(4 / 3)}
-                          className={aspect === 4 / 3 ? scss.active : undefined}
-                        >
-                          Original <GalleryIcon />
-                        </li>
-                        <li
-                          onClick={() => setAspect(1)}
-                          className={aspect === 1 ? scss.active : undefined}
-                        >
-                          1:1 <SquareIcon />
-                        </li>
-                        <li
-                          onClick={() => setAspect(4 / 5)}
-                          className={aspect === 4 / 5 ? scss.active : undefined}
-                        >
-                          4:5 <VerticalRectangleIcon />
-                        </li>
-                        <li
-                          onClick={() => setAspect(16 / 9)}
-                          className={
-                            aspect === 16 / 9 ? scss.active : undefined
+                    <textarea></textarea>
+                  </form>
+                </div>
+              ) : (
+                <>
+                  <ul
+                    onMouseDown={() => setActiveIconButton(null)}
+                    className={scss.cropper}
+                  >
+                    {mediaData.map((media, i) => (
+                      <li key={media.url}>
+                        <Cropper
+                          style={{
+                            containerStyle: {
+                              // display: currentMedia !== i ? "none" : undefined,
+                              opacity: currentMedia !== i ? 0 : 1,
+                              zIndex: currentMedia !== i ? 0 : 1,
+                            },
+                          }}
+                          image={media.type === "image" ? media.url : undefined}
+                          video={media.type === "video" ? media.url : undefined}
+                          crop={media.crop}
+                          zoom={media.zoom}
+                          // setInitialCrop={(cropSize) =>}
+                          mediaProps={{ muted: false, autoPlay: false }}
+                          setVideoRef={(ref) => (videoRefs.current[i] = ref)}
+                          // zoom={2}
+                          zoomWithScroll={false}
+                          // initialCroppedAreaPixels={{x: 0, y: 0, height: 0, width: 0}}
+                          aspect={aspect}
+                          onCropChange={(loaction) =>
+                            handleCropChange(loaction, i)
                           }
+                          // onZoomChange={
+                          //   media.type === "image" ? handleZoomChange : undefined
+                          // }
+                          onCropComplete={(croppedArea) => {
+                            console.log("cropComplete", i);
+                            onCropComplete(croppedArea, i);
+                          }}
+                          // onMediaLoaded={(mediaSize) =>{console.log("mediaLoad", i)
+                          //   onMediaLoad(mediaSize, i)}
+                          // }
+                          // onCropAreaChange={handleCropAreaChange}
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                  {/* {mediaData[currentMedia].type === "video" && (
+                    <video
+                      autoPlay
+                      loop
+                      onPlay={(e) => (e.currentTarget.volume = 1)}
+                      src={mediaData[currentMedia].url}
+                      style={{ display: "none" }}
+                    />
+                  )} */}
+                  {currentMedia > 0 && (
+                    <div
+                      onClick={() => {
+                        setCurrentMedia((prev) => prev - 1);
+                        setActiveIconButton(null);
+                      }}
+                      className={`${scss.left} ${scss.icon__button} ${scss.arrow}`}
+                    >
+                      <LeftArrowCircleIcon />
+                    </div>
+                  )}
+                  {currentMedia < mediaData.length - 1 && (
+                    <div
+                      onClick={() => {
+                        setCurrentMedia((prev) => prev + 1);
+                        setActiveIconButton(null);
+                      }}
+                      className={`${scss.right} ${scss.icon__button} ${scss.arrow}`}
+                    >
+                      <RightArrowCircleIcon />
+                    </div>
+                  )}
+                  <div className={scss.upload__sub}>
+                    <div>
+                      <div
+                        onClick={(e) =>
+                          setActiveIconButton((prev) =>
+                            prev === "crop" ? null : "crop"
+                          )
+                        }
+                        className={`${scss.icon__button} ${
+                          activeIconButton &&
+                          (activeIconButton === "crop"
+                            ? scss.active
+                            : scss.disabled)
+                        }`}
+                      >
+                        <CropIcon />
+                      </div>
+                      {activeIconButton === "crop" && (
+                        <ul
+                          onClick={(e) => e.stopPropagation()}
+                          className={scss.cropMenu}
                         >
-                          16:9 <HorizontalRectangleIcon />
-                        </li>
+                          <li
+                            onClick={() => setAspect(4 / 3)}
+                            className={
+                              aspect === 4 / 3 ? scss.active : undefined
+                            }
+                          >
+                            Original <GalleryIcon />
+                          </li>
+                          <li
+                            onClick={() => setAspect(1)}
+                            className={aspect === 1 ? scss.active : undefined}
+                          >
+                            1:1 <SquareIcon />
+                          </li>
+                          <li
+                            onClick={() => setAspect(4 / 5)}
+                            className={
+                              aspect === 4 / 5 ? scss.active : undefined
+                            }
+                          >
+                            4:5 <VerticalRectangleIcon />
+                          </li>
+                          <li
+                            onClick={() => setAspect(16 / 9)}
+                            className={
+                              aspect === 16 / 9 ? scss.active : undefined
+                            }
+                          >
+                            16:9 <HorizontalRectangleIcon />
+                          </li>
+                        </ul>
+                      )}
+                      <div
+                        onClick={(e) =>
+                          setActiveIconButton((prev) =>
+                            prev === "zoom" ? null : "zoom"
+                          )
+                        }
+                        className={`${scss.icon__button} ${
+                          activeIconButton &&
+                          (activeIconButton === "zoom"
+                            ? scss.active
+                            : scss.disabled)
+                        }`}
+                      >
+                        <ZoomIcon />
+                      </div>
+                      {activeIconButton === "zoom" && (
+                        <div className={scss.range}>
+                          <input
+                            type="range"
+                            min={1}
+                            max={2}
+                            step={0.01}
+                            value={mediaData[currentMedia].zoom}
+                            onChange={(e) =>
+                              handleZoomChange(e.target.valueAsNumber)
+                            }
+                          />
+                        </div>
+                      )}
+                    </div>
+                    {mediaData.length > 1 && (
+                      <ul className={scss.dots}>
+                        {mediaData.map((_, i) => (
+                          <li
+                            key={i}
+                            onClick={() => {
+                              setCurrentMedia(i);
+                              setActiveIconButton(null);
+                            }}
+                            style={{
+                              opacity: currentMedia === i ? 1 : 0.4,
+                            }}
+                          ></li>
+                        ))}
                       </ul>
                     )}
                     <div
                       onClick={(e) =>
                         setActiveIconButton((prev) =>
-                          prev === "zoom" ? null : "zoom"
+                          prev === "gallery" ? null : "gallery"
                         )
                       }
                       className={`${scss.icon__button} ${
                         activeIconButton &&
-                        (activeIconButton === "zoom"
+                        (activeIconButton === "gallery"
                           ? scss.active
                           : scss.disabled)
                       }`}
                     >
-                      <ZoomIcon />
+                      <MediaGalleryIcon />
                     </div>
-                    {activeIconButton === "zoom" && (
-                      <div className={scss.range}>
-                        <input
-                          type="range"
-                          min={1}
-                          max={2}
-                          step={0.01}
-                          value={mediaData[currentMedia].zoom}
-                          onChange={(e) =>
-                            handleZoomChange(e.target.valueAsNumber)
-                          }
-                        />
+                    {activeIconButton === "gallery" && (
+                      <div
+                        // onClick={(e) => e.stopPropagation()}
+                        className={scss.gallery}
+                      >
+                        <div className={scss.media}>
+                          {galleryScrollLeft > 0 && (
+                            <div className={`${scss.arrow} ${scss.left}`}>
+                              <div
+                                onClick={() =>
+                                  galleryRef.current?.scrollTo({
+                                    left: galleryScrollLeft - 300,
+                                    behavior: "smooth",
+                                  })
+                                }
+                                className={scss.icon__button}
+                              >
+                                <LeftArrowCircleIcon />
+                              </div>
+                            </div>
+                          )}
+                          {galleryScrollLeft < galleryScrollWidth && (
+                            <div className={`${scss.arrow} ${scss.right}`}>
+                              <div
+                                onClick={() =>
+                                  galleryRef.current?.scrollTo({
+                                    left: galleryScrollLeft + 300,
+                                    behavior: "smooth",
+                                  })
+                                }
+                                className={scss.icon__button}
+                              >
+                                <RightArrowCircleIcon />
+                              </div>
+                            </div>
+                          )}
+                          <ul
+                            onScroll={(e) =>
+                              setGalleryScrollLeft(e.currentTarget.scrollLeft)
+                            }
+                            ref={galleryRef}
+                          >
+                            {mediaData.map((media, i) => (
+                              <li
+                                key={media.url}
+                                className={
+                                  currentMedia === i ? scss.active : ""
+                                }
+                                onClick={() => setCurrentMedia(i)}
+                                style={{
+                                  // paddingBottom: aspect && `${100/aspect}%`
+                                  width:
+                                    aspect > 1 ? "94px" : `${94 * aspect}px`,
+                                  height:
+                                    aspect < 1 ? "94px" : `${94 / aspect}px`,
+                                }}
+                              >
+                                {media.type === "image" ? (
+                                  <img
+                                    src={media.url}
+                                    alt=""
+                                    style={media.styles}
+                                    // style={{
+                                    //   objectFit: "cover",
+                                    //   width: "100%",
+                                    //   height: "100%",
+                                    //   transform: `translate(${media.crop.x}px, ${media.crop.y}px) scale(${media.zoom})`,
+                                    // }}
+                                    // style={{
+                                    //   top: media.croppedArea.top,
+                                    //   left: media.croppedArea.left,
+                                    // }}
+                                  />
+                                ) : (
+                                  <video src={media.url} style={media.styles} />
+                                )}
+                                <div onClick={() => setActiveModal("delete")}>
+                                  <CloseIcon />
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        {mediaData.length < 10 && (
+                          <div
+                            className={scss.plus}
+                            onClick={() => inputRef.current?.click()}
+                          >
+                            <PlusIcon />
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
-                  {mediaData.length > 1 && (
-                    <ul className={scss.dots}>
-                      {mediaData.map((_, i) => (
-                        <li
-                          key={i}
-                          onClick={() => {
-                            setCurrentMedia(i);
-                            setActiveIconButton(null);
-                          }}
-                          style={{
-                            opacity: currentMedia === i ? 1 : 0.4,
-                          }}
-                        ></li>
-                      ))}
-                    </ul>
-                  )}
-                  <div
-                    onClick={(e) =>
-                      setActiveIconButton((prev) =>
-                        prev === "gallery" ? null : "gallery"
-                      )
-                    }
-                    className={`${scss.icon__button} ${
-                      activeIconButton &&
-                      (activeIconButton === "gallery"
-                        ? scss.active
-                        : scss.disabled)
-                    }`}
-                  >
-                    <MediaGalleryIcon />
-                  </div>
-                  {activeIconButton === "gallery" && (
-                    <div
-                      // onClick={(e) => e.stopPropagation()}
-                      className={scss.gallery}
-                    >
-                      <div className={scss.media}>
-                        {galleryScrollLeft > 0 && (
-                          <div className={`${scss.arrow} ${scss.left}`}>
-                            <div
-                              onClick={() =>
-                                galleryRef.current?.scrollTo({
-                                  left: galleryScrollLeft - 300,
-                                  behavior: "smooth",
-                                })
-                              }
-                              className={scss.icon__button}
-                            >
-                              <LeftArrowCircleIcon />
-                            </div>
-                          </div>
-                        )}
-                        {galleryScrollLeft < galleryScrollWidth && (
-                          <div className={`${scss.arrow} ${scss.right}`}>
-                            <div
-                              onClick={() =>
-                                galleryRef.current?.scrollTo({
-                                  left: galleryScrollLeft + 300,
-                                  behavior: "smooth",
-                                })
-                              }
-                              className={scss.icon__button}
-                            >
-                              <RightArrowCircleIcon />
-                            </div>
-                          </div>
-                        )}
-                        <ul
-                          onScroll={(e) =>
-                            setGalleryScrollLeft(e.currentTarget.scrollLeft)
-                          }
-                          ref={galleryRef}
-                        >
-                          {mediaData.map((media, i) => (
-                            <li
-                              key={media.url}
-                              className={currentMedia === i ? scss.active : ""}
-                              onClick={() => setCurrentMedia(i)}
-                              style={{
-                                // paddingBottom: aspect && `${100/aspect}%`
-                                width: aspect > 1 ? "94px" : `${94 * aspect}px`,
-                                height:
-                                  aspect < 1 ? "94px" : `${94 / aspect}px`,
-                              }}
-                            >
-                              {media.type === "image" ? (
-                                <img
-                                  src={media.url}
-                                  alt=""
-                                  style={media.styles}
-                                  // style={{
-                                  //   objectFit: "cover",
-                                  //   width: "100%",
-                                  //   height: "100%",
-                                  //   transform: `translate(${media.crop.x}px, ${media.crop.y}px) scale(${media.zoom})`,
-                                  // }}
-                                  // style={{
-                                  //   top: media.croppedArea.top,
-                                  //   left: media.croppedArea.left,
-                                  // }}
-                                />
-                              ) : (
-                                <video src={media.url} style={media.styles} />
-                              )}
-                              <div onClick={() => setActiveModal("delete")}>
-                                <CloseIcon />
-                              </div>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      {mediaData.length < 10 && (
-                        <div
-                          className={scss.plus}
-                          onClick={() => inputRef.current?.click()}
-                        >
-                          <PlusIcon />
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </>
+                </>
+              )
             ) : (
               <div className={scss.box__inner__upload}>
                 <ImageVideoIcon />
@@ -706,13 +796,6 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
               multiple
             />
           </div>
-          <form className={scss.form}>
-            <div>
-              <Avatar size="28px" />
-              <p>nickname</p>
-            </div>
-            <textarea></textarea>
-          </form>
         </div>
         <span>
           <CloseIcon />
