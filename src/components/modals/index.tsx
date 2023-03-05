@@ -120,7 +120,7 @@ export const DiscardModal: React.FC<{
   return (
     <div className={scss.background} onClick={onClose}>
       <div
-        // onClick={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
         className={`${scss.box} ${scss.options__box}`}
       >
         <h6>{title}</h6>

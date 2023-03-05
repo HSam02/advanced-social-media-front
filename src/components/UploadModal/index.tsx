@@ -4,6 +4,7 @@ import Cropper, { Area, MediaSize, Point } from "react-easy-crop";
 // import "cropperjs/dist/cropper.css";
 import { AppButton, Avatar } from "../AppComponents";
 import {
+  BottomArrowIcon,
   CloseIcon,
   CropIcon,
   GalleryIcon,
@@ -45,6 +46,7 @@ type mediaType = {
   // };
   // croppedArea: croppedAreaPercentType;
   // mediaSize: { naturalWidth: number; naturalHeight: number };
+  videoRef?: React.RefObject<HTMLVideoElement>;
   styles: {
     transform: string;
     // width: string;
@@ -133,13 +135,20 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [galleryScrollLeft, setGalleryScrollLeft] = useState(0);
   const [galleryScrollWidth, setGalleryScrollWidth] = useState(0);
   const [isCropSuccess, setIsCropSuccess] = useState(false);
+  const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
+  const [text, setText] = useState("");
+  const [hideLikes, setHideLikes] = useState(false);
+  const [hideComments, setHideComments] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const galleryRef = useRef<HTMLUListElement>(null);
-  const videoRefs = useRef<Array<React.RefObject<HTMLVideoElement>>>([]);
+  const wasMediaDataNull = useRef(true);
+  // const videoRefs = useRef<Array<React.RefObject<HTMLVideoElement>>>([]);
 
   console.log(mediaData);
-  console.log(videoRefs);
+  // console.log(videoRefs);
+  // console.log("scrollLeft", galleryScrollLeft);
+  // console.log("scrollWidth", galleryScrollWidth);
 
   useEffect(() => {
     document.body.style.overflowY = "hidden";
@@ -149,28 +158,57 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   }, []);
 
   useEffect(() => {
+    if (activeIconButton !== "gallery") {
+      return;
+    }
     galleryRef.current?.scrollTo({ left: galleryScrollLeft });
     setGalleryScrollWidth(
       (galleryRef.current?.scrollWidth &&
         galleryRef.current.scrollWidth - galleryRef.current.clientWidth) ||
         0
     );
-  }, [mediaData]);
+  }, [mediaData, activeIconButton]);
 
   useEffect(() => {
-    videoRefs.current.forEach(({ current }, i) => {
-      if (current) {
-        current.pause();
+    // videoRefs.current.forEach(({ current }, i) => {
+    //   if (current) {
+    //     current.pause();
+    //     if (i === currentMedia) {
+    //       current.currentTime = 0;
+    //       current.play();
+    //     }
+    //   }
+    // });
+    mediaData?.forEach(({ videoRef }, i) => {
+      const video = videoRef?.current;
+      console.log(video);
+
+      if (video) {
+        video.pause();
         if (i === currentMedia) {
-          current.currentTime = 0;
-          current.play();
+          video.currentTime = 0;
+          video.play();
         }
       }
     });
   }, [currentMedia]);
 
+  useEffect(() => {
+    if (
+      mediaData &&
+      wasMediaDataNull.current &&
+      (mediaData[currentMedia].videoRef?.current ||
+        (!isCropSuccess && mediaData[currentMedia].type === "image"))
+    ) {
+      wasMediaDataNull.current = false;
+      mediaData[currentMedia].videoRef?.current?.play();
+    }
+  }, [mediaData, isCropSuccess]);
+
   const handleChangeFile = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const fileList = evt.target.files;
+    console.log(fileList);
+
     if (!fileList) {
       return;
     }
@@ -179,7 +217,7 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
     if (files.length > availableCount) {
       alert("You can choose maximum 10 images");
-      files.splice(10);
+      files.splice(availableCount);
     }
     const newData = files.map(
       (file) =>
@@ -199,12 +237,12 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   };
 
   const handleCropChange = (location: Point, index: number) => {
-    console.log("cropChange", location, mediaData![index].crop);
+    // console.log("cropChange", location, mediaData![index].crop);
     if (
       mediaData![index].crop.x === location.x &&
       mediaData![index].crop.y === location.y
     ) {
-      console.log("return");
+      // console.log("return");
       return;
     }
 
@@ -222,7 +260,7 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   };
 
   const handleZoomChange = (zoom: number) => {
-    console.log(zoom);
+    // console.log(zoom);
 
     setMediaData([
       ...mediaData!.slice(0, currentMedia),
@@ -249,14 +287,17 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       // height: transform.height
     };
 
-    setMediaData((mediaData) => mediaData && [
-      ...mediaData.slice(0, index),
-      {
-        ...mediaData[index],
-        styles: imageStyle,
-      },
-      ...mediaData.slice(index + 1),
-    ]);
+    setMediaData(
+      (mediaData) =>
+        mediaData && [
+          ...mediaData.slice(0, index),
+          {
+            ...mediaData[index],
+            styles: imageStyle,
+          },
+          ...mediaData.slice(index + 1),
+        ]
+    );
     // setMediaData((mediaData) =>
     //   mediaData!.map((item, i) =>
     //     i === index ? { ...item, styles: imageStyle } : item
@@ -327,6 +368,17 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     };
   };
 
+  const handleSubmit = () => {
+    if (!isCropSuccess) {
+      setIsCropSuccess(true);
+      wasMediaDataNull.current = true;
+      return;
+    }
+    console.log("text", text);
+    console.log("hideLikes", hideLikes);
+    console.log("hideComments", hideComments);
+  };
+
   // const onMediaLoad = (mediaSize: MediaSize, index: number) => {
   //   const { naturalWidth, naturalHeight } = mediaSize;
   //   console.log(mediaSize);
@@ -392,9 +444,11 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   };
 
   const handleAcceptModal = () => {
+    setActiveModal(null);
     switch (activeModal) {
       case "cancel":
         setMediaData(null);
+        wasMediaDataNull.current = true;
         break;
       case "close":
         onClose();
@@ -402,6 +456,7 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       case "delete":
         if (mediaData?.length === 1) {
           setMediaData(null);
+          wasMediaDataNull.current = true;
           break;
         }
         setMediaData(
@@ -418,81 +473,189 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     }
   };
 
+  const handleGoBack = () => {
+    if (isCropSuccess) {
+      return setIsCropSuccess(false);
+    }
+    setActiveModal("cancel");
+  };
+
   return (
     <>
       <div onMouseDown={handleBGMouseDown} className={scss.background}>
-        <div onMouseDown={(e) => e.stopPropagation()} className={scss.box}>
+        <div
+          onMouseDown={(e) => e.stopPropagation()}
+          className={scss.box}
+          // style={{ height: isCropSuccess ? "unset" : undefined }}
+        >
           <div onClick={() => setActiveIconButton(null)} className={scss.title}>
             {mediaData && (
-              <div onClick={() => setActiveModal("cancel")}>
+              <div onClick={handleGoBack}>
                 <LeftArrowIcon />
               </div>
             )}
             <h3>Create new post</h3>
             {mediaData && (
-              <div onClick={() => setIsCropSuccess(true)} className={scss.next}>
-                Next
+              <div
+                onClick={handleSubmit}
+                className={scss.next}
+              >
+                {isCropSuccess ? "Share" : "Next"}
               </div>
             )}
           </div>
-          <div className={scss.box__inner}>
-            {mediaData ? (
-              // <ul className={scss.cropper}>
-              //   {mediaData.map((media, i) => (
-              //     <li key={media.url}>
-              //       <Cropper
-              //         aspectRatio={aspect}
-              //         preview=".img-preview"
-              //         src={media.url}
-              //         dragMode="move"
-              //         viewMode={1}
-              //         // autoCrop={true}
-              //         cropBoxMovable={false}
-              //         cropBoxResizable={false}
-              //         background={false}
-              //         responsive={true}
-              //         autoCropArea={1}
-              //         checkOrientation={true}
-              //         onInitialized={(instance) => console.log(instance, i)}
-              //         style={{
-              //           display: currentMedia !== i ? "none" : undefined,
-              //           // maxHeight: "100%",
-              //           // maxWidth: "100%",
-              //           width: "auto",
-              //           height: "100%",
-              //           // opacity: currentMedia !== i ? 0 : 1,
-              //           // zIndex: currentMedia !== i ? 0 : 1,
-              //         }}
-              //       />
-              //     </li>
-              //   ))}
-              // </ul>
-
-              isCropSuccess ? (
-                <div className={scss.form}>
-                  <div className={scss.croppedMedia}>
-                    {mediaData[currentMedia].type === "image" ? (
-                      <img
-                        src={mediaData[currentMedia].url}
-                        alt=""
-                        style={mediaData[currentMedia].styles}
-                      />
-                    ) : (
-                      <video
-                        src={mediaData[currentMedia].url}
-                        style={mediaData[currentMedia].styles}
-                      />
-                    )}
+          {isCropSuccess && mediaData ? (
+            <div className={scss.form}>
+              <div
+                className={scss.croppedMedia}
+                style={{ aspectRatio: aspect }}
+              >
+                {mediaData[currentMedia].type === "image" ? (
+                  <img
+                    src={mediaData[currentMedia].url}
+                    alt=""
+                    style={mediaData[currentMedia].styles}
+                  />
+                ) : (
+                  <video
+                    src={mediaData[currentMedia].url}
+                    style={mediaData[currentMedia].styles}
+                  />
+                )}
+                {currentMedia > 0 && (
+                  <div
+                    onClick={() => {
+                      setCurrentMedia((prev) => prev - 1);
+                      setActiveIconButton(null);
+                    }}
+                    className={`${scss.left} ${scss.icon__button} ${scss.arrow}`}
+                  >
+                    <LeftArrowCircleIcon />
                   </div>
-                  <form>
-                    <div>
-                      <Avatar size="28px" />
-                      <p>nickname</p>
-                    </div>
-                    <textarea></textarea>
-                  </form>
+                )}
+                {currentMedia < mediaData.length - 1 && (
+                  <div
+                    onClick={() => {
+                      setCurrentMedia((prev) => prev + 1);
+                      setActiveIconButton(null);
+                    }}
+                    className={`${scss.right} ${scss.icon__button} ${scss.arrow}`}
+                  >
+                    <RightArrowCircleIcon />
+                  </div>
+                )}
+                {mediaData.length > 1 && (
+                  <ul className={scss.dots}>
+                    {mediaData.map((_, i) => (
+                      <li
+                        key={i}
+                        onClick={() => {
+                          setCurrentMedia(i);
+                          setActiveIconButton(null);
+                        }}
+                        style={{
+                          opacity: currentMedia === i ? 1 : 0.4,
+                        }}
+                      ></li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <div className={scss.form__info}>
+                <div className={scss.user}>
+                  <Avatar size="28px" />
+                  <h3>nickname</h3>
                 </div>
-              ) : (
+                <textarea
+                  placeholder="Write a caption..."
+                  onChange={(e) => setText(e.target.value)}
+                  value={text}
+                ></textarea>
+                <div
+                  className={scss.more__title}
+                  onClick={() => setShowAdvancedSettings((prev) => !prev)}
+                >
+                  <h5>Advanced settings</h5>
+                  <div
+                    style={{
+                      transform: `rotate(${showAdvancedSettings ? 0 : 180}deg)`,
+                    }}
+                  >
+                    <BottomArrowIcon />
+                  </div>
+                </div>
+                {showAdvancedSettings && (
+                  <ul className={scss.more__info}>
+                    <li>
+                      <div>
+                        <h6>Hide like and view counts on this post</h6>
+                        <div
+                          onClick={() => setHideLikes((prev) => !prev)}
+                          className={`${scss.custom__checkbox} ${
+                            hideLikes ? scss.active : ""
+                          }`}
+                        ></div>
+                      </div>
+                      <p>
+                        Only you will see the total number of likes and views on
+                        this post. You can change this later by going to the ···
+                        menu at the top of the post. To hide like counts on
+                        other people's posts, go to your account settings.
+                      </p>
+                    </li>
+                    <li>
+                      <div>
+                        <h6>Turn off commenting</h6>
+                        <div
+                          onClick={() => setHideComments((prev) => !prev)}
+                          className={`${scss.custom__checkbox} ${
+                            hideComments ? scss.active : ""
+                          }`}
+                        ></div>
+                      </div>
+                      <p>
+                        You can change this later by going to the ··· menu at
+                        the top of your post.
+                      </p>
+                    </li>
+                  </ul>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className={scss.box__inner}>
+              {mediaData ? (
+                // <ul className={scss.cropper}>
+                //   {mediaData.map((media, i) => (
+                //     <li key={media.url}>
+                //       <Cropper
+                //         aspectRatio={aspect}
+                //         preview=".img-preview"
+                //         src={media.url}
+                //         dragMode="move"
+                //         viewMode={1}
+                //         // autoCrop={true}
+                //         cropBoxMovable={false}
+                //         cropBoxResizable={false}
+                //         background={false}
+                //         responsive={true}
+                //         autoCropArea={1}
+                //         checkOrientation={true}
+                //         onInitialized={(instance) => console.log(instance, i)}
+                //         style={{
+                //           display: currentMedia !== i ? "none" : undefined,
+                //           // maxHeight: "100%",
+                //           // maxWidth: "100%",
+                //           width: "auto",
+                //           height: "100%",
+                //           // opacity: currentMedia !== i ? 0 : 1,
+                //           // zIndex: currentMedia !== i ? 0 : 1,
+                //         }}
+                //       />
+                //     </li>
+                //   ))}
+                // </ul>
+
                 <>
                   <ul
                     onMouseDown={() => setActiveIconButton(null)}
@@ -514,7 +677,19 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                           zoom={media.zoom}
                           // setInitialCrop={(cropSize) =>}
                           mediaProps={{ muted: false, autoPlay: false }}
-                          setVideoRef={(ref) => (videoRefs.current[i] = ref)}
+                          setVideoRef={(ref) =>
+                            setMediaData(
+                              (mediaData) =>
+                                mediaData && [
+                                  ...mediaData.slice(0, i),
+                                  {
+                                    ...mediaData[i],
+                                    videoRef: ref,
+                                  },
+                                  ...mediaData.slice(i + 1),
+                                ]
+                            )
+                          }
                           // zoom={2}
                           zoomWithScroll={false}
                           // initialCroppedAreaPixels={{x: 0, y: 0, height: 0, width: 0}}
@@ -525,10 +700,9 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                           // onZoomChange={
                           //   media.type === "image" ? handleZoomChange : undefined
                           // }
-                          onCropComplete={(croppedArea) => {
-                            console.log("cropComplete", i);
-                            onCropComplete(croppedArea, i);
-                          }}
+                          onCropComplete={(croppedArea) =>
+                            onCropComplete(croppedArea, i)
+                          }
                           // onMediaLoaded={(mediaSize) =>{console.log("mediaLoad", i)
                           //   onMediaLoad(mediaSize, i)}
                           // }
@@ -704,7 +878,7 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                               </div>
                             </div>
                           )}
-                          {galleryScrollLeft < galleryScrollWidth && (
+                          {galleryScrollLeft < galleryScrollWidth - 1 && (
                             <div className={`${scss.arrow} ${scss.right}`}>
                               <div
                                 onClick={() =>
@@ -721,7 +895,9 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                           )}
                           <ul
                             onScroll={(e) =>
-                              setGalleryScrollLeft(e.currentTarget.scrollLeft)
+                              setGalleryScrollLeft(
+                                Math.round(e.currentTarget.scrollLeft)
+                              )
                             }
                             ref={galleryRef}
                           >
@@ -778,24 +954,24 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     )}
                   </div>
                 </>
-              )
-            ) : (
-              <div className={scss.box__inner__upload}>
-                <ImageVideoIcon />
-                <p>Drag photos and videos here</p>
-                <AppButton onClick={() => inputRef.current?.click()}>
-                  Select from computer
-                </AppButton>
-              </div>
-            )}
-            <input
-              onChange={handleChangeFile}
-              ref={inputRef}
-              type="file"
-              accept="image/png, image/jpeg, video/mp4"
-              multiple
-            />
-          </div>
+              ) : (
+                <div className={scss.box__inner__upload}>
+                  <ImageVideoIcon />
+                  <p>Drag photos and videos here</p>
+                  <AppButton onClick={() => inputRef.current?.click()}>
+                    Select from computer
+                  </AppButton>
+                </div>
+              )}
+              <input
+                onChange={handleChangeFile}
+                ref={inputRef}
+                type="file"
+                accept="image/png, image/jpeg, video/mp4"
+                multiple
+              />
+            </div>
+          )}
         </div>
         <span>
           <CloseIcon />
