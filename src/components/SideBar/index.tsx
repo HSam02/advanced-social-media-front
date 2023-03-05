@@ -18,7 +18,7 @@ import {
   UserIcon,
 } from "../icons";
 import scss from "./SideBar.module.scss";
-import { UploadModal } from "../modals";
+import { UploadModal } from "../";
 
 export const SideBar: React.FC = () => {
   const [activeLink, setActiveLink] = useState<string>("");

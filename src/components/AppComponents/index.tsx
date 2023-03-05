@@ -4,11 +4,13 @@ import scss from "./AppComponent.module.scss";
 
 type childrenPropType = {
   children?: React.ReactElement | React.ReactElement[] | string;
-  gray?: boolean,
-  type?: "submit" | "reset" | "button",
-  disabled?: boolean,
-  to?: string,
-  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
+  gray?: boolean;
+  type?: "submit" | "reset" | "button";
+  disabled?: boolean;
+  to?: string;
+  active?: boolean;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onClose?: () => void;
 };
 
 export const AppContainer: React.FC<childrenPropType> = ({ children }) => {
@@ -26,8 +28,24 @@ export const Avatar: React.FC<{ size?: string }> = ({ size }) => {
   );
 };
 
-export const AppButton: React.FC<childrenPropType> = ({ children, gray, type, disabled, onClick }) => {
-  return <button onClick={onClick} type={type} className={`${scss.button} ${gray && scss.gray} ${disabled && scss.disabled}`}>{children}</button>;
+export const AppButton: React.FC<childrenPropType> = ({
+  children,
+  gray,
+  type,
+  disabled,
+  onClick,
+}) => {
+  return (
+    <button
+      onClick={onClick}
+      type={type}
+      className={`${scss.button} ${gray && scss.gray} ${
+        disabled && scss.disabled
+      }`}
+    >
+      {children}
+    </button>
+  );
 };
 
 // export const AppNavLink: React.FC<childrenPropType> = ({children, to}) => {
@@ -37,8 +55,25 @@ export const AppButton: React.FC<childrenPropType> = ({ children, gray, type, di
 // }
 
 export const LoadingPage: React.FC = () => {
-  return <div className={scss.loading__page}>
-    <LogoIcon />
-    <p>from Sam</p>
-  </div>
-}
+  return (
+    <div className={scss.loading__page}>
+      <LogoIcon />
+      <p>from Sam</p>
+    </div>
+  );
+};
+
+// export const IconButton: React.FC<childrenPropType> = ({
+//   children,
+//   active,
+//   onClose,
+// }) => {
+//   return (
+//     <div
+//       onClick={onClose}
+//       className={`${scss.icon__button} ${active ? scss.active : scss.disabled}`}
+//     >
+//       {children}
+//     </div>
+//   );
+// };

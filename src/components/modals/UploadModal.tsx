@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { AppButton } from "../AppComponents";
 import {
   CloseIcon,
@@ -18,6 +18,7 @@ import {
 import scss from "./modals.module.scss";
 import appAxios from "../../appAxios";
 import { DiscardModal } from ".";
+// import Cropper, { Area, Point } from "react-easy-crop";
 
 export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -31,16 +32,26 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   // const [showSmallImages, setShowSmallImages] = useState(false);
   // const [showCropMenu, setShowCropMenu] = useState(false);
   // const [images, setImages] = useState<string[] | null>(null);
+  // const [images, setImages] = useState<
+  //   | {
+  //       name: string;
+  //       layout: {
+  //         crop: {
+  //           x: number;
+  //           y: number;
+  //         };
+  //         width: number;
+  //         height: number;
+  //         zoom: number;
+  //       };
+  //     }[]
+  //   | null
+  // >(null);
   const [images, setImages] = useState<
     | {
-        name: string;
-        layout: {
-          x: number;
-          y: number;
-          width: number;
-          height: number;
-          zoom: number;
-        };
+        url: string;
+        crop: { x: number; y: number };
+        zoom: number;
       }[]
     | null
   >(null);
@@ -56,16 +67,19 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const [activeCrop, setActiveCrop] = useState<"horizontal" | "vertical">(
     "vertical"
   );
+
+  // const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
+  // const [zoom, setZoom] = useState(1);
   // const [zoomValue, setZoomValue] = useState(0);
 
-  const [isDragging, setIsDragging] = useState(false);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  // const [isDragging, setIsDragging] = useState(false);
+  // const [offset, setOffset] = useState({ x: 0, y: 0 });
   // const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [maxPosition, setMaxPosition] = useState({ x: 0, y: 0 });
+  // const [maxPosition, setMaxPosition] = useState({ x: 0, y: 0 });
   // const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
 
-  const containerRef = useRef<HTMLLIElement>(null);
-  const imageRef = useRef<HTMLImageElement>(null);
+  // const containerRef = useRef<HTMLLIElement>(null);
+  // const imageRef = useRef<HTMLImageElement>(null);
 
   // console.log(imageRef, containerRef);
   // console.log("offset: ", offset);
@@ -79,104 +93,104 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   // const [mouseX, setMouseX] = useState(0);
   // const [mouseY, setMouseY] = useState(0);
 
-  const handleMouseDown = (e: React.MouseEvent<HTMLImageElement>) => {
-    setIsDragging(true);
-    setActiveIconButton(null);
+  // const handleMouseDown = (e: React.MouseEvent<HTMLImageElement>) => {
+  //   setIsDragging(true);
+  //   setActiveIconButton(null);
 
-    // if (imageRef.current) {
-    //   // const rect = imageRef.current.getBoundingClientRect();
-    //   setOffset({
-    //     x: e.nativeEvent.offsetX,
-    //     y: e.nativeEvent.offsetY,
-    //   });
-    // }
-    if (imageRef.current && containerRef.current) {
-      const rect = imageRef.current.getBoundingClientRect();
-      const containerRect = containerRef.current.getBoundingClientRect();
-      setOffset({
-        x: e.clientX - rect.left + containerRect.left,
-        y: e.clientY - rect.top + containerRect.top,
-      });
-    }
-  };
+  //   // if (imageRef.current) {
+  //   //   // const rect = imageRef.current.getBoundingClientRect();
+  //   //   setOffset({
+  //   //     x: e.nativeEvent.offsetX,
+  //   //     y: e.nativeEvent.offsetY,
+  //   //   });
+  //   // }
+  //   if (imageRef.current && containerRef.current) {
+  //     const rect = imageRef.current.getBoundingClientRect();
+  //     const containerRect = containerRef.current.getBoundingClientRect();
+  //     setOffset({
+  //       x: e.clientX - rect.left + containerRect.left,
+  //       y: e.clientY - rect.top + containerRect.top,
+  //     });
+  //   }
+  // };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (isDragging && imageRef.current && containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
-      setMaxPosition({
-        x: rect.width - imageRef.current.width,
-        y: rect.height - imageRef.current.height,
-      });
-      let x = e.pageX - offset.x;
-      let y = e.pageY - offset.y;
-      x = Math.min(Math.max(x, maxPosition.x), 0);
-      y = Math.min(Math.max(y, maxPosition.y), 0);
-      // setPosition({ x, y });
+  // const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  //   if (isDragging && imageRef.current && containerRef.current) {
+  //     const rect = containerRef.current.getBoundingClientRect();
+  //     setMaxPosition({
+  //       x: rect.width - imageRef.current.width,
+  //       y: rect.height - imageRef.current.height,
+  //     });
+  //     let x = e.pageX - offset.x;
+  //     let y = e.pageY - offset.y;
+  //     x = Math.min(Math.max(x, maxPosition.x), 0);
+  //     y = Math.min(Math.max(y, maxPosition.y), 0);
+  //     // setPosition({ x, y });
 
-      setImages(
-        (images) =>
-          images &&
-          images.map((image) => ({
-            ...image,
-            layout: {
-              ...image.layout,
-              x,
-              y,
-            },
-          }))
-      );
+  //     setImages(
+  //       (images) =>
+  //         images &&
+  //         images.map((image) => ({
+  //           ...image,
+  //           layout: {
+  //             ...image.layout,
+  //             x,
+  //             y,
+  //           },
+  //         }))
+  //     );
 
-      // setImages(
-      //   (images) =>
-      //     images?.map((image, i) => {
-      //       if (i + 1 === currentImage) {
-      //         image.layout.x = x;
-      //         image.layout.y = y;
-      //       }
-      //       return image;
-      //     }) || null
-      // );
-    }
-  };
+  //     // setImages(
+  //     //   (images) =>
+  //     //     images?.map((image, i) => {
+  //     //       if (i + 1 === currentImage) {
+  //     //         image.layout.x = x;
+  //     //         image.layout.y = y;
+  //     //       }
+  //     //       return image;
+  //     //     }) || null
+  //     // );
+  //   }
+  // };
 
-  const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
-    setIsDragging(false);
-  };
+  // const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
+  //   setIsDragging(false);
+  // };
 
-  const handleImageLoad = (
-    e: React.SyntheticEvent<HTMLImageElement>,
-    index: number
-  ) => {
-    const { width, height } = e.target as HTMLImageElement;
-    if (images) {
-      const newImages = [...images];
-      const oldImage = newImages[index];
-      const newImage = {
-        ...oldImage,
-        layout: {
-          ...oldImage.layout,
-          width: activeCrop === "horizontal" ? 680 : width,
-          height: activeCrop === "vertical" ? 680 : height,
-          // clientHeight,
-          // clientWidth
-        },
-      };
-      newImages[index] = newImage;
-      setImages(newImages);
-      // newImages[index].layout.height = target.height;
-      // newImages[index].layout.width = target.width;
-    }
+  // const handleImageLoad = (
+  //   e: React.SyntheticEvent<HTMLImageElement>,
+  //   index: number
+  // ) => {
+  //   const { width, height } = e.target as HTMLImageElement;
+  //   if (images) {
+  //     const newImages = [...images];
+  //     const oldImage = newImages[index];
+  //     const newImage = {
+  //       ...oldImage,
+  //       layout: {
+  //         ...oldImage.layout,
+  //         width: activeCrop === "horizontal" ? 680 : width,
+  //         height: activeCrop === "vertical" ? 680 : height,
+  //         // clientHeight,
+  //         // clientWidth
+  //       },
+  //     };
+  //     newImages[index] = newImage;
+  //     setImages(newImages);
+  //     // newImages[index].layout.height = target.height;
+  //     // newImages[index].layout.width = target.width;
+  //   }
 
-    // setImages(images => images?.map(image => ))
-    // setImageSize({
-    //   width: target.width,
-    //   height: target.height,
-    // });
-  };
+  //   // setImages(images => images?.map(image => ))
+  //   // setImageSize({
+  //   //   width: target.width,
+  //   //   height: target.height,
+  //   // });
+  // };
 
-  const handleDragStart = (e: React.DragEvent<HTMLImageElement>) => {
-    e.preventDefault();
-  };
+  // const handleDragStart = (e: React.DragEvent<HTMLImageElement>) => {
+  //   e.preventDefault();
+  // };
 
   // useEffect(() => {
   //   const handleMouseUp = () => {
@@ -321,36 +335,36 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   };
 
   const handleRemoveImage = (name: string) => {
-    appAxios.delete(`uploads/${name}`);
-    if (images?.length === 1) {
-      setImages(null);
-    } else {
-      setImages(
-        (images) => images && images.filter((image) => image.name !== name)
-      );
-    }
-    setDeletingImageName(null);
-    if (currentImage !== 1) {
-      setCurrentImage((prev) => prev - 1);
-    }
+    // appAxios.delete(`uploads/${name}`);
+    // if (images?.length === 1) {
+    //   setImages(null);
+    // } else {
+    //   setImages(
+    //     (images) => images && images.filter((image) => image.name !== name)
+    //   );
+    // }
+    // setDeletingImageName(null);
+    // if (currentImage !== 1) {
+    //   setCurrentImage((prev) => prev - 1);
+    // }
   };
 
   const handleAcceptDiscard = () => {
-    if (isImagesLoading) {
-      controller.current.abort();
-      onClose();
-      return;
-    }
-    appAxios.post(
-      "/uploads/delete",
-      images?.map((image) => image.name)
-    );
-    if (cancelUpload) {
-      setImages(null);
-      setCurrentImage(1);
-      setCancelUpload(false);
-      return;
-    }
+    // if (isImagesLoading) {
+    //   controller.current.abort();
+    //   onClose();
+    //   return;
+    // }
+    // appAxios.post(
+    //   "/uploads/delete",
+    //   images?.map((image) => image.name)
+    // );
+    // if (cancelUpload) {
+    //   setImages(null);
+    //   setCurrentImage(1);
+    //   setCancelUpload(false);
+    //   return;
+    // }
     onClose();
   };
 
@@ -367,49 +381,86 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     setShowDiscardModal(true);
   };
 
-  const handleChangeFile = async (evt: React.ChangeEvent<HTMLInputElement>) => {
+  // const onCropComplete = useCallback(
+  //   (croppedArea: Area, croppedAreaPixels: Area) => {
+  //     console.log(croppedArea, croppedAreaPixels);
+  //   },
+  //   []
+  // );
+
+  const handleChangeFile = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const fileList = evt.target.files;
+    console.log(fileList);
     if (!fileList) {
       return;
     }
 
     const files = Array.from(fileList);
     const availableCount = images ? 10 - images.length : 10;
-
+    console.log(availableCount);
+    
     if (files.length > availableCount) {
       alert("You can choose maximum 10 images");
       return;
     }
-    const formData = new FormData();
-    files.forEach((file) => formData.append(`images`, file));
-    setIsImagesLoading(true);
-    try {
-      const { data } = await appAxios.post<{ name: string }[]>(
-        "/uploads",
-        formData,
-        {
-          signal: controller.current.signal,
-        }
-      );
-      const newImages = data.map((imageName) => ({
-        ...imageName,
-        layout: {
-          height: 0,
-          width: 0,
-          x: 0,
-          y: 0,
-          zoom: 0,
-        },
-      }));
-      setImages((images) => (images ? [...images, ...newImages] : newImages));
-    } catch (error) {
-      console.log(error);
-    }
-    setIsImagesLoading(false);
+    const newImages = files.map(file => ({
+      url: URL.createObjectURL(file),
+      crop: {
+        x: 0,
+        y: 0
+      },
+      zoom: 1
+    }));
+    console.log(newImages);
+    
+    setImages((images) => (images ? [...images, ...newImages] : newImages));
   };
+
+  // const handleChangeFile = async (evt: React.ChangeEvent<HTMLInputElement>) => {
+  //   const fileList = evt.target.files;
+  //   if (!fileList) {
+  //     return;
+  //   }
+
+  //   const files = Array.from(fileList);
+  //   const availableCount = images ? 10 - images.length : 10;
+
+  //   if (files.length > availableCount) {
+  //     alert("You can choose maximum 10 images");
+  //     return;
+  //   }
+  //   const formData = new FormData();
+  //   files.forEach((file) => formData.append(`images`, file));
+  //   setIsImagesLoading(true);
+  //   try {
+  //     const { data } = await appAxios.post<{ name: string }[]>(
+  //       "/uploads",
+  //       formData,
+  //       {
+  //         signal: controller.current.signal,
+  //       }
+  //     );
+  //     const newImages = data.map((imageName) => ({
+  //       ...imageName,
+  //       layout: {
+  //         crop: {
+  //           x: 0,
+  //           y: 0,
+  //         },
+  //         height: 0,
+  //         width: 0,
+  //         zoom: 1,
+  //       },
+  //     }));
+  //     setImages((images) => (images ? [...images, ...newImages] : newImages));
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  //   setIsImagesLoading(false);
+  // };
   return (
     <>
-      {isDragging && (
+      {/* {isDragging && (
         <div
           className={scss.mouseMove}
           onMouseMove={handleMouseMove}
@@ -419,7 +470,7 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             cursor: isDragging ? "grabbing" : undefined,
           }}
         ></div>
-      )}
+      )} */}
       <div onClick={handleCloseUpload} className={scss.background}>
         <div
           onClick={(e) => {
@@ -528,20 +579,35 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     <MediaGalleryIcon />
                   </div>
                 </div>
-                <ul
+                <div
                   className={scss.upload__images}
                   style={{ left: (currentImage - 1) * -100 + "%" }}
                 >
                   {images.map((image, i) => (
-                    <li
-                      key={image.name}
-                      ref={currentImage === i + 1 ? containerRef : undefined}
-                      // onMouseMove={handleMouseMove}
-                      // onMouseUp={handleMouseUp}
-                      // onMouseLeave={handleMouseLeave}
-                    >
+                    // <li
+                    //   key={image.name}
+                    //   // ref={currentImage === i + 1 ? containerRef : undefined}
+                    //   // onMouseMove={handleMouseMove}
+                    //   // onMouseUp={handleMouseUp}
+                    //   // onMouseLeave={handleMouseLeave}
+                    // >
+                    <>
+                      {/* {currentImage === i + 1 && (
+                        <Cropper
+                          image={image.url}
+                          crop={image.crop}
+                          zoom={image.zoom}
+                          // aspect={4/3}
+                          onCropChange={(location) => setImages(images => images && images.map(img => img.url === image.url ? { ...img, crop: location } : img))}
+                          onCropComplete={onCropComplete}
+                          onZoomChange={(zoom) => setImages(images => images && images.map(img => img.url === image.url ? { ...img, zoom } : img))}
+                          // cropSize={{ width: 680, height: 680 }}
+                          // objectFit="contain"
+                          style={{containerStyle: {width: "auto", height: "auto"}, mediaStyle: {overflow: "hidden"}}}
+                        />
+                      )} */}
                       {/* {currentImage}, {i} */}
-                      <img
+                      {/* <img
                         ref={currentImage === i + 1 ? imageRef : undefined}
                         // ref={imageRef}
                         src={"http://localhost:5555/uploads/" + image.name}
@@ -577,7 +643,7 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                           // top: `${position.y}px`,
                           // cursor: isDragging ? "grabbing" : "grab",
                         }}
-                      />
+                      /> */}
                       {activeIconButton === "zoom" &&
                         currentImage === i + 1 && (
                           <div
@@ -586,51 +652,52 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                           >
                             <input
                               type="range"
-                              onChange={(e) => {
-                                if (containerRef.current && imageRef.current) {
-                                  const newImages = [...images];
-                                  const oldImage = images[currentImage - 1];
+                              // onChange={(e) => {
+                              //   if (containerRef.current && imageRef.current) {
+                              //     const newImages = [...images];
+                              //     const oldImage = images[currentImage - 1];
 
-                                  const rect =
-                                    containerRef.current.getBoundingClientRect();
-                                  const x = rect.width - imageRef.current.width;
-                                  const y = rect.height - imageRef.current.height;
-                                  // setMaxPosition({
-                                  //   x: rect.width - imageRef.current.width,
-                                  //   y: rect.height - imageRef.current.height,
-                                  // });
+                              //     const rect =
+                              //       containerRef.current.getBoundingClientRect();
+                              //     const x = rect.width - imageRef.current.width;
+                              //     const y = rect.height - imageRef.current.height;
+                              //     // setMaxPosition({
+                              //     //   x: rect.width - imageRef.current.width,
+                              //     //   y: rect.height - imageRef.current.height,
+                              //     // });
 
-                                  console.log("x, y ", x, y);
-                                  console.log(
-                                    "maxPosition x, y ",
-                                    maxPosition.x,
-                                    maxPosition.y
-                                  );
+                              //     console.log("x, y ", x, y);
+                              //     console.log(
+                              //       "maxPosition x, y ",
+                              //       maxPosition.x,
+                              //       maxPosition.y
+                              //     );
 
-                                  const newImage = {
-                                    ...oldImage,
-                                    layout: {
-                                      ...oldImage.layout,
-                                      x: Math.min(
-                                        Math.max(x, oldImage.layout.x, 0)
-                                      ),
-                                      y: Math.min(
-                                        Math.max(y, oldImage.layout.y, 0)
-                                      ),
-                                      zoom: e.target.valueAsNumber,
-                                    },
-                                  };
-                                  newImages[currentImage - 1] = newImage;
-                                  setImages(newImages);
-                                }
-                              }}
-                              value={image.layout.zoom}
+                              //     const newImage = {
+                              //       ...oldImage,
+                              //       layout: {
+                              //         ...oldImage.layout,
+                              //         x: Math.min(
+                              //           Math.max(x, oldImage.layout.x, 0)
+                              //         ),
+                              //         y: Math.min(
+                              //           Math.max(y, oldImage.layout.y, 0)
+                              //         ),
+                              //         zoom: e.target.valueAsNumber,
+                              //       },
+                              //     };
+                              //     newImages[currentImage - 1] = newImage;
+                              //     setImages(newImages);
+                              //   }
+                              // }}
+                              value={image.zoom}
                             />
                           </div>
                         )}
-                    </li>
+                    </>
+                    // </li>
                   ))}
-                </ul>
+                </div>
                 {activeIconButton === "crop" && (
                   <ul
                     onClick={(e) => e.stopPropagation()}
@@ -648,52 +715,52 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     </li> */}
                     {/* <li>1:1</li> */}
                     <li
-                      onClick={() => {
-                        setActiveCrop("vertical");
-                        setImages(
-                          (images) =>
-                            images &&
-                            images.map((image) => ({
-                              ...image,
-                              layout: {
-                                ...image.layout,
-                                height: 680,
-                                width:
-                                  (image.layout.width * 680) /
-                                  image.layout.height,
-                                y: 0,
-                              },
-                            }))
-                        );
-                      }}
-                      className={
-                        activeCrop === "vertical" ? scss.active : undefined
-                      }
+                      // onClick={() => {
+                      //   setActiveCrop("vertical");
+                      //   setImages(
+                      //     (images) =>
+                      //       images &&
+                      //       images.map((image) => ({
+                      //         ...image,
+                      //         layout: {
+                      //           ...image.layout,
+                      //           height: 680,
+                      //           width:
+                      //             (image.layout.width * 680) /
+                      //             image.layout.height,
+                      //           y: 0,
+                      //         },
+                      //       }))
+                      //   );
+                      // }}
+                      // className={
+                      //   activeCrop === "vertical" ? scss.active : undefined
+                      // }
                     >
                       4:5 <VerticalRectangleIcon />
                     </li>
                     <li
-                      onClick={() => {
-                        setActiveCrop("horizontal");
-                        setImages(
-                          (images) =>
-                            images &&
-                            images.map((image) => ({
-                              ...image,
-                              layout: {
-                                ...image.layout,
-                                width: 680,
-                                height:
-                                  (image.layout.height * 680) /
-                                  image.layout.width,
-                                x: 0,
-                              },
-                            }))
-                        );
-                      }}
-                      className={
-                        activeCrop === "horizontal" ? scss.active : undefined
-                      }
+                      // onClick={() => {
+                      //   setActiveCrop("horizontal");
+                      //   setImages(
+                      //     (images) =>
+                      //       images &&
+                      //       images.map((image) => ({
+                      //         ...image,
+                      //         layout: {
+                      //           ...image.layout,
+                      //           width: 680,
+                      //           height:
+                      //             (image.layout.height * 680) /
+                      //             image.layout.width,
+                      //           x: 0,
+                      //         },
+                      //       }))
+                      //   );
+                      // }}
+                      // className={
+                      //   activeCrop === "horizontal" ? scss.active : undefined
+                      // }
                     >
                       16:9 <HorizontalRectangleIcon />
                     </li>
@@ -757,51 +824,51 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                       </li> */}
                         {images.map((image, i) => (
                           <li
-                            key={image.name + i}
+                            key={image.url + i}
                             className={
                               currentImage === i + 1 ? scss.active : ""
                             }
                             onClick={() => setCurrentImage(i + 1)}
                           >
-                            <img
+                            {/* <img
                               src={
                                 "http://localhost:5555/uploads/" + image.name
                               }
                               alt=""
-                              style={{
-                                left:
-                                  image.layout.x || image.layout.width > 680
-                                    ? `${(image.layout.x * 94) / 680}px`
-                                    : "unset",
-                                top:
-                                  image.layout.y || image.layout.height > 680
-                                    ? `${(image.layout.y * 94) / 680}px`
-                                    : "unset",
-                                height:
-                                  activeCrop === "vertical"
-                                    ? `${100 + image.layout.zoom}%`
-                                    : undefined,
-                                width:
-                                  activeCrop === "horizontal"
-                                    ? `${100 + image.layout.zoom}%`
-                                    : undefined,
-                                // left: `${(image.layout.x * 94) / 680}px`,
-                                // top: `${(image.layout.y * 94) / 680}px`,
-                                // width: `${(image.layout.width * 94) / 680}px`,
-                                // height: `${(image.layout.height * 94) / 680}px`,
-                                // left: `${position.x}px`,
-                                // top: `${position.y}px`,
-                                // cursor: isDragging ? "grabbing" : "grab",
-                              }}
-                            />
-                            <div
+                              // style={{
+                              //   left:
+                              //     image.layout.x || image.layout.width > 680
+                              //       ? `${(image.layout.x * 94) / 680}px`
+                              //       : "unset",
+                              //   top:
+                              //     image.layout.y || image.layout.height > 680
+                              //       ? `${(image.layout.y * 94) / 680}px`
+                              //       : "unset",
+                              //   height:
+                              //     activeCrop === "vertical"
+                              //       ? `${100 + image.layout.zoom}%`
+                              //       : undefined,
+                              //   width:
+                              //     activeCrop === "horizontal"
+                              //       ? `${100 + image.layout.zoom}%`
+                              //       : undefined,
+                              //   // left: `${(image.layout.x * 94) / 680}px`,
+                              //   // top: `${(image.layout.y * 94) / 680}px`,
+                              //   // width: `${(image.layout.width * 94) / 680}px`,
+                              //   // height: `${(image.layout.height * 94) / 680}px`,
+                              //   // left: `${position.x}px`,
+                              //   // top: `${position.y}px`,
+                              //   // cursor: isDragging ? "grabbing" : "grab",
+                              // }}
+                            /> */}
+                            {/* <div
                               onClick={() => {
                                 setShowDiscardOneModal(true);
                                 setDeletingImageName(image.name);
                               }}
                             >
                               <CloseIcon />
-                            </div>
+                            </div> */}
                           </li>
                         ))}
                       </ul>

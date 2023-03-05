@@ -122,6 +122,8 @@
   position: relative;
   width: 680px;
   height: 680px;
+  // width: auto;
+  // height: auto;
   padding: 24px;
 
   display: flex;
@@ -255,6 +257,7 @@
   position: absolute;
   left: 0;
   height: 100%;
+  width: 100%;
   display: flex;
   transition: .2s;
   user-select: none;
@@ -262,6 +265,7 @@
   >li {
     overflow: hidden;
     height: 100%;
+    width: 100%;
     min-width: 680px;
     display: flex;
     justify-content: center;

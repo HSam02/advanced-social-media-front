@@ -173,13 +173,27 @@ export const MediaGalleryIcon: React.FC = () => {
   );
 };
 
-// export const SquareIcon: React.FC = () => {
-//   return (
-//     <svg viewBox="0 0 24 24">
-//       <path fill="currentColor" d="M19 23H5a4.004 4.004 0 0 1-4-4V5a4.004 4.004 0 0 1 4-4h14a4.004 4.004 0 0 1 4 4v14a4.004 4.004 0 0 1-4 4ZM5 3a2.002 2.002 0 0 0-2 2v14a2.002 2.002 0 0 0 2 2h14a2.002 2.002 0 0 0 2-2V5a2.002 2.002 0 0 0-2-2Z"></path>
-//     </svg>
-//   );
-// };
+export const SquareIcon: React.FC = () => {
+  return (
+    <svg viewBox="0 0 24 24">
+      <path
+        fill="currentColor"
+        d="M19 23H5a4.004 4.004 0 0 1-4-4V5a4.004 4.004 0 0 1 4-4h14a4.004 4.004 0 0 1 4 4v14a4.004 4.004 0 0 1-4 4ZM5 3a2.002 2.002 0 0 0-2 2v14a2.002 2.002 0 0 0 2 2h14a2.002 2.002 0 0 0 2-2V5a2.002 2.002 0 0 0-2-2Z"
+      ></path>
+    </svg>
+  );
+};
+
+export const BottomArrowIcon: React.FC = () => {
+  return (
+    <svg viewBox="0 0 24 24">
+        <path
+          fill="currentColor"
+          d="M21 17.502a.997.997 0 0 1-.707-.293L12 8.913l-8.293 8.296a1 1 0 1 1-1.414-1.414l9-9.004a1.03 1.03 0 0 1 1.414 0l9 9.004A1 1 0 0 1 21 17.502Z"
+        ></path>
+    </svg>
+  );
+};
 
 export const VerticalRectangleIcon: React.FC = () => {
   return (
@@ -195,7 +209,10 @@ export const VerticalRectangleIcon: React.FC = () => {
 export const HorizontalRectangleIcon: React.FC = () => {
   return (
     <svg viewBox="0 0 24 24">
-      <path fill="currentColor" d="M19 20H5a4.004 4.004 0 0 1-4-4V8a4.004 4.004 0 0 1 4-4h14a4.004 4.004 0 0 1 4 4v8a4.004 4.004 0 0 1-4 4ZM5 6a2.002 2.002 0 0 0-2 2v8a2.002 2.002 0 0 0 2 2h14a2.002 2.002 0 0 0 2-2V8a2.002 2.002 0 0 0-2-2Z"></path>
+      <path
+        fill="currentColor"
+        d="M19 20H5a4.004 4.004 0 0 1-4-4V8a4.004 4.004 0 0 1 4-4h14a4.004 4.004 0 0 1 4 4v8a4.004 4.004 0 0 1-4 4ZM5 6a2.002 2.002 0 0 0-2 2v8a2.002 2.002 0 0 0 2 2h14a2.002 2.002 0 0 0 2-2V8a2.002 2.002 0 0 0-2-2Z"
+      ></path>
     </svg>
   );
 };

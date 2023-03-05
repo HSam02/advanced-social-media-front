@@ -118,14 +118,11 @@ export const DiscardModal: React.FC<{
   onAccept: () => void;
 }> = ({ title, text, onClose, onAccept }) => {
   return (
-    <div
-      className={scss.background}
-      onClick={(e) => {
-        e.stopPropagation();
-        onClose();
-      }}
-    >
-      <div className={`${scss.box} ${scss.options__box}`}>
+    <div className={scss.background} onClick={onClose}>
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className={`${scss.box} ${scss.options__box}`}
+      >
         <h6>{title}</h6>
         <p>{text}</p>
         <ul>
