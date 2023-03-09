@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { Avatar } from "../../../../AppComponents";
+import { Avatar } from "../../../../";
 import { AdvancedSettings } from "./AdvancedSettings";
 import { postInfoType } from "../../../types";
 import scss from "./FormData.module.scss";

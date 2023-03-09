@@ -2,8 +2,6 @@ import { AppButton, Avatar } from "../";
 import { CloseIcon } from "../icons";
 import scss from "./modals.module.scss";
 
-export { UploadModal } from "./UploadModal";
-
 export const FollowersModal: React.FC = () => {
   return (
     <div className={scss.background}>
@@ -105,29 +103,6 @@ export const SettingsModal: React.FC = () => {
           <li>Report a problem</li>
           <li>Log Out</li>
           <li>Cancel</li>
-        </ul>
-      </div>
-    </div>
-  );
-};
-
-export const DiscardModal: React.FC<{
-  title: string;
-  text: string;
-  onClose: () => void;
-  onAccept: () => void;
-}> = ({ title, text, onClose, onAccept }) => {
-  return (
-    <div className={scss.background} onClick={onClose}>
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className={`${scss.box} ${scss.options__box}`}
-      >
-        <h6>{title}</h6>
-        <p>{text}</p>
-        <ul>
-          <li onClick={onAccept}>Discard</li>
-          <li onClick={onClose}>Cancel</li>
         </ul>
       </div>
     </div>

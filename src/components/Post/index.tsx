@@ -1,5 +1,5 @@
 import { BookMarkIcon, CommentIcon, DotsIcon, HeartIcon, PlaneIcon } from "../icons";
-import { Avatar } from "../AppComponents";
+import { Avatar } from "../";
 import scss from "./Post.module.scss";
 
 export const Post: React.FC = () => {

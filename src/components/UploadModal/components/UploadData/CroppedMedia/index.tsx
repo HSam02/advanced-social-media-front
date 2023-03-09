@@ -1,7 +1,5 @@
 import { memo } from "react";
-import { MediaBox } from "../../../../AppComponents/MediaBox";
-import { MediaSliderArrows } from "../../../../AppComponents/MediaSliderArrows";
-import { SliderDots } from "../../../../AppComponents/SliderDots";
+import { MediaBox, MediaSliderArrows, SliderDots } from "../../../../";
 import { cropMediaType } from "../../../types";
 import scss from "./CroppedMedia.module.scss";
 

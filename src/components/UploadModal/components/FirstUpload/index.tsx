@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { AppButton } from "../../../AppComponents";
+import { AppButton } from "../../../";
 import { ImageVideoIcon } from "../../../icons";
 import scss from "./FirstUpload.module.scss";
 

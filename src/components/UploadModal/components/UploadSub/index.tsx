@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { SliderDots } from "../../../AppComponents/SliderDots";
+import { SliderDots } from "../../../";
 import { CropMenu } from "./CropMenu";
 import { Gallery } from "./Gallery";
 import { SubIconButton } from "./SubIconButton";

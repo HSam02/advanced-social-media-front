@@ -1,4 +1,4 @@
-import { ArrowIconButton } from "../ArrowIconButton";
+import { ArrowIconButton } from "../";
 import scss from "./MediaSliderArrows.module.scss";
 
 type MediaSliderArrowsProps = {

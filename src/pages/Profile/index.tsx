@@ -1,7 +1,7 @@
 import { useAppSelector } from "../../app/hooks";
 import { selectUser } from "../../app/slices/user";
 import { FollowersModal, FollowingModal } from "../../components";
-import { AppButton, Avatar } from "../../components/AppComponents";
+import { AppButton, Avatar } from "../../components";
 import { ImageIcon, SettingsIcon } from "../../components/icons";
 import { SettingsModal, UnfollowModal } from "../../components/modals";
 import scss from "./Profile.module.scss";

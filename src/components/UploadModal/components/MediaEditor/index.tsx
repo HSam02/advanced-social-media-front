@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { MediaCropper } from "./MediaCropper";
-import { MediaSliderArrows } from "../../../AppComponents/MediaSliderArrows";
+import { MediaSliderArrows } from "../../../";
 import { Area, Point } from "react-easy-crop";
 import { cropMediaType } from "../../types";
 

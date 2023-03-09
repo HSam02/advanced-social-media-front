@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useClickOutside } from "../../../../../hooks";
 import { CloseIcon, PlusIcon } from "../../../../icons";
-import { ArrowIconButton } from "../../../../AppComponents/ArrowIconButton";
-import { MediaBox } from "../../../../AppComponents/MediaBox";
+import { ArrowIconButton, MediaBox } from "../../../../";
 import { activeModalType, cropMediaType } from "../../../types";
 import scss from "./Gallery.module.scss";
 
@@ -43,7 +42,7 @@ export const Gallery: React.FC<GalleryProps> = ({
         galleryRef.current.scrollWidth - galleryRef.current.clientWidth) ||
         0
     );
-  }, [mediaData]);
+  }, [mediaData, currentMedia]);
   return (
     <div className={scss.gallery} ref={boxRef}>
       <div className={scss.media}>

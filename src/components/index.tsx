@@ -1,4 +1,4 @@
-export { AppContainer, Avatar, AppButton } from "./AppComponents";
+export { Avatar, AppButton, AppSlider, ArrowIconButton, MediaBox, MediaSliderArrows, SliderDots } from "./AppComponents";
 export { SideBar } from "./SideBar";
 export { Post } from "./Post";
 export { FollowersModal, FollowingModal } from "./modals";

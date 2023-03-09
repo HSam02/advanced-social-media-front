@@ -129,7 +129,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ onClose }) => {
         setUploadStatus("idle");
       }
     }
-  }, [postInfo, mediaData, uploadStatus]);
+  }, [postInfo, mediaData, uploadStatus, aspect]);
 
   const handleCloseModal = () => {
     setActiveModal(null);

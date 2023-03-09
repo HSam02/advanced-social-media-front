@@ -4,9 +4,8 @@ import { Home, Login, Messages, Profile, Register } from "./pages";
 import { getUserAsync } from "./app/slices/user";
 import { useAppDispatch } from "./app/hooks";
 import { Route, Routes } from "react-router-dom";
-import { LoginRoute } from "./components/LoginRoute";
-import { PrivateRoute } from "./components/PrivateRoute";
-import Example from "./Example";
+import { LoginRoute } from "./components/RouteComponents/LoginRoute";
+import { PrivateRoute } from "./components/RouteComponents/PrivateRoute";
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -26,7 +25,6 @@ const App: React.FC = () => {
             <Route path="*" element={<>retgh</>} />
           </Route>
           <Route path="/auth" element={<LoginRoute />}>
-            <Route path="example" element={<Example />} />
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
           </Route>
