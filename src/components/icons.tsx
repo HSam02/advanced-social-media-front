@@ -92,6 +92,24 @@ export const AddIcon: React.FC<iconPropsType> = ({ active }) => {
   );
 };
 
+export const SpeakerIcon: React.FC<iconPropsType> = ({ active }) => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+      {active ? (
+        <path
+          fill="currentColor"
+          d="M160 32v192a8 8 0 0 1-12.91 6.31L77.25 176H32a16 16 0 0 1-16-16V96a16 16 0 0 1 16-16h45.25l69.84-54.31A8 8 0 0 1 160 32Zm32 64a8 8 0 0 0-8 8v48a8 8 0 0 0 16 0v-48a8 8 0 0 0-8-8Zm32-16a8 8 0 0 0-8 8v80a8 8 0 0 0 16 0V88a8 8 0 0 0-8-8Z"
+        />
+      ) : (
+        <path
+          fill="currentColor"
+          d="M184 152v-48a8 8 0 0 1 16 0v48a8 8 0 0 1-16 0Zm40-72a8 8 0 0 0-8 8v80a8 8 0 0 0 16 0V88a8 8 0 0 0-8-8ZM53.92 34.62a8 8 0 1 0-11.84 10.76L73.55 80H32a16 16 0 0 0-16 16v64a16 16 0 0 0 16 16h45.25l69.84 54.31A8 8 0 0 0 160 224v-48.91l42.08 46.29a8 8 0 1 0 11.84-10.76Zm92.16 77.59a8 8 0 0 0 13.92-5.38V32a8 8 0 0 0-12.91-6.31l-39.85 31a8 8 0 0 0-1 11.7Z"
+        />
+      )}
+    </svg>
+  );
+};
+
 export const UserIcon: React.FC<iconPropsType> = ({ active }) => {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
@@ -187,10 +205,10 @@ export const SquareIcon: React.FC = () => {
 export const BottomArrowIcon: React.FC = () => {
   return (
     <svg viewBox="0 0 24 24">
-        <path
-          fill="currentColor"
-          d="M21 17.502a.997.997 0 0 1-.707-.293L12 8.913l-8.293 8.296a1 1 0 1 1-1.414-1.414l9-9.004a1.03 1.03 0 0 1 1.414 0l9 9.004A1 1 0 0 1 21 17.502Z"
-        ></path>
+      <path
+        fill="currentColor"
+        d="M21 17.502a.997.997 0 0 1-.707-.293L12 8.913l-8.293 8.296a1 1 0 1 1-1.414-1.414l9-9.004a1.03 1.03 0 0 1 1.414 0l9 9.004A1 1 0 0 1 21 17.502Z"
+      ></path>
     </svg>
   );
 };
@@ -213,6 +231,28 @@ export const HorizontalRectangleIcon: React.FC = () => {
         fill="currentColor"
         d="M19 20H5a4.004 4.004 0 0 1-4-4V8a4.004 4.004 0 0 1 4-4h14a4.004 4.004 0 0 1 4 4v8a4.004 4.004 0 0 1-4 4ZM5 6a2.002 2.002 0 0 0-2 2v8a2.002 2.002 0 0 0 2 2h14a2.002 2.002 0 0 0 2-2V8a2.002 2.002 0 0 0-2-2Z"
       ></path>
+    </svg>
+  );
+};
+
+export const CheckCircleIcon: React.FC = () => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+      <path
+        fill="currentColor"
+        d="M172.24 99.76a6 6 0 0 1 0 8.48l-56 56a6 6 0 0 1-8.48 0l-24-24a6 6 0 0 1 8.48-8.48L112 151.51l51.76-51.75a6 6 0 0 1 8.48 0ZM230 128A102 102 0 1 1 128 26a102.12 102.12 0 0 1 102 102Zm-12 0a90 90 0 1 0-90 90a90.1 90.1 0 0 0 90-90Z"
+      />
+    </svg>
+  );
+};
+
+export const PlayIcon: React.FC = () => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+      <path
+        fill="currentColor"
+        d="M240 128a15.74 15.74 0 0 1-7.6 13.51L88.32 229.65a16 16 0 0 1-16.2.3A15.86 15.86 0 0 1 64 216.13V39.87a15.86 15.86 0 0 1 8.12-13.82a16 16 0 0 1 16.2.3l144.08 88.14A15.74 15.74 0 0 1 240 128Z"
+      />
     </svg>
   );
 };

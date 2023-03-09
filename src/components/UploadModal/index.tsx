@@ -1,154 +1,46 @@
-import { useRef, useState, useEffect } from "react";
-import Cropper, { Area, MediaSize, Point } from "react-easy-crop";
-// import Cropper from "react-cropper";
-// import "cropperjs/dist/cropper.css";
-import { AppButton, Avatar } from "../AppComponents";
+import { useRef, useState, useEffect, useCallback } from "react";
+import { useClickOutside } from "../../hooks";
+import appAxios from "../../appAxios";
+import { CloseIcon } from "../icons";
+import { DiscardModal } from "../DiscardModal";
 import {
-  BottomArrowIcon,
-  CloseIcon,
-  CropIcon,
-  GalleryIcon,
-  HorizontalRectangleIcon,
-  ImageVideoIcon,
-  LeftArrowCircleIcon,
-  LeftArrowIcon,
-  MediaGalleryIcon,
-  PlusIcon,
-  RightArrowCircleIcon,
-  SquareIcon,
-  VerticalRectangleIcon,
-  ZoomIcon,
-} from "../icons";
+  FirstUpload,
+  MediaEditor,
+  UploadData,
+  UploadStatus,
+  UploadSub,
+  UploadTitle,
+} from "./components/";
+import { mediaType } from "../../app/slices/posts";
+import { activeModalType, cropMediaType, uploadStatusType } from "./types";
 import scss from "./UploadModal.module.scss";
-import { DiscardModal } from "../modals";
 
-// type croppedAreaPercentType = {
-//   [key: string]: string;
-//   width: string;
-//   height: string;
-//   left: string;
-//   top: string;
-// };
-
-// type mediaType = {
-//   type: "image" | "video";
-//   url: string;
-// };
-
-type mediaType = {
-  type: "image" | "video";
-  url: string;
-  // croppedBlob: Blob;
-  // croppedUrl: string;
-  // crop: {
-  //   x: number;
-  //   y: number;
-  // };
-  // croppedArea: croppedAreaPercentType;
-  // mediaSize: { naturalWidth: number; naturalHeight: number };
-  videoRef?: React.RefObject<HTMLVideoElement>;
-  styles: {
-    transform: string;
-    // width: string;
-    // height: string;
-  };
-  croppedAreaPixels: Area;
-  crop: Point;
-  zoom: number;
+type UploadModalProps = {
+  onClose: () => void;
 };
 
-// const getCroppedImg = (media: mediaType, pixelCrop: Area): Promise<Blob> => {
-//   const canvas = document.createElement("canvas");
-//   const ctx = canvas.getContext("2d");
-//   // if (media.type === "image") {
-//   const image = new Image();
-//   image.src = media.url;
-//   canvas.width = pixelCrop.width;
-//   canvas.height = pixelCrop.height;
-//   ctx!.drawImage(
-//     image,
-//     pixelCrop.x,
-//     pixelCrop.y,
-//     pixelCrop.width,
-//     pixelCrop.height,
-//     0,
-//     0,
-//     pixelCrop.width,
-//     pixelCrop.height
-//   );
-
-//   return new Promise((resolve, reject) => {
-//     canvas.toBlob(
-//       (blob) => {
-//         console.log("blob", blob);
-
-//         if (!blob) {
-//           reject(new Error("Canvas is empty"));
-//           return;
-//         }
-//         resolve(blob);
-//       },
-//       undefined,
-//       1
-//     );
-//   });
-//   // }
-
-//   // return new Promise((resolve, reject) => {
-//   //   const video = document.createElement('video');
-//   //   video.crossOrigin = 'anonymous';
-//   //   video.src = media.url;
-//   //   video.currentTime = 0;
-//   //   video.play();
-
-//   //   video.addEventListener('seeked', () => {
-//   //     canvas.width = pixelCrop.width;
-//   //     canvas.height = pixelCrop.height;
-//   //     const ctx = canvas.getContext('2d');
-//   //     const scale = video.videoWidth / video.clientWidth;
-//   //     const startX = pixelCrop.x * scale;
-//   //     const startY = pixelCrop.y * scale;
-//   //     const width = pixelCrop.width * scale;
-//   //     const height = pixelCrop.height * scale;
-
-//   //     ctx!.drawImage(video, startX, startY, width, height, 0, 0, canvas.width, canvas.height);
-
-//   //     canvas.toBlob((blob) => {
-//   //       console.log(blob);
-
-//   //       resolve(blob!);
-//   //     }, 'video/mp4');
-//   //   });
-//   // });
-// };
-
-export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-  const [mediaData, setMediaData] = useState<mediaType[] | null>(null);
+export const UploadModal: React.FC<UploadModalProps> = ({ onClose }) => {
+  const [mediaData, setMediaData] = useState<cropMediaType[] | null>(null);
   const [currentMedia, setCurrentMedia] = useState(0);
-  const [aspect, setAspect] = useState<number>(4 / 3);
-  const [activeIconButton, setActiveIconButton] = useState<
-    "crop" | "zoom" | "gallery" | null
-  >(null);
-  const [activeModal, setActiveModal] = useState<
-    "delete" | "cancel" | "close" | null
-  >(null);
-  const [galleryScrollLeft, setGalleryScrollLeft] = useState(0);
-  const [galleryScrollWidth, setGalleryScrollWidth] = useState(0);
+  const [aspect, setAspect] = useState<number>(1);
+  const [activeModal, setActiveModal] = useState<activeModalType | null>(null);
   const [isCropSuccess, setIsCropSuccess] = useState(false);
-  const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
-  const [text, setText] = useState("");
-  const [hideLikes, setHideLikes] = useState(false);
-  const [hideComments, setHideComments] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState<uploadStatusType>("idle");
+  const [postInfo, setPostInfo] = useState({
+    text: "",
+    hideComments: false,
+    hideLikes: false,
+  });
 
-  const inputRef = useRef<HTMLInputElement>(null);
-  const galleryRef = useRef<HTMLUListElement>(null);
-  const wasMediaDataNull = useRef(true);
-  // const videoRefs = useRef<Array<React.RefObject<HTMLVideoElement>>>([]);
+  const uploadController = useRef(new AbortController());
+  const boxRef = useRef<HTMLDivElement>(null);
 
-  console.log(mediaData);
-  // console.log(videoRefs);
-  // console.log("scrollLeft", galleryScrollLeft);
-  // console.log("scrollWidth", galleryScrollWidth);
+  useClickOutside(boxRef, () => {
+    if (mediaData && uploadStatus !== "Post shared") {
+      return setActiveModal("close");
+    }
+    onClose();
+  });
 
   useEffect(() => {
     document.body.style.overflowY = "hidden";
@@ -157,57 +49,8 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     };
   }, []);
 
-  useEffect(() => {
-    if (activeIconButton !== "gallery") {
-      return;
-    }
-    galleryRef.current?.scrollTo({ left: galleryScrollLeft });
-    setGalleryScrollWidth(
-      (galleryRef.current?.scrollWidth &&
-        galleryRef.current.scrollWidth - galleryRef.current.clientWidth) ||
-        0
-    );
-  }, [mediaData, activeIconButton]);
-
-  useEffect(() => {
-    // videoRefs.current.forEach(({ current }, i) => {
-    //   if (current) {
-    //     current.pause();
-    //     if (i === currentMedia) {
-    //       current.currentTime = 0;
-    //       current.play();
-    //     }
-    //   }
-    // });
-    mediaData?.forEach(({ videoRef }, i) => {
-      const video = videoRef?.current;
-      console.log(video);
-
-      if (video) {
-        video.pause();
-        if (i === currentMedia) {
-          video.currentTime = 0;
-          video.play();
-        }
-      }
-    });
-  }, [currentMedia]);
-
-  useEffect(() => {
-    if (
-      mediaData &&
-      wasMediaDataNull.current &&
-      (mediaData[currentMedia].videoRef?.current ||
-        (!isCropSuccess && mediaData[currentMedia].type === "image"))
-    ) {
-      wasMediaDataNull.current = false;
-      mediaData[currentMedia].videoRef?.current?.play();
-    }
-  }, [mediaData, isCropSuccess]);
-
   const handleChangeFile = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const fileList = evt.target.files;
-    console.log(fileList);
 
     if (!fileList) {
       return;
@@ -219,225 +62,74 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
       alert("You can choose maximum 10 images");
       files.splice(availableCount);
     }
-    const newData = files.map(
+    const allowedFiles = files.filter((file) =>
+      file.type === "video/mp4"
+        ? file.size < 20 * 1024 * 1024
+        : file.size < 5 * 1024 * 1024
+    );
+    if (files.length !== allowedFiles.length) {
+      alert("You can choose images (maximum 5Mb) or videos(maximum 20Mb)");
+      if (allowedFiles.length === 0) {
+        return;
+      }
+    }
+    const newData = allowedFiles.map(
       (file) =>
         ({
           type: file.type.slice(0, 5),
           url: URL.createObjectURL(file),
+          file,
           crop: {
             x: 0,
             y: 0,
           },
           zoom: 1,
-        } as mediaType)
+        } as cropMediaType)
     );
     setMediaData((mediaData) =>
       mediaData ? [...mediaData, ...newData] : newData
     );
+    evt.target.value = "";
   };
 
-  const handleCropChange = (location: Point, index: number) => {
-    // console.log("cropChange", location, mediaData![index].crop);
-    if (
-      mediaData![index].crop.x === location.x &&
-      mediaData![index].crop.y === location.y
-    ) {
-      // console.log("return");
-      return;
-    }
+  const goToForm = useCallback(() => setIsCropSuccess(true), []);
 
-    setMediaData(
-      (mediaData) =>
-        mediaData && [
-          ...mediaData!.slice(0, index),
-          {
-            ...mediaData![index],
-            crop: location,
-          },
-          ...mediaData!.slice(index + 1),
-        ]
-    );
-  };
+  const handleSubmit = useCallback(async () => {
+    setUploadStatus("Sharing");
+    try {
+      const { text, hideComments, hideLikes } = postInfo;
+      const formData = new FormData();
+      const requestData = {
+        aspect,
+        text,
+        hideComments,
+        hideLikes,
+        media: [] as never as mediaType[],
+      };
+      mediaData?.forEach((media) => {
+        formData.append("post_media", media.file);
 
-  const handleZoomChange = (zoom: number) => {
-    // console.log(zoom);
+        requestData.media.push({
+          dest: "",
+          type: media.type,
+          styles: media.styles,
+        });
+      });
+      formData.append("data", JSON.stringify(requestData));
 
-    setMediaData([
-      ...mediaData!.slice(0, currentMedia),
-      {
-        ...mediaData![currentMedia],
-        zoom,
-      },
-      ...mediaData!.slice(currentMedia + 1),
-    ]);
-  };
-
-  const onCropComplete = (croppedArea: Area, index: number) => {
-    const scale = 100 / croppedArea.width;
-    const transform = {
-      x: `${-croppedArea.x * scale}%`,
-      y: `${-croppedArea.y * scale}%`,
-      scale,
-      // width: "calc(100% + 0.5px)",
-      // height: "auto"
-    };
-    const imageStyle = {
-      transform: `translate3d(${transform.x}, ${transform.y}, 0) scale3d(${transform.scale},${transform.scale},1)`,
-      // width: transform.width,
-      // height: transform.height
-    };
-
-    setMediaData(
-      (mediaData) =>
-        mediaData && [
-          ...mediaData.slice(0, index),
-          {
-            ...mediaData[index],
-            styles: imageStyle,
-          },
-          ...mediaData.slice(index + 1),
-        ]
-    );
-    // setMediaData((mediaData) =>
-    //   mediaData!.map((item, i) =>
-    //     i === index ? { ...item, styles: imageStyle } : item
-    //   )
-    // );
-  };
-
-  // const onCropComplete = async (croppedAreaPixels: Area, index: number) => {
-  //   console.log(croppedAreaPixels);
-
-  //   try {
-  //     const croppedBlob = await getCroppedImg(
-  //       mediaData![index],
-  //       croppedAreaPixels
-  //     );
-  //     console.log("croppedBlob", croppedBlob);
-
-  //     setMediaData((media) => [
-  //       ...media!.slice(0, index),
-  //       {
-  //         ...media![index],
-  //         croppedBlob: croppedBlob,
-  //         croppedUrl: URL.createObjectURL(croppedBlob),
-  //       },
-  //       ...media!.slice(index + 1),
-  //     ]);
-  //   } catch (e) {
-  //     console.error(e, "load error");
-  //   }
-  // };
-
-  // const onMediaLoaded = async (mediaSize: MediaSize, index: number) => {
-  //   console.log(mediaSize);
-
-  //   const defaultCropArea = {
-  //     x: 0,
-  //     y: 0,
-  //     width: mediaSize.width,
-  //     height: mediaSize.height,
-  //   };
-  //   const croppedAreaPixels = getCroppedAreaPixels(defaultCropArea, mediaSize);
-  //   console.log("croppedAreaPicels", croppedAreaPixels);
-
-  //   const croppedBlob = await getCroppedImg(
-  //     mediaData![index],
-  //     croppedAreaPixels
-  //   );
-  //   setMediaData((media) => [
-  //     ...media!.slice(0, index),
-  //     {
-  //       ...media![index],
-  //       // croppedBlob: croppedBlob,
-  //       // croppedUrl: URL.createObjectURL(croppedBlob),
-  //     },
-  //     ...media!.slice(index + 1),
-  //   ]);
-  // };
-
-  const getCroppedAreaPixels = (cropArea: Area, mediaSize: MediaSize) => {
-    const { x, y, width, height } = cropArea;
-    const scaleX = mediaSize.width / mediaSize.naturalWidth;
-    const scaleY = mediaSize.height / mediaSize.naturalHeight;
-    return {
-      x: Math.round(x * scaleX),
-      y: Math.round(y * scaleY),
-      width: Math.round(width * scaleX),
-      height: Math.round(height * scaleY),
-    };
-  };
-
-  const handleSubmit = () => {
-    if (!isCropSuccess) {
-      setIsCropSuccess(true);
-      wasMediaDataNull.current = true;
-      return;
-    }
-    console.log("text", text);
-    console.log("hideLikes", hideLikes);
-    console.log("hideComments", hideComments);
-  };
-
-  // const onMediaLoad = (mediaSize: MediaSize, index: number) => {
-  //   const { naturalWidth, naturalHeight } = mediaSize;
-  //   console.log(mediaSize);
-  //   // if (!mediaData![index].mediaSize) {
-  //   //   console.log("mediaSize");
-
-  //   //   setMediaData((mediaData) => [
-  //   //     ...mediaData!.slice(0, index),
-  //   //     {
-  //   //       ...mediaData![index],
-  //   //       mediaSize: {
-  //   //         naturalHeight,
-  //   //         naturalWidth,
-  //   //       },
-  //   //     },
-  //   //     ...mediaData!.slice(index + 1),
-  //   //   ]);
-  //   // }
-  //   // const aspect = naturalWidth / naturalHeight;
-  //   // console.log(aspect);
-  //   const croppedArea = {
-  //     x: 0,
-  //     y: 0,
-  //     width: 100,
-  //     height: 100,
-  //   };
-  //   if (naturalHeight > naturalWidth) {
-  //     croppedArea.height = (naturalWidth / naturalHeight) * 100;
-  //     croppedArea.y = (naturalWidth / naturalHeight) * 38.888;
-  //   } else if (naturalHeight < naturalWidth) {
-  //     croppedArea.width = (naturalHeight / naturalWidth) * 100;
-  //     croppedArea.x = (naturalHeight / naturalWidth) * 38.888;
-  //   }
-
-  //   onCropComplete(croppedArea, index);
-
-  //   // setMediaData([
-  //   //   ...mediaData!.slice(0, currentMedia),
-  //   //   {
-  //   //     ...mediaData![currentMedia],
-  //   //     crop: {x: 0, y: 0},
-  //   //     zoom: 1
-  //   //   },
-  //   //   ...mediaData!.slice(currentMedia + 1),
-  //   // ]);
-  // };
-
-  const handleBGMouseDown = (evt: React.MouseEvent<HTMLDivElement>) => {
-    const onMouseUp = () => {
-      setActiveIconButton(null);
-      if (mediaData) {
-        setActiveModal("close");
-      } else {
-        onClose();
+      const { data } = await appAxios.post("/posts", formData, {
+        signal: uploadController.current.signal,
+      });
+      console.log(data);
+      setUploadStatus("Post shared");
+    } catch (error) {
+      console.log(error);
+      if (uploadStatus === "Sharing") {
+        alert("Post didn't share");
+        setUploadStatus("idle");
       }
-      evt.target.removeEventListener("mouseup", onMouseUp);
-    };
-    evt.target.addEventListener("mouseup", onMouseUp);
-  };
+    }
+  }, [postInfo, mediaData, uploadStatus]);
 
   const handleCloseModal = () => {
     setActiveModal(null);
@@ -448,15 +140,17 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     switch (activeModal) {
       case "cancel":
         setMediaData(null);
-        wasMediaDataNull.current = true;
+        setCurrentMedia(0);
         break;
       case "close":
+        if (uploadStatus === "Sharing") {
+          uploadController.current.abort();
+        }
         onClose();
         break;
       case "delete":
         if (mediaData?.length === 1) {
           setMediaData(null);
-          wasMediaDataNull.current = true;
           break;
         }
         setMediaData(
@@ -473,503 +167,64 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     }
   };
 
-  const handleGoBack = () => {
+  const handleGoBack = useCallback(() => {
     if (isCropSuccess) {
       return setIsCropSuccess(false);
     }
     setActiveModal("cancel");
-  };
+  }, [isCropSuccess]);
 
   return (
     <>
-      <div onMouseDown={handleBGMouseDown} className={scss.background}>
-        <div
-          onMouseDown={(e) => e.stopPropagation()}
-          className={scss.box}
-          // style={{ height: isCropSuccess ? "unset" : undefined }}
-        >
-          <div onClick={() => setActiveIconButton(null)} className={scss.title}>
-            {mediaData && (
-              <div onClick={handleGoBack}>
-                <LeftArrowIcon />
-              </div>
-            )}
-            <h3>Create new post</h3>
-            {mediaData && (
-              <div
-                onClick={handleSubmit}
-                className={scss.next}
-              >
-                {isCropSuccess ? "Share" : "Next"}
-              </div>
-            )}
-          </div>
+      <div className={scss.background}>
+        <div className={scss.box} ref={boxRef}>
+          <UploadTitle
+            showButtos={Boolean(mediaData)}
+            isCropSuccess={isCropSuccess}
+            uploadStatus={uploadStatus}
+            handleGoBack={handleGoBack}
+            handleClickButton={isCropSuccess ? handleSubmit : goToForm}
+          />
           {isCropSuccess && mediaData ? (
-            <div className={scss.form}>
-              <div
-                className={scss.croppedMedia}
-                style={{ aspectRatio: aspect }}
-              >
-                {mediaData[currentMedia].type === "image" ? (
-                  <img
-                    src={mediaData[currentMedia].url}
-                    alt=""
-                    style={mediaData[currentMedia].styles}
-                  />
-                ) : (
-                  <video
-                    src={mediaData[currentMedia].url}
-                    style={mediaData[currentMedia].styles}
-                  />
-                )}
-                {currentMedia > 0 && (
-                  <div
-                    onClick={() => {
-                      setCurrentMedia((prev) => prev - 1);
-                      setActiveIconButton(null);
-                    }}
-                    className={`${scss.left} ${scss.icon__button} ${scss.arrow}`}
-                  >
-                    <LeftArrowCircleIcon />
-                  </div>
-                )}
-                {currentMedia < mediaData.length - 1 && (
-                  <div
-                    onClick={() => {
-                      setCurrentMedia((prev) => prev + 1);
-                      setActiveIconButton(null);
-                    }}
-                    className={`${scss.right} ${scss.icon__button} ${scss.arrow}`}
-                  >
-                    <RightArrowCircleIcon />
-                  </div>
-                )}
-                {mediaData.length > 1 && (
-                  <ul className={scss.dots}>
-                    {mediaData.map((_, i) => (
-                      <li
-                        key={i}
-                        onClick={() => {
-                          setCurrentMedia(i);
-                          setActiveIconButton(null);
-                        }}
-                        style={{
-                          opacity: currentMedia === i ? 1 : 0.4,
-                        }}
-                      ></li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-              <div className={scss.form__info}>
-                <div className={scss.user}>
-                  <Avatar size="28px" />
-                  <h3>nickname</h3>
-                </div>
-                <textarea
-                  placeholder="Write a caption..."
-                  onChange={(e) => setText(e.target.value)}
-                  value={text}
-                ></textarea>
-                <div
-                  className={scss.more__title}
-                  onClick={() => setShowAdvancedSettings((prev) => !prev)}
-                >
-                  <h5>Advanced settings</h5>
-                  <div
-                    style={{
-                      transform: `rotate(${showAdvancedSettings ? 0 : 180}deg)`,
-                    }}
-                  >
-                    <BottomArrowIcon />
-                  </div>
-                </div>
-                {showAdvancedSettings && (
-                  <ul className={scss.more__info}>
-                    <li>
-                      <div>
-                        <h6>Hide like and view counts on this post</h6>
-                        <div
-                          onClick={() => setHideLikes((prev) => !prev)}
-                          className={`${scss.custom__checkbox} ${
-                            hideLikes ? scss.active : ""
-                          }`}
-                        ></div>
-                      </div>
-                      <p>
-                        Only you will see the total number of likes and views on
-                        this post. You can change this later by going to the ···
-                        menu at the top of the post. To hide like counts on
-                        other people's posts, go to your account settings.
-                      </p>
-                    </li>
-                    <li>
-                      <div>
-                        <h6>Turn off commenting</h6>
-                        <div
-                          onClick={() => setHideComments((prev) => !prev)}
-                          className={`${scss.custom__checkbox} ${
-                            hideComments ? scss.active : ""
-                          }`}
-                        ></div>
-                      </div>
-                      <p>
-                        You can change this later by going to the ··· menu at
-                        the top of your post.
-                      </p>
-                    </li>
-                  </ul>
-                )}
-              </div>
-            </div>
+            <>
+              {uploadStatus === "idle" ? (
+                <UploadData
+                  mediaData={mediaData}
+                  currentMedia={currentMedia}
+                  aspect={aspect}
+                  postInfo={postInfo}
+                  setPostInfo={setPostInfo}
+                  setCurrentMedia={setCurrentMedia}
+                />
+              ) : (
+                <UploadStatus uploadStatus={uploadStatus} />
+              )}
+            </>
           ) : (
             <div className={scss.box__inner}>
               {mediaData ? (
-                // <ul className={scss.cropper}>
-                //   {mediaData.map((media, i) => (
-                //     <li key={media.url}>
-                //       <Cropper
-                //         aspectRatio={aspect}
-                //         preview=".img-preview"
-                //         src={media.url}
-                //         dragMode="move"
-                //         viewMode={1}
-                //         // autoCrop={true}
-                //         cropBoxMovable={false}
-                //         cropBoxResizable={false}
-                //         background={false}
-                //         responsive={true}
-                //         autoCropArea={1}
-                //         checkOrientation={true}
-                //         onInitialized={(instance) => console.log(instance, i)}
-                //         style={{
-                //           display: currentMedia !== i ? "none" : undefined,
-                //           // maxHeight: "100%",
-                //           // maxWidth: "100%",
-                //           width: "auto",
-                //           height: "100%",
-                //           // opacity: currentMedia !== i ? 0 : 1,
-                //           // zIndex: currentMedia !== i ? 0 : 1,
-                //         }}
-                //       />
-                //     </li>
-                //   ))}
-                // </ul>
-
                 <>
-                  <ul
-                    onMouseDown={() => setActiveIconButton(null)}
-                    className={scss.cropper}
-                  >
-                    {mediaData.map((media, i) => (
-                      <li key={media.url}>
-                        <Cropper
-                          style={{
-                            containerStyle: {
-                              // display: currentMedia !== i ? "none" : undefined,
-                              opacity: currentMedia !== i ? 0 : 1,
-                              zIndex: currentMedia !== i ? 0 : 1,
-                            },
-                          }}
-                          image={media.type === "image" ? media.url : undefined}
-                          video={media.type === "video" ? media.url : undefined}
-                          crop={media.crop}
-                          zoom={media.zoom}
-                          // setInitialCrop={(cropSize) =>}
-                          mediaProps={{ muted: false, autoPlay: false }}
-                          setVideoRef={(ref) =>
-                            setMediaData(
-                              (mediaData) =>
-                                mediaData && [
-                                  ...mediaData.slice(0, i),
-                                  {
-                                    ...mediaData[i],
-                                    videoRef: ref,
-                                  },
-                                  ...mediaData.slice(i + 1),
-                                ]
-                            )
-                          }
-                          // zoom={2}
-                          zoomWithScroll={false}
-                          // initialCroppedAreaPixels={{x: 0, y: 0, height: 0, width: 0}}
-                          aspect={aspect}
-                          onCropChange={(loaction) =>
-                            handleCropChange(loaction, i)
-                          }
-                          // onZoomChange={
-                          //   media.type === "image" ? handleZoomChange : undefined
-                          // }
-                          onCropComplete={(croppedArea) =>
-                            onCropComplete(croppedArea, i)
-                          }
-                          // onMediaLoaded={(mediaSize) =>{console.log("mediaLoad", i)
-                          //   onMediaLoad(mediaSize, i)}
-                          // }
-                          // onCropAreaChange={handleCropAreaChange}
-                        />
-                      </li>
-                    ))}
-                  </ul>
-                  {/* {mediaData[currentMedia].type === "video" && (
-                    <video
-                      autoPlay
-                      loop
-                      onPlay={(e) => (e.currentTarget.volume = 1)}
-                      src={mediaData[currentMedia].url}
-                      style={{ display: "none" }}
-                    />
-                  )} */}
-                  {currentMedia > 0 && (
-                    <div
-                      onClick={() => {
-                        setCurrentMedia((prev) => prev - 1);
-                        setActiveIconButton(null);
-                      }}
-                      className={`${scss.left} ${scss.icon__button} ${scss.arrow}`}
-                    >
-                      <LeftArrowCircleIcon />
-                    </div>
-                  )}
-                  {currentMedia < mediaData.length - 1 && (
-                    <div
-                      onClick={() => {
-                        setCurrentMedia((prev) => prev + 1);
-                        setActiveIconButton(null);
-                      }}
-                      className={`${scss.right} ${scss.icon__button} ${scss.arrow}`}
-                    >
-                      <RightArrowCircleIcon />
-                    </div>
-                  )}
-                  <div className={scss.upload__sub}>
-                    <div>
-                      <div
-                        onClick={(e) =>
-                          setActiveIconButton((prev) =>
-                            prev === "crop" ? null : "crop"
-                          )
-                        }
-                        className={`${scss.icon__button} ${
-                          activeIconButton &&
-                          (activeIconButton === "crop"
-                            ? scss.active
-                            : scss.disabled)
-                        }`}
-                      >
-                        <CropIcon />
-                      </div>
-                      {activeIconButton === "crop" && (
-                        <ul
-                          onClick={(e) => e.stopPropagation()}
-                          className={scss.cropMenu}
-                        >
-                          <li
-                            onClick={() => setAspect(4 / 3)}
-                            className={
-                              aspect === 4 / 3 ? scss.active : undefined
-                            }
-                          >
-                            Original <GalleryIcon />
-                          </li>
-                          <li
-                            onClick={() => setAspect(1)}
-                            className={aspect === 1 ? scss.active : undefined}
-                          >
-                            1:1 <SquareIcon />
-                          </li>
-                          <li
-                            onClick={() => setAspect(4 / 5)}
-                            className={
-                              aspect === 4 / 5 ? scss.active : undefined
-                            }
-                          >
-                            4:5 <VerticalRectangleIcon />
-                          </li>
-                          <li
-                            onClick={() => setAspect(16 / 9)}
-                            className={
-                              aspect === 16 / 9 ? scss.active : undefined
-                            }
-                          >
-                            16:9 <HorizontalRectangleIcon />
-                          </li>
-                        </ul>
-                      )}
-                      <div
-                        onClick={(e) =>
-                          setActiveIconButton((prev) =>
-                            prev === "zoom" ? null : "zoom"
-                          )
-                        }
-                        className={`${scss.icon__button} ${
-                          activeIconButton &&
-                          (activeIconButton === "zoom"
-                            ? scss.active
-                            : scss.disabled)
-                        }`}
-                      >
-                        <ZoomIcon />
-                      </div>
-                      {activeIconButton === "zoom" && (
-                        <div className={scss.range}>
-                          <input
-                            type="range"
-                            min={1}
-                            max={2}
-                            step={0.01}
-                            value={mediaData[currentMedia].zoom}
-                            onChange={(e) =>
-                              handleZoomChange(e.target.valueAsNumber)
-                            }
-                          />
-                        </div>
-                      )}
-                    </div>
-                    {mediaData.length > 1 && (
-                      <ul className={scss.dots}>
-                        {mediaData.map((_, i) => (
-                          <li
-                            key={i}
-                            onClick={() => {
-                              setCurrentMedia(i);
-                              setActiveIconButton(null);
-                            }}
-                            style={{
-                              opacity: currentMedia === i ? 1 : 0.4,
-                            }}
-                          ></li>
-                        ))}
-                      </ul>
-                    )}
-                    <div
-                      onClick={(e) =>
-                        setActiveIconButton((prev) =>
-                          prev === "gallery" ? null : "gallery"
-                        )
-                      }
-                      className={`${scss.icon__button} ${
-                        activeIconButton &&
-                        (activeIconButton === "gallery"
-                          ? scss.active
-                          : scss.disabled)
-                      }`}
-                    >
-                      <MediaGalleryIcon />
-                    </div>
-                    {activeIconButton === "gallery" && (
-                      <div
-                        // onClick={(e) => e.stopPropagation()}
-                        className={scss.gallery}
-                      >
-                        <div className={scss.media}>
-                          {galleryScrollLeft > 0 && (
-                            <div className={`${scss.arrow} ${scss.left}`}>
-                              <div
-                                onClick={() =>
-                                  galleryRef.current?.scrollTo({
-                                    left: galleryScrollLeft - 300,
-                                    behavior: "smooth",
-                                  })
-                                }
-                                className={scss.icon__button}
-                              >
-                                <LeftArrowCircleIcon />
-                              </div>
-                            </div>
-                          )}
-                          {galleryScrollLeft < galleryScrollWidth - 1 && (
-                            <div className={`${scss.arrow} ${scss.right}`}>
-                              <div
-                                onClick={() =>
-                                  galleryRef.current?.scrollTo({
-                                    left: galleryScrollLeft + 300,
-                                    behavior: "smooth",
-                                  })
-                                }
-                                className={scss.icon__button}
-                              >
-                                <RightArrowCircleIcon />
-                              </div>
-                            </div>
-                          )}
-                          <ul
-                            onScroll={(e) =>
-                              setGalleryScrollLeft(
-                                Math.round(e.currentTarget.scrollLeft)
-                              )
-                            }
-                            ref={galleryRef}
-                          >
-                            {mediaData.map((media, i) => (
-                              <li
-                                key={media.url}
-                                className={
-                                  currentMedia === i ? scss.active : ""
-                                }
-                                onClick={() => setCurrentMedia(i)}
-                                style={{
-                                  // paddingBottom: aspect && `${100/aspect}%`
-                                  width:
-                                    aspect > 1 ? "94px" : `${94 * aspect}px`,
-                                  height:
-                                    aspect < 1 ? "94px" : `${94 / aspect}px`,
-                                }}
-                              >
-                                {media.type === "image" ? (
-                                  <img
-                                    src={media.url}
-                                    alt=""
-                                    style={media.styles}
-                                    // style={{
-                                    //   objectFit: "cover",
-                                    //   width: "100%",
-                                    //   height: "100%",
-                                    //   transform: `translate(${media.crop.x}px, ${media.crop.y}px) scale(${media.zoom})`,
-                                    // }}
-                                    // style={{
-                                    //   top: media.croppedArea.top,
-                                    //   left: media.croppedArea.left,
-                                    // }}
-                                  />
-                                ) : (
-                                  <video src={media.url} style={media.styles} />
-                                )}
-                                <div onClick={() => setActiveModal("delete")}>
-                                  <CloseIcon />
-                                </div>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                        {mediaData.length < 10 && (
-                          <div
-                            className={scss.plus}
-                            onClick={() => inputRef.current?.click()}
-                          >
-                            <PlusIcon />
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                  <MediaEditor
+                    aspect={aspect}
+                    currentMedia={currentMedia}
+                    mediaData={mediaData}
+                    setCurrentMedia={setCurrentMedia}
+                    setMediaData={setMediaData}
+                  />
+                  <UploadSub
+                    mediaData={mediaData}
+                    aspect={aspect}
+                    currentMedia={currentMedia}
+                    handleChangeFile={handleChangeFile}
+                    setMediaData={setMediaData}
+                    setActiveModal={setActiveModal}
+                    setAspect={setAspect}
+                    setCurrentMedia={setCurrentMedia}
+                  />
                 </>
               ) : (
-                <div className={scss.box__inner__upload}>
-                  <ImageVideoIcon />
-                  <p>Drag photos and videos here</p>
-                  <AppButton onClick={() => inputRef.current?.click()}>
-                    Select from computer
-                  </AppButton>
-                </div>
+                <FirstUpload handleChangeFile={handleChangeFile} />
               )}
-              <input
-                onChange={handleChangeFile}
-                ref={inputRef}
-                type="file"
-                accept="image/png, image/jpeg, video/mp4"
-                multiple
-              />
             </div>
           )}
         </div>
@@ -981,6 +236,7 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         <DiscardModal
           title="Discard post?"
           text="If you leave, your edits won't be saved."
+          acceptText="Discard"
           onClose={handleCloseModal}
           onAccept={handleAcceptModal}
         />
@@ -989,6 +245,7 @@ export const UploadModal: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         <DiscardModal
           title="Discard photo?"
           text="This will remove the photo from your post."
+          acceptText="Discard"
           onClose={handleCloseModal}
           onAccept={handleAcceptModal}
         />

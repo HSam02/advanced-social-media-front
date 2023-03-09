@@ -1,0 +1,29 @@
+.icon__button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(26, 26, 26, .8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: .2s;
+
+  &:hover {
+    opacity: .7;
+  }
+
+  >svg {
+    width: 12px;
+    height: 12px;
+    color: #fff;
+  }
+}
+
+.white {
+  background-color: #fff;
+
+  >svg {
+    color: #262626;
+  }
+}

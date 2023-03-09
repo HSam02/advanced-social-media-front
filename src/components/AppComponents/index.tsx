@@ -35,12 +35,13 @@ export const AppButton: React.FC<childrenPropType> = ({
   disabled,
   onClick,
 }) => {
+  console.log("AppButton");
   return (
     <button
       onClick={onClick}
       type={type}
-      className={`${scss.button} ${gray && scss.gray} ${
-        disabled && scss.disabled
+      className={`${scss.button} ${gray ? scss.gray : ""} ${
+        disabled ? scss.disabled : ""
       }`}
     >
       {children}

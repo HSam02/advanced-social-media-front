@@ -1,0 +1,35 @@
+.title {
+  padding: 9px 16px;
+  border-bottom: 1px solid #e6e6e6;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  >h3 {
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  >h3:only-child {
+    width: 100%;
+  }
+
+  >div:first-child {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+  }
+
+  >.next {
+    cursor: pointer;
+    user-select: none;
+    color: #0095f6;
+    transition: .2s;
+
+    &:hover {
+      color: #00376b;
+    }
+  }
+}

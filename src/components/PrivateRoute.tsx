@@ -8,13 +8,13 @@ export const PrivateRoute: React.FC = () => {
   const { user, status } = useAppSelector(selectUser);
   const location = useLocation();
 
-  // if (status === "loading:access" || status === "idle") {
-  //   return <LoadingPage />;
-  // }
+  if (status === "loading:access" || status === "idle") {
+    return <LoadingPage />;
+  }
 
-  // if (!user) {
-  //   return <Navigate to="/auth/login" state={location.pathname} />;
-  // }
+  if (!user) {
+    return <Navigate to="/auth/login" state={location.pathname} />;
+  }
 	
   return <>
 		<SideBar />
