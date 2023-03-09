@@ -63,7 +63,7 @@ export const MediaEditor: React.FC<MediaEditorProps> = ({
       <ul>
         {mediaData.map((media, i) => (
           <MediaCropper
-            key={media.url}
+            key={media.dest}
             index={i}
             media={media}
             aspect={aspect}

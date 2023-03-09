@@ -77,7 +77,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ onClose }) => {
       (file) =>
         ({
           type: file.type.slice(0, 5),
-          url: URL.createObjectURL(file),
+          dest: URL.createObjectURL(file),
           file,
           crop: {
             x: 0,
@@ -86,6 +86,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ onClose }) => {
           zoom: 1,
         } as cropMediaType)
     );
+    
     setMediaData((mediaData) =>
       mediaData ? [...mediaData, ...newData] : newData
     );
@@ -124,10 +125,10 @@ export const UploadModal: React.FC<UploadModalProps> = ({ onClose }) => {
       setUploadStatus("Post shared");
     } catch (error) {
       console.log(error);
-      if (uploadStatus === "Sharing") {
-        alert("Post didn't share");
-        setUploadStatus("idle");
-      }
+      // if (uploadStatus === "Sharing") {
+      alert("Post didn't share");
+      setUploadStatus("idle");
+      // }
     }
   }, [postInfo, mediaData, uploadStatus, aspect]);
 
@@ -190,11 +191,9 @@ export const UploadModal: React.FC<UploadModalProps> = ({ onClose }) => {
               {uploadStatus === "idle" ? (
                 <UploadData
                   mediaData={mediaData}
-                  currentMedia={currentMedia}
                   aspect={aspect}
                   postInfo={postInfo}
                   setPostInfo={setPostInfo}
-                  setCurrentMedia={setCurrentMedia}
                 />
               ) : (
                 <UploadStatus uploadStatus={uploadStatus} />

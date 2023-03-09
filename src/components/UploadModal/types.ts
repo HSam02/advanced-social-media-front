@@ -2,7 +2,7 @@ import { Point } from "react-easy-crop";
 
 export type cropMediaType = {
   type: "image" | "video";
-  url: string;
+  dest: string;
   file: File;
   styles: {
     transform: string;

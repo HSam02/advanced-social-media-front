@@ -1,8 +1,33 @@
-import { BookMarkIcon, CommentIcon, DotsIcon, HeartIcon, PlaneIcon } from "../icons";
-import { Avatar } from "../";
+import { useEffect, useState } from "react";
+import {
+  BookMarkIcon,
+  CommentIcon,
+  DotsIcon,
+  HeartIcon,
+  PlaneIcon,
+} from "../icons";
+import { Avatar, MediaSlider } from "../";
 import scss from "./Post.module.scss";
+import appAxios from "../../appAxios";
+import { IPost } from "../../app/slices/posts";
 
 export const Post: React.FC = () => {
+  const [post, setPost] = useState<IPost | null>(null);
+  useEffect(() => {
+    (async () => {
+      try {
+        const { data } = await appAxios.get<IPost>(
+          "/posts/640a3a5813fc6721e0c7268f"
+        );
+        setPost(data);
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+  }, []);
+  if (!post) {
+    return <></>;
+  }
   return (
     <li className={scss.post}>
       <div className={scss.title}>
@@ -11,7 +36,7 @@ export const Post: React.FC = () => {
             <Avatar />
           </a>
           <p>
-            <a href="/">nnickname</a> &#183; <span>4h</span>
+            <a href="/">{post?.user.username}</a> &#183; <span>4h</span>
           </p>
         </div>
         <a href="/">
@@ -19,9 +44,11 @@ export const Post: React.FC = () => {
         </a>
       </div>
       <div className={scss.photo}>
-        <img
-          src="https://images.unsplash.com/photo-1597573337211-e1080012b84b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8OSUzQTE2fGVufDB8fDB8fA%3D%3D&w=1000&q=80"
-          alt=""
+        <MediaSlider
+          aspect={post.aspect}
+          dataCount={post.media.length}
+          media={post.media}
+          videoPlay
         />
       </div>
       <div className={scss.subtitle}>

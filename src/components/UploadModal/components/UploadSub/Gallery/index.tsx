@@ -79,7 +79,7 @@ export const Gallery: React.FC<GalleryProps> = ({
           ref={galleryRef}
         >
           {mediaData.map((media, i) => (
-            <li key={media.url} onClick={() => setCurrentMedia(i)}>
+            <li key={media.dest} onClick={() => setCurrentMedia(i)}>
               <MediaBox media={media} aspect={aspect} />
               {currentMedia === i ? (
                 <span onClick={() => setActiveModal("delete")}>

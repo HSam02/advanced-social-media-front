@@ -1,17 +1,12 @@
 import { memo, useEffect, useRef, useState } from "react";
 import scss from "./MediaBox.module.scss";
 import { PlayIcon, SpeakerIcon } from "../../icons";
-
-export interface IMedia {
-  type: "image" | "video";
-  url: string;
-  styles: {
-    transform: string;
-  };
-}
+import { mediaType } from "../../../app/slices/posts";
+import { useIntersection } from "../../../hooks";
+import { VideoPlayer } from "./VideoPlayer";
 
 type MediaBoxProps = {
-  media: IMedia;
+  media: mediaType;
   aspect: number;
   width?: number;
   controls?: boolean;
@@ -21,31 +16,10 @@ type MediaBoxProps = {
 export const MediaBox: React.FC<MediaBoxProps> = memo(
   ({ media, width, aspect, controls, play }) => {
     console.log("MediaBox");
-    const [isMute, setIsMute] = useState(
-      Boolean(localStorage.getItem("isVideoMute"))
-    );
-    const [isPlay, setIsPlay] = useState(Boolean(play));
-    const videoRef = useRef<HTMLVideoElement>(null);
 
-    useEffect(() => {
-      if (videoRef.current) {
-        if (isPlay) {
-          videoRef.current.play();
-        } else {
-          videoRef.current.pause();
-        }
-      }
-    }, [isPlay]);
-
-    useEffect(() => {
-      if (videoRef.current) {
-        if (isMute) {
-          videoRef.current.volume = 0;
-        } else {
-          videoRef.current.volume = 1;
-        }
-      }
-    }, [isMute]);
+    const mediaUrl = media.dest.includes("blob")
+      ? media.dest
+      : process.env.REACT_APP_API_URL + media.dest;
 
     return (
       <div
@@ -53,33 +27,17 @@ export const MediaBox: React.FC<MediaBoxProps> = memo(
         style={{ aspectRatio: aspect, width: width ? `${width}px` : undefined }}
       >
         {media.type === "image" ? (
-          <img src={media.url} alt="" style={media.styles} />
+          <img src={mediaUrl} alt="" style={media.styles} />
         ) : controls ? (
           <>
-            <video
-              src={media.url}
-              style={media.styles}
-              ref={videoRef}
-              onPause={() => setIsPlay(false)}
+            <VideoPlayer
+              url={mediaUrl}
+              styles={media.styles}
+              play={Boolean(play)}
             />
-            <div
-              className={scss.play}
-              onClick={() => setIsPlay((prev) => !prev)}
-            >
-              {!isPlay && <PlayIcon />}
-            </div>
-            <div
-              className={scss.sound}
-              onClick={() => {
-                localStorage.setItem("isVideoMute", isMute ? "" : "true");
-                setIsMute((prev) => !prev);
-              }}
-            >
-              <SpeakerIcon active={!isMute} />
-            </div>
           </>
         ) : (
-          <video src={media.url} style={media.styles} />
+          <video src={mediaUrl} style={media.styles} />
         )}
       </div>
     );
