@@ -4,19 +4,20 @@ import { loginDataType } from "../../pages/Login";
 import { registerDataType } from "../../pages/Register";
 import { RootState } from "../store";
 
-export type userType = {
+export interface IUser  {
+  _id: string;
   email: string;
   username: string;
   fullname?: string;
   avatarUrl?: string;
-  // following: userType[];
-  // followers: userType[];
+  // following: IUser[];
+  // followers: IUser[];
   // privateAccount: boolean;
   // posts: [];
   // saved: [];
   // chats: [];
   // comments: [];
-} | null;
+};
 
 export type statusType = "idle" | "loading" | "failed" | "loading:access" | "fulfilled";
 
@@ -30,7 +31,7 @@ export type errorType = {
 };
 
 type userStateType = {
-  user: userType | null;
+  user: IUser | null;
   status: statusType;
   error: string | null;
 };
@@ -41,11 +42,11 @@ const initialState: userStateType = {
   error: null
 };
 
-export const registerAsync = createAsyncThunk<userType, registerDataType, {rejectValue: string}>(
+export const registerAsync = createAsyncThunk<IUser, registerDataType, {rejectValue: string}>(
   "user/register",
   async (reqData, {rejectWithValue}) => {
     try {
-      const { data } = await appAxios.post<{ user: userType; token: string }>(
+      const { data } = await appAxios.post<{ user: IUser; token: string }>(
         "/auth/register",
         reqData
       );
@@ -57,11 +58,11 @@ export const registerAsync = createAsyncThunk<userType, registerDataType, {rejec
   }
 );
 
-export const loginAsync = createAsyncThunk<userType, loginDataType, {rejectValue: string}>(
+export const loginAsync = createAsyncThunk<IUser, loginDataType, {rejectValue: string}>(
 	"user/login",
 	async (reqData, {rejectWithValue}) => {
 		try {
-			const { data } = await appAxios.post<{ user: userType; token: string }>(
+			const { data } = await appAxios.post<{ user: IUser; token: string }>(
         "/auth/login",
         reqData
       );
@@ -80,7 +81,7 @@ export const getUserAsync = createAsyncThunk(
       if (!localStorage.getItem("token")) {
         throw new Error("No token");
       }
-			const {data} = await appAxios.get<userType>("./auth/me");
+			const {data} = await appAxios.get<IUser>("./auth/me");
 			return data;
 		} catch (error) {
 			console.log(error);

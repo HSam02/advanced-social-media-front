@@ -1,0 +1,14 @@
+.arrow {
+  position: absolute;
+  z-index: 100;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.left {
+  left: 4%;
+}
+
+.right {
+  right: 4%;
+}

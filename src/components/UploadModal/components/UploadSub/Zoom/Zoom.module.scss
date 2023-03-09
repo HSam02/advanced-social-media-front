@@ -1,0 +1,33 @@
+.range {
+  position: absolute;
+  left: 40px;
+  bottom: 46px;
+  padding: 13px 12px;
+  border-radius: 8px;
+
+  background-color: rgba(26, 26, 26, .7);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  >input[type=range] {
+    -webkit-appearance: none;
+    background-color: #000;
+    border-radius: 10px;
+    height: 1px;
+    width: 132px;
+    outline: none;
+
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      background-color: white;
+      border-radius: 50%;
+      border: none;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+    }
+  }
+}

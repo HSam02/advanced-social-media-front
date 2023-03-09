@@ -1,0 +1,34 @@
+.cropMenu {
+	background-color: rgba(26, 26, 26, .8);
+	border-radius: 8px;
+	position: absolute;
+	bottom: 46px;
+
+	>li {
+		border-bottom: 1px solid #dbdbdb;
+		color: #8e8e8e;
+		padding-left: 12px;
+		display: flex;
+		align-items: center;
+		cursor: pointer;
+		user-select: none;
+
+		&:last-child {
+			border-bottom: none;
+		}
+
+		>svg {
+			margin: 12px;
+			color: #8e8e8e;
+			width: 24px;
+		}
+	}
+
+	>.active {
+		color: #fff;
+
+		>svg {
+			color: #fff;
+		}
+	}
+}

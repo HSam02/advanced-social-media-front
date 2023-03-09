@@ -1,0 +1,31 @@
+.upload__sub {
+  position: absolute;
+  bottom: 24px;
+  left: 4%;
+  z-index: 100;
+  width: 92%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  >.active,
+  >div>.active {
+    background-color: #fff;
+
+    >svg {
+      fill: #262626;
+    }
+  }
+
+  .disabled {
+    opacity: .3 !important;
+  }
+
+  >div:first-child {
+    display: flex;
+
+    >div:first-child {
+      margin-right: 8px;
+    }
+  }
+}

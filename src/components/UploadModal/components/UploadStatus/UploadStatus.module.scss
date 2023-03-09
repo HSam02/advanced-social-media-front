@@ -1,0 +1,22 @@
+.status {
+  position: relative;
+  height: calc(100% - 40px);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  >div {
+    text-align: center;
+
+    >p {
+      font-size: 20px;
+    }
+  }
+
+  svg {
+    width: 96px;
+    color: #F1007C;
+    fill: #F1007C;
+  }
+}

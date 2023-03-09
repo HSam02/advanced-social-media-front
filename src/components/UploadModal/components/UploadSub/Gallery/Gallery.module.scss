@@ -1,0 +1,120 @@
+.gallery {
+  position: absolute;
+  z-index: 100;
+  bottom: 46px;
+  right: 0;
+  max-width: 92%;
+  padding: 8px;
+  border-radius: 8px;
+  background-color: rgba(26, 26, 26, .8);
+  display: flex;
+
+  >input {
+    display: none;
+  }
+}
+
+.plus {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  margin-left: 6px;
+  border: 1px solid #dbdbdb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: .2s;
+
+  &:active {
+    background-color: #efefef;
+  }
+
+  >svg {
+    fill: #8e8e8e;
+  }
+}
+
+.media {
+  position: relative;
+  overflow: hidden;
+
+
+  >.arrow {
+    position: absolute;
+    z-index: 120;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 50%;
+  }
+
+  >.right {
+    right: 10px;
+  }
+
+  >.left {
+    left: 10px;
+  }
+
+  >ul {
+    display: flex;
+    align-items: center;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    position: relative;
+    min-height: 96px;
+
+    >li {
+      position: relative;
+      // overflow: hidden;
+      width: 94px;
+      margin: 6px;
+      flex: none;
+      cursor: pointer;
+      background-color: #000;
+
+      >span {
+        display: block;
+        position: absolute;
+        z-index: 110;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background-color: rgba(26, 26, 26, .8);
+        top: 8px;
+        right: 8px;
+        transition: .2s;
+        cursor: pointer;
+
+        &:hover {
+          opacity: .7;
+        }
+
+        >svg {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          color: #fff;
+          width: 12px;
+          height: 12px;
+        }
+      }
+
+      >.disable__gradient {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 110;
+        background-color: rgba(26, 26, 26, .6);
+      }
+    }
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
