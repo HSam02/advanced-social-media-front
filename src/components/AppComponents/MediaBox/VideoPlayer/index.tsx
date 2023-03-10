@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import scss from "./VideoPlayer.module.scss";
-import { useIntersection } from "../../../../hooks";
+import { useIntersection } from "../../../../utils/hooks";
 import { PlayIcon, SpeakerIcon } from "../../../icons";
 
 type VideoPlayerProps = {

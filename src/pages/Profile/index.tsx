@@ -1,21 +1,25 @@
+import { useRef, useState } from "react";
 import { useAppSelector } from "../../app/hooks";
 import { selectUser } from "../../app/slices/user";
 import { FollowersModal, FollowingModal } from "../../components";
 import { AppButton, Avatar } from "../../components";
-import { ImageIcon, SettingsIcon } from "../../components/icons";
+import { ImageIcon, LoadingIcon, SettingsIcon } from "../../components/icons";
 import { SettingsModal, UnfollowModal } from "../../components/modals";
 import scss from "./Profile.module.scss";
+import { ProfileAvatar } from "./ProfileAvatar";
 
 export const Profile: React.FC = () => {
-  const {user} = useAppSelector(selectUser);
+  console.log("Profile");
+  const { user } = useAppSelector(selectUser);
+
   return (
     <div className={scss.profile}>
-			{/* <FollowersModal /> */}
-			{/* <FollowingModal /> */}
-			{/* <UnfollowModal /> */}
-			{/* <SettingsModal /> */}
+      {/* <FollowersModal /> */}
+      {/* <FollowingModal /> */}
+      {/* <UnfollowModal /> */}
+      {/* <SettingsModal /> */}
       <div className={scss.user}>
-				<Avatar size="150px" />
+        <ProfileAvatar dest={user?.avatarDest || ""} />
         <div className={scss.info}>
           <div>
             <p>{user?.username}</p>
@@ -23,12 +27,18 @@ export const Profile: React.FC = () => {
             <SettingsIcon />
           </div>
           <ul>
-            <li><span>{0}</span> posts</li>
             <li>
-              <a href="/"><span>{112}</span> followers</a>
+              <span>{0}</span> posts
             </li>
             <li>
-              <a href="/"><span>{473}</span> following</a>
+              <a href="/">
+                <span>{112}</span> followers
+              </a>
+            </li>
+            <li>
+              <a href="/">
+                <span>{473}</span> following
+              </a>
             </li>
           </ul>
           <h4>{user?.fullname}</h4>

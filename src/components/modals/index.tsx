@@ -18,7 +18,7 @@ export const FollowersModal: React.FC = () => {
             .map((el, i) => (
               <li key={i}>
                 <div>
-                  <Avatar size="44px" />
+                  <Avatar size="44px" dest="" />
                   <span>
                     <p>nickname</p>
                     <span>full name</span>
@@ -59,7 +59,7 @@ export const FollowingModal: React.FC = () => {
             .map((el, i) => (
               <li key={i}>
                 <div>
-                  <Avatar size="44px" />
+                  <Avatar size="44px" dest="" />
                   <span>
                     <p>nickname</p>
                     <span>full name</span>
@@ -83,7 +83,7 @@ export const UnfollowModal: React.FC = () => {
   return (
     <div className={scss.background}>
       <div className={`${scss.box} ${scss.options__box}`}>
-        <Avatar size="90px" />
+        <Avatar size="90px" dest="" />
         <p>Unfollow @{"nickname"}</p>
         <ul>
           <li>Unfollow</li>

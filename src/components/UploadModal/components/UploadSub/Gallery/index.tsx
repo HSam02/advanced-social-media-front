@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useClickOutside } from "../../../../../hooks";
+import { useClickOutside } from "../../../../../utils/hooks";
 import { CloseIcon, PlusIcon } from "../../../../icons";
 import { ArrowIconButton, MediaBox } from "../../../../";
 import { activeModalType, cropMediaType } from "../../../types";

@@ -1,8 +1,7 @@
-import { useRef, useState, useEffect, useCallback } from "react";
-import { useClickOutside } from "../../hooks";
+import { useRef, useState, useCallback } from "react";
 import appAxios from "../../appAxios";
 import { CloseIcon } from "../icons";
-import { DiscardModal } from "../DiscardModal";
+import { DiscardModal, ModalBackground } from "../";
 import {
   FirstUpload,
   MediaEditor,
@@ -33,21 +32,13 @@ export const UploadModal: React.FC<UploadModalProps> = ({ onClose }) => {
   });
 
   const uploadController = useRef(new AbortController());
-  const boxRef = useRef<HTMLDivElement>(null);
 
-  useClickOutside(boxRef, () => {
+  const handleCloseUpload = () => {
     if (mediaData && uploadStatus !== "Post shared") {
       return setActiveModal("close");
     }
     onClose();
-  });
-
-  useEffect(() => {
-    document.body.style.overflowY = "hidden";
-    return () => {
-      document.body.style.overflowY = "auto";
-    };
-  }, []);
+  };
 
   const handleChangeFile = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const fileList = evt.target.files;
@@ -86,7 +77,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ onClose }) => {
           zoom: 1,
         } as cropMediaType)
     );
-    
+
     setMediaData((mediaData) =>
       mediaData ? [...mediaData, ...newData] : newData
     );
@@ -125,12 +116,10 @@ export const UploadModal: React.FC<UploadModalProps> = ({ onClose }) => {
       setUploadStatus("Post shared");
     } catch (error) {
       console.log(error);
-      // if (uploadStatus === "Sharing") {
       alert("Post didn't share");
       setUploadStatus("idle");
-      // }
     }
-  }, [postInfo, mediaData, uploadStatus, aspect]);
+  }, [postInfo, mediaData, aspect]);
 
   const handleCloseModal = () => {
     setActiveModal(null);
@@ -177,8 +166,8 @@ export const UploadModal: React.FC<UploadModalProps> = ({ onClose }) => {
 
   return (
     <>
-      <div className={scss.background}>
-        <div className={scss.box} ref={boxRef}>
+      <ModalBackground onClose={handleCloseUpload}>
+        <div className={scss.box} onClick={(e) => e.stopPropagation()}>
           <UploadTitle
             showButtos={Boolean(mediaData)}
             isCropSuccess={isCropSuccess}
@@ -227,10 +216,10 @@ export const UploadModal: React.FC<UploadModalProps> = ({ onClose }) => {
             </div>
           )}
         </div>
-        <span>
+        <span className={scss.close}>
           <CloseIcon />
         </span>
-      </div>
+      </ModalBackground>
       {activeModal === "cancel" && (
         <DiscardModal
           title="Discard post?"

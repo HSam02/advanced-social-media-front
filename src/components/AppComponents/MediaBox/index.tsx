@@ -2,7 +2,7 @@ import { memo, useEffect, useRef, useState } from "react";
 import scss from "./MediaBox.module.scss";
 import { PlayIcon, SpeakerIcon } from "../../icons";
 import { mediaType } from "../../../app/slices/posts";
-import { useIntersection } from "../../../hooks";
+import { useIntersection } from "../../../utils/hooks";
 import { VideoPlayer } from "./VideoPlayer";
 
 type MediaBoxProps = {

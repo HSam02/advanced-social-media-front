@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { useClickOutside } from "../../../../../hooks";
+import { useClickOutside } from "../../../../../utils/hooks";
 import {
   GalleryIcon,
   HorizontalRectangleIcon,

@@ -32,9 +32,9 @@ export const Post: React.FC = () => {
     <li className={scss.post}>
       <div className={scss.title}>
         <div className={scss.userInfo}>
-          <a href="/">
-            <Avatar />
-          </a>
+          <div className={scss.avatar}>
+            <Avatar dest={post.user.avatarDest} />
+          </div>
           <p>
             <a href="/">{post?.user.username}</a> &#183; <span>4h</span>
           </p>
