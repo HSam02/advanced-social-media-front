@@ -1,9 +1,7 @@
-import { memo, useEffect, useRef, useState } from "react";
-import scss from "./MediaBox.module.scss";
-import { PlayIcon, SpeakerIcon } from "../../icons";
+import { memo } from "react";
 import { mediaType } from "../../../app/slices/posts";
-import { useIntersection } from "../../../utils/hooks";
 import { VideoPlayer } from "./VideoPlayer";
+import scss from "./MediaBox.module.scss";
 
 type MediaBoxProps = {
   media: mediaType;

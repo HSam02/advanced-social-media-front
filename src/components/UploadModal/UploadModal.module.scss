@@ -13,12 +13,10 @@
 .box {
   max-width: 1150px;
   max-height: 720px;
-  width: 80%;
-  height: 80%;
+  width: 80vw;
+  height: 80vh;
 
   overflow: hidden;
-  background-color: #fff;
-  border-radius: 12px;
 }
 
 .box__inner {

@@ -1,0 +1,86 @@
+.box {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  cursor: pointer;
+
+  &:hover .hoverDiv {
+    display: flex;
+  }
+
+}
+
+.mediaBox {
+  height: 100%;
+  >div {
+    height: 100%;
+
+    >video,
+    >img {
+      object-fit: cover;
+    }
+  }
+
+}
+
+.width100 {
+
+  video,
+  img {
+    width: 100% !important;
+  }
+}
+
+.height100 {
+
+  video,
+  img {
+    height: 100% !important;
+  }
+}
+
+.hoverDiv {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 100;
+
+  display: none;
+  justify-content: center;
+  align-items: center;
+
+  background-color: rgba(0, 0, 0, 0.3);
+
+  >div {
+    >span {
+      display: inline-flex;
+      align-items: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 16px;
+
+      >svg {
+        width: 19px;
+        color: #fff;
+        margin-right: 7px;
+      }
+    }
+
+    >span:first-child:not(:only-child) {
+      margin-right: 30px;
+    }
+  }
+}
+
+.galleryIcon {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 10;
+
+  >svg {
+    color: #fff;
+  }
+}

@@ -14,7 +14,7 @@ export const ModalBackground: React.FC<ModalBackgroundProps> = ({
   useDisableScroll();
   return (
     <div className={scss.background} onClick={onClose}>
-      {children}
+      <div onClick={(e) => e.stopPropagation()}>{children}</div>
     </div>
   );
 };

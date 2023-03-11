@@ -1,0 +1,32 @@
+.filter {
+  list-style: none;
+  margin: 0 auto;
+  width: 50%;
+
+  display: flex;
+  justify-content: space-evenly;
+
+
+  >li {
+    padding: 17px 0;
+    color: #8e8e8e;
+    font-size: 12px;
+    cursor: pointer;
+    user-select: none;
+
+    >svg {
+      color: #8e8e8e;
+      width: 12px;
+      margin-right: 6px;
+    }
+  }
+
+  >.active {
+    border-top: 1px solid #262626;
+    color: #262626;
+
+    >svg {
+      color: #262626;
+    }
+  }
+}

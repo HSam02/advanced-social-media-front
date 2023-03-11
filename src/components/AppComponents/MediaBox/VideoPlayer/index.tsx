@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import scss from "./VideoPlayer.module.scss";
-import { useIntersection } from "../../../../utils/hooks";
+import { useIntersection, useVideoMute } from "../../../../utils/hooks";
 import { PlayIcon, SpeakerIcon } from "../../../icons";
 
 type VideoPlayerProps = {
@@ -16,40 +16,24 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 }) => {
   console.log("VideoPlayer");
 
-  const [isMute, setIsMute] = useState(
-    Boolean(localStorage.getItem("isVideoMute"))
-  );
   const [isPlay, setIsPlay] = useState(Boolean(play));
+  const {isMute, toggleIsMute} = useVideoMute();
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const isVisible = useIntersection(videoRef, "-50%");
-
-  const videos = document.querySelectorAll("video");
 
   useEffect(() => {
     if (play) {
       setIsPlay(isVisible);
     }
-  }, [isVisible]);
-
-  useEffect(() => {
-    setIsMute((prev) => prev);
-    const handleStorageChange = (evt: StorageEvent) => {
-      setIsMute(Boolean(localStorage.getItem("isVideoMute")));
-    };
-    window.addEventListener("storage", handleStorageChange);
-
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, []);
+  }, [isVisible, play]);
 
   useEffect(() => {
     if (videoRef.current) {
       if (isPlay) {
         (async () => {
           try {
-            console.log("play");
+            const videos = document.querySelectorAll("video");
 
             await videoRef.current!.play();
             videos.forEach(
@@ -77,13 +61,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }
   }, [isMute]);
 
-  const handleClickSpeaker = () => {
-    setIsMute((prev) => {
-      localStorage.setItem("isVideoMute", !prev ? "true" : "");
-      window.dispatchEvent(new Event("storage"));
-      return !prev;
-    });
-  };
   return (
     <>
       <video
@@ -95,7 +72,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       <div className={scss.play} onClick={() => setIsPlay((prev) => !prev)}>
         {!isPlay && <PlayIcon />}
       </div>
-      <div className={scss.sound} onClick={handleClickSpeaker}>
+      <div className={scss.sound} onClick={toggleIsMute}>
         <SpeakerIcon active={!isMute} />
       </div>
     </>

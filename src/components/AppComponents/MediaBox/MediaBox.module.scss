@@ -2,7 +2,6 @@
   position: relative;
   overflow: hidden;
   width: 100%;
-  aspect-ratio: 1;
 
   >img,
   >video {
@@ -14,45 +13,3 @@
     transform-origin: top left;
   }
 }
-
-// .play {
-//   width: 100%;
-//   height: 100%;
-//   position: absolute;
-//   top: 0;
-//   left: 0;
-//   z-index: 10;
-
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-
-//   cursor: pointer;
-
-//   >svg {
-//     width: 64px;
-//     color: #fff;
-//   }
-// }
-
-// .sound {
-//   position: absolute;
-//   bottom: 16px;
-//   right: 16px;
-//   z-index: 20;
-//   width: 28px;
-//   height: 28px;
-//   border-radius: 50%;
-  
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-  
-//   background-color: rgb(38,38,38);
-//   cursor: pointer;
-
-//   >svg {
-//     color: #fff;
-//     width: 12px;
-//   }
-// }

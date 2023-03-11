@@ -1,0 +1,41 @@
+.sharePosts {
+	padding: 60px 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	>.imageIcon {
+		width: 62px;
+		height: 62px;
+		border: 1px solid #262626;
+		border-radius: 50%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		cursor: pointer;
+
+		>svg {
+			width: 38px;
+		}
+	}
+
+	>h3 {
+		margin: 18px 0;
+		font-size: 30px;
+	}
+
+	>p {
+		margin-bottom: 18px;
+	}
+
+	>span {
+		color: #0095f6;
+		cursor: pointer;
+		transition: .2s;
+
+		&:hover {
+			color: #00376b;
+		}
+	}
+}

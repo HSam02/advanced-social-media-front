@@ -10,15 +10,18 @@ import {
   UploadSub,
   UploadTitle,
 } from "./components/";
-import { mediaType } from "../../app/slices/posts";
+import { IPost, mediaType } from "../../app/slices/posts";
 import { activeModalType, cropMediaType, uploadStatusType } from "./types";
 import scss from "./UploadModal.module.scss";
+import { useAppDispatch } from "../../app/hooks";
+import { addPost } from "../../app/slices/user";
 
 type UploadModalProps = {
   onClose: () => void;
 };
 
 export const UploadModal: React.FC<UploadModalProps> = ({ onClose }) => {
+  const dispatch = useAppDispatch();
   const [mediaData, setMediaData] = useState<cropMediaType[] | null>(null);
   const [currentMedia, setCurrentMedia] = useState(0);
   const [aspect, setAspect] = useState<number>(1);
@@ -109,17 +112,17 @@ export const UploadModal: React.FC<UploadModalProps> = ({ onClose }) => {
       });
       formData.append("data", JSON.stringify(requestData));
 
-      const { data } = await appAxios.post("/posts", formData, {
+      const { data } = await appAxios.post<IPost>("/posts", formData, {
         signal: uploadController.current.signal,
       });
-      console.log(data);
+      dispatch(addPost(data));
       setUploadStatus("Post shared");
     } catch (error) {
       console.log(error);
       alert("Post didn't share");
       setUploadStatus("idle");
     }
-  }, [postInfo, mediaData, aspect]);
+  }, [postInfo, mediaData, aspect, dispatch]);
 
   const handleCloseModal = () => {
     setActiveModal(null);
@@ -167,7 +170,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ onClose }) => {
   return (
     <>
       <ModalBackground onClose={handleCloseUpload}>
-        <div className={scss.box} onClick={(e) => e.stopPropagation()}>
+        <div className={scss.box}>
           <UploadTitle
             showButtos={Boolean(mediaData)}
             isCropSuccess={isCropSuccess}

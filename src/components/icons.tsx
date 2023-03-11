@@ -191,6 +191,17 @@ export const MediaGalleryIcon: React.FC = () => {
   );
 };
 
+export const MediaGalleryFilledIcon: React.FC = () => {
+  return (
+    <svg viewBox="0 0 48 48">
+      <path
+        fill="currentColor"
+        d="M34.8 29.7V11c0-2.9-2.3-5.2-5.2-5.2H11c-2.9 0-5.2 2.3-5.2 5.2v18.7c0 2.9 2.3 5.2 5.2 5.2h18.7c2.8-.1 5.1-2.4 5.1-5.2zM39.2 15v16.1c0 4.5-3.7 8.2-8.2 8.2H14.9c-.6 0-.9.7-.5 1.1 1 1.1 2.4 1.8 4.1 1.8h13.4c5.7 0 10.3-4.6 10.3-10.3V18.5c0-1.6-.7-3.1-1.8-4.1-.5-.4-1.2 0-1.2.6z"
+      ></path>
+    </svg>
+  );
+};
+
 export const SquareIcon: React.FC = () => {
   return (
     <svg viewBox="0 0 24 24">
@@ -405,6 +416,17 @@ export const CommentIcon: React.FC = () => {
   );
 };
 
+export const CommentFillIcon: React.FC = () => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+      <path
+        fill="currentColor"
+        d="M232 128a104 104 0 0 1-152.88 91.82l-34.05 11.35a16 16 0 0 1-20.24-20.24l11.35-34.05A104 104 0 1 1 232 128Z"
+      />
+    </svg>
+  );
+};
+
 export const MessageIcon: React.FC<iconPropsType> = ({ active }) => {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
@@ -448,6 +470,68 @@ export const PlaneIcon: React.FC = () => {
         fill="currentColor"
         d="M223.7 32.3a15.9 15.9 0 0 0-15.6-4.1L21.8 80.7a16.1 16.1 0 0 0-2.6 29.9l85.7 40.5l40.5 85.7a16 16 0 0 0 14.4 9.1h1.4a15.9 15.9 0 0 0 14.1-11.6l52.5-186.4a15.9 15.9 0 0 0-4.1-15.6Zm-63.8 197.6l-39.4-83.1l41.3-41.3a8 8 0 1 0-11.3-11.3l-41.3 41.3l-83.1-39.4l186.3-52.5Z"
       />
+    </svg>
+  );
+};
+
+export const WebIcon: React.FC = () => {
+  return (
+    <svg viewBox="0 0 24 24">
+      <rect
+        fill="none"
+        height="18"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        width="18"
+        x="3"
+        y="3"
+      ></rect>
+      <line
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        x1="9.015"
+        x2="9.015"
+        y1="3"
+        y2="21"
+      ></line>
+      <line
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        x1="14.985"
+        x2="14.985"
+        y1="3"
+        y2="21"
+      ></line>
+      <line
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        x1="21"
+        x2="3"
+        y1="9.015"
+        y2="9.015"
+      ></line>
+      <line
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        x1="21"
+        x2="3"
+        y1="14.985"
+        y2="14.985"
+      ></line>
     </svg>
   );
 };

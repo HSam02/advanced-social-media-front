@@ -10,6 +10,7 @@ import appAxios from "../../appAxios";
 import { loginDataType } from "../../pages/Login";
 import { registerDataType } from "../../pages/Register";
 import { RootState } from "../store";
+import { IPost } from "./posts";
 
 export interface IUser {
   _id: string;
@@ -17,16 +18,16 @@ export interface IUser {
   username: string;
   fullname?: string;
   avatarDest?: string;
+  posts: IPost[];
+  saved: IPost[];
   // following: IUser[];
   // followers: IUser[];
   // privateAccount: boolean;
-  // posts: [];
-  // saved: [];
   // chats: [];
   // comments: [];
 }
 
-export type statusType =
+type statusType =
   | "idle"
   | "loading"
   | "failed"
@@ -117,6 +118,11 @@ export const userSlice = createSlice({
         state.user.avatarDest = action.payload;
       }
     },
+    addPost: (state, action: PayloadAction<IPost>) => {
+      if (state.user) {
+        state.user.posts.unshift(action.payload);
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -153,7 +159,7 @@ export const userSlice = createSlice({
   },
 });
 
-export const { logout, updateAvatar } = userSlice.actions;
+export const { logout, updateAvatar, addPost } = userSlice.actions;
 
 // export const logout = ():AppThunk => (dispatch) => {
 //   dispatch(userSlice.actions.logout());

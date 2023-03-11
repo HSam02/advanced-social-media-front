@@ -1,11 +1,11 @@
 import { useState, useRef, memo } from "react";
-import { Avatar } from "../../../components";
-import { LoadingIcon } from "../../../components/icons";
-import scss from "./ProfileAvatar.module.scss";
-import appAxios from "../../../appAxios";
 import { useAppDispatch } from "../../../app/hooks";
 import { updateAvatar } from "../../../app/slices/user";
+import appAxios from "../../../appAxios";
+import { Avatar } from "../../../components";
+import { LoadingIcon } from "../../../components/icons";
 import { ChangeAvatarModal } from "./ChangeAvatarModal";
+import scss from "./ProfileAvatar.module.scss";
 
 type ProfileAvatarProps = {
   dest: string;

@@ -38,7 +38,7 @@ export const SideBar: React.FC = () => {
 
   useEffect(() => {
     setActiveLink("/" + location.pathname.split("/")[1]);
-  }, []);
+  }, [location.pathname]);
 
   const closeModal = () => {
     setShowUploadModal(false);
