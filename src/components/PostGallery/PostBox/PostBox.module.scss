@@ -11,31 +11,44 @@
 }
 
 .mediaBox {
+  // position: relative;
   height: 100%;
   >div {
+    // position: absolute;
+    // top: 50%;
+    // left: 50%;
+    // transform: translate(-50%, -50%);
     height: 100%;
-
     >video,
     >img {
       object-fit: cover;
+
     }
   }
 
 }
 
-.width100 {
+// .width100 {
 
+//   video,
+//   img {
+//     width: 100% !important;
+//   }
+// }
+
+.height200 {
+  // width: 180%;
   video,
   img {
-    width: 100% !important;
+    width: 180% !important;
   }
 }
 
-.height100 {
+.height300 {
 
   video,
   img {
-    height: 100% !important;
+    height: 300% !important;
   }
 }
 

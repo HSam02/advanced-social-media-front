@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { useAppDispatch } from "../../app/hooks";
-import { logout } from "../../app/slices/user";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { logout, selectUser } from "../../app/slices/user";
 import {
   ActivityIcon,
   AddIcon,
@@ -21,6 +21,7 @@ import scss from "./SideBar.module.scss";
 import { UploadModal } from "../";
 
 export const SideBar: React.FC = () => {
+  const { user } = useAppSelector(selectUser);
   const [activeLink, setActiveLink] = useState<string>("");
   const [showMoreMenu, setShowMoreMenu] = useState<boolean>(false);
   const [showUploadModal, setShowUploadModal] = useState<boolean>(false);
@@ -43,7 +44,7 @@ export const SideBar: React.FC = () => {
   const closeModal = () => {
     setShowUploadModal(false);
     setActiveLink("/" + location.pathname.split("/")[1]);
-  }
+  };
 
   // useEffect(() => {
 
@@ -51,7 +52,6 @@ export const SideBar: React.FC = () => {
   // }, [showUploadModal])
 
   // console.log(showUploadModal);
-  
 
   return (
     <>
@@ -88,9 +88,9 @@ export const SideBar: React.FC = () => {
             >
               <AddIcon active={activeLink === "add"} />
             </li>
-            <li onClick={() => setActiveLink("/profile")}>
-              <NavLink to="/profile">
-                <UserIcon active={activeLink === "/profile"} />
+            <li onClick={() => setActiveLink(`/${user?.username}`)}>
+              <NavLink to={`/${user?.username}`}>
+                <UserIcon active={activeLink === `/${user?.username}`} />
               </NavLink>
             </li>
           </ul>

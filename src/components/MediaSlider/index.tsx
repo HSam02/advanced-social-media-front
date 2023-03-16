@@ -6,13 +6,14 @@ import scss from "./MediaSlider.module.scss";
 type MediaSliderProps = {
   media: mediaType[];
   aspect: number;
-  dataCount: number;
   videoPlay?: boolean;
+  intersection?: boolean;
+  arrowsType?: "black" | "white" | "dark-white"
 };
 
 export const MediaSlider: React.FC<MediaSliderProps> = memo(
-  ({ media, aspect, dataCount, videoPlay }) => {
-    console.log("CroppedMedia");
+  ({ media, aspect, videoPlay, intersection, arrowsType }) => {
+    console.log("MediaSlider");
     const [currentMedia, setCurrentMedia] = useState(0);
 
     return (
@@ -22,16 +23,17 @@ export const MediaSlider: React.FC<MediaSliderProps> = memo(
           aspect={aspect}
           controls
           play={videoPlay}
+          intersection={intersection}
         />
         <MediaSliderArrows
-          type="black"
+          type={arrowsType || "black"}
           currentMedia={currentMedia}
-          mediaCount={dataCount}
+          mediaCount={media.length}
           setCurrentMedia={setCurrentMedia}
         />
-        {dataCount > 1 && (
+        {media.length > 1 && (
           <SliderDots
-            count={dataCount}
+            count={media.length}
             currentMedia={currentMedia}
             setCurrentMedia={setCurrentMedia}
           />

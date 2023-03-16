@@ -9,10 +9,11 @@ type MediaBoxProps = {
   width?: number;
   controls?: boolean;
   play?: boolean;
+  intersection?: boolean;
 };
 
 export const MediaBox: React.FC<MediaBoxProps> = memo(
-  ({ media, width, aspect, controls, play }) => {
+  ({ media, width, aspect, controls, play, intersection }) => {
     console.log("MediaBox");
 
     const mediaUrl = media.dest.includes("blob")
@@ -32,6 +33,7 @@ export const MediaBox: React.FC<MediaBoxProps> = memo(
               url={mediaUrl}
               styles={media.styles}
               play={Boolean(play)}
+              intersection={intersection}
             />
           </>
         ) : (

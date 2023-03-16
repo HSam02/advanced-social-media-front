@@ -1,0 +1,35 @@
+.interaction {
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+
+  >li {
+    margin: 8px;
+    cursor: pointer;
+
+    >svg {
+      transition: .2s;
+
+      &:hover {
+        color: #8e8e8e;
+      }
+    }
+
+    &:first-child {
+      margin-left: 0;
+    }
+
+    &:last-child {
+      margin-left: auto;
+      margin-right: 0;
+    }
+  }
+}
+
+.loading {
+  pointer-events: none;
+
+  >svg {
+    color: #8e8e8e;
+  }
+}

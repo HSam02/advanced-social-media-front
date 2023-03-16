@@ -2,13 +2,14 @@ import { ArrowIconButton } from "../";
 import scss from "./MediaSliderArrows.module.scss";
 
 type MediaSliderArrowsProps = {
-  type: "black" | "white";
+  type: "black" | "white" | "dark-white";
   mediaCount: number;
   currentMedia: number;
   setCurrentMedia: React.Dispatch<React.SetStateAction<number>>;
 };
 
 export const MediaSliderArrows: React.FC<MediaSliderArrowsProps> = ({
+  type,
   mediaCount,
   currentMedia,
   setCurrentMedia,
@@ -24,7 +25,7 @@ export const MediaSliderArrows: React.FC<MediaSliderArrowsProps> = ({
           }}
           className={`${scss.left} ${scss.arrow}`}
         >
-          <ArrowIconButton side="left" />
+          <ArrowIconButton side="left" type={type} />
         </div>
       )}
       {currentMedia < mediaCount - 1 && (
@@ -34,7 +35,7 @@ export const MediaSliderArrows: React.FC<MediaSliderArrowsProps> = ({
           }}
           className={`${scss.right} ${scss.arrow}`}
         >
-          <ArrowIconButton side="right" />
+          <ArrowIconButton side="right" type={type} />
         </div>
       )}
     </>

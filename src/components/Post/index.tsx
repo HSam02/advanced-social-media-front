@@ -6,7 +6,7 @@ import {
   HeartIcon,
   PlaneIcon,
 } from "../icons";
-import { Avatar, MediaSlider } from "../";
+import { Avatar, MediaSlider, PostTitle, UserInteraction } from "../";
 import scss from "./Post.module.scss";
 import appAxios from "../../appAxios";
 import { IPost } from "../../app/slices/posts";
@@ -30,34 +30,20 @@ export const Post: React.FC = () => {
   }
   return (
     <li className={scss.post}>
-      <div className={scss.title}>
-        <div className={scss.userInfo}>
-          <div className={scss.avatar}>
-            <Avatar dest={post.user.avatarDest} />
-          </div>
-          <p>
-            <a href="/">{post?.user.username}</a> &#183; <span>4h</span>
-          </p>
-        </div>
-        <a href="/">
-          <DotsIcon />
-        </a>
-      </div>
+      <PostTitle
+        username={post.user.username}
+        avatarDest={post.user.avatarDest}
+      />
       <div className={scss.photo}>
         <MediaSlider
           aspect={post.aspect}
-          dataCount={post.media.length}
           media={post.media}
           videoPlay
+          intersection
         />
       </div>
       <div className={scss.subtitle}>
-        <div className={scss.icons}>
-          <HeartIcon />
-          <CommentIcon />
-          <PlaneIcon />
-          <BookMarkIcon />
-        </div>
+        <UserInteraction post={post} />
         <p className={scss.likes}>{4788} likes</p>
         <div className={scss.description}>
           description vnjndjk fbhjad hbefhd j ehjf hjhj ddfh dfh df

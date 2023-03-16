@@ -17,11 +17,11 @@ export const useIntersection = (
       },
       { rootMargin }
     );
-
-    element.current && observer.observe(element.current);
+    const currentElement = element.current;
+    currentElement && observer.observe(currentElement);
 
     return () => {
-      element.current && observer.unobserve(element.current);
+      currentElement && observer.unobserve(currentElement);
     };
   }, [element, rootMargin]);
 

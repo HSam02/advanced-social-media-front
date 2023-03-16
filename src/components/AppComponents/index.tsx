@@ -6,3 +6,5 @@ export { MediaBox } from "./MediaBox";
 export { MediaSliderArrows } from "./MediaSliderArrows";
 export { SliderDots } from "./SliderDots";
 export { ModalBackground } from "./ModalBackground";
+export { UserInteraction } from "./UserInteraction";
+export { PostTitle } from "./PostTitle";

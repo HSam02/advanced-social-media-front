@@ -28,7 +28,7 @@ export const MediaCropper: React.FC<MediaCropperType> = memo(
       if (videoRef.current && currentMedia !== index) {
         videoRef.current.pause();
       }
-    }, [currentMedia]);
+    }, [currentMedia, index]);
 
     useEffect(() => {
       if (videoRef.current && currentMedia === index && !isPlay) {

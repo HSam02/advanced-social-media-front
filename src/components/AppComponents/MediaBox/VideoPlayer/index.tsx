@@ -7,11 +7,13 @@ type VideoPlayerProps = {
   url: string;
   styles: { transform: string };
   play: boolean;
+  intersection?: boolean;
 };
 
 export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   url,
   play,
+  intersection,
   styles,
 }) => {
   console.log("VideoPlayer");
@@ -20,7 +22,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const {isMute, toggleIsMute} = useVideoMute();
 
   const videoRef = useRef<HTMLVideoElement>(null);
-  const isVisible = useIntersection(videoRef, "-50%");
+  let isVisible = useIntersection(videoRef, "-50%");
+  if (!intersection) {
+    isVisible = isPlay
+  }
 
   useEffect(() => {
     if (play) {

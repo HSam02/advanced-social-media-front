@@ -1,6 +1,5 @@
 import { useRef, useState, useCallback } from "react";
 import appAxios from "../../appAxios";
-import { CloseIcon } from "../icons";
 import { DiscardModal, ModalBackground } from "../";
 import {
   FirstUpload,
@@ -99,7 +98,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ onClose }) => {
         text,
         hideComments,
         hideLikes,
-        media: [] as never as mediaType[],
+        media: [] as mediaType[],
       };
       mediaData?.forEach((media) => {
         formData.append("post_media", media.file);
@@ -116,6 +115,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ onClose }) => {
         signal: uploadController.current.signal,
       });
       dispatch(addPost(data));
+
       setUploadStatus("Post shared");
     } catch (error) {
       console.log(error);
@@ -169,7 +169,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ onClose }) => {
 
   return (
     <>
-      <ModalBackground onClose={handleCloseUpload}>
+      <ModalBackground onClose={handleCloseUpload} closeIcon>
         <div className={scss.box}>
           <UploadTitle
             showButtos={Boolean(mediaData)}
@@ -219,9 +219,6 @@ export const UploadModal: React.FC<UploadModalProps> = ({ onClose }) => {
             </div>
           )}
         </div>
-        <span className={scss.close}>
-          <CloseIcon />
-        </span>
       </ModalBackground>
       {activeModal === "cancel" && (
         <DiscardModal

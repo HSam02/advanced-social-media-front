@@ -24,7 +24,6 @@ export const UploadData: React.FC<UploadDataProps> = ({
         <MediaSlider
           media={mediaData}
           aspect={aspect}
-          dataCount={mediaData.length}
         />
       </div>
       {/* <CroppedMedia

@@ -2,7 +2,7 @@ import { IPost } from "../../../app/slices/posts";
 import { MediaBox } from "../../AppComponents";
 import {
   CommentFillIcon,
-  HeartIcon,
+  HeartFilledIcon,
   MediaGalleryFilledIcon,
 } from "../../icons";
 import scss from "./PostBox.module.scss";
@@ -14,14 +14,23 @@ type PostBoxProps = {
 export const PostBox: React.FC<PostBoxProps> = ({ post }) => {
   console.log("PostBox");
 
-  const mediaClassName = `${scss.mediaBox} ${
-    post.aspect <= 1 ? scss.width100 : ""
-  } ${post.aspect >= 1 ? scss.height100 : ""}`;
+  // const mediaClassName = `${scss.mediaBox} ${
+  //   post.aspect < 1 ? scss.width100 : ""
+  // } ${post.aspect > 1 ? scss.height100 : ""}`;
 
   return (
     <div className={scss.box}>
-      <div className={mediaClassName}>
-        <MediaBox aspect={post.aspect} media={post.media[0]} />
+      {/* <div className={mediaClassName}> */}
+      <div
+        className={`${scss.mediaBox} ${
+          post.aspect > 1
+            ? post.aspect > 1.5
+              ? scss.height200
+              : scss.height300
+            : ""
+        }`}
+      >
+        <MediaBox aspect={1} media={post.media[0]} />
       </div>
       {post.media.length > 1 && (
         <span className={scss.galleryIcon}>
@@ -33,7 +42,7 @@ export const PostBox: React.FC<PostBoxProps> = ({ post }) => {
           <div>
             {!post.hideLikes && (
               <span>
-                <HeartIcon active /> 5465
+                <HeartFilledIcon /> {post.likes.length}
               </span>
             )}
             {!post.hideComments && (

@@ -1,5 +1,6 @@
-import { PostBox } from "./PostBox";
+import { NavLink } from "react-router-dom";
 import { IPost } from "../../app/slices/posts";
+import { PostBox } from "./PostBox";
 import scss from "./PostGallery.module.scss";
 
 type PostGalleryProps = {
@@ -8,12 +9,15 @@ type PostGalleryProps = {
 
 export const PostGallery: React.FC<PostGalleryProps> = ({ posts }) => {
   console.log("PostGallery");
-  
+
   return (
     <ul className={scss.gallery}>
-      {posts.map((post) => (
+      {posts.map((post) => post && (
         <li key={post._id}>
-          <PostBox post={post} />
+          <NavLink to={post._id}>
+            <PostBox post={post} />
+          </NavLink>
+          {/* <MediaBox aspect={post.aspect} media={post.media[0]} /> */}
         </li>
       ))}
     </ul>

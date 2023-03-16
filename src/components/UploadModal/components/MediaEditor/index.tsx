@@ -33,7 +33,7 @@ export const MediaEditor: React.FC<MediaEditorProps> = ({
           ...mediaData!.slice(index + 1),
         ]
     );
-  }, []);
+  }, [setMediaData]);
 
   const handleCropComplete = useCallback((croppedArea: Area, index: number) => {
     const scale = 100 / croppedArea.width;
@@ -57,7 +57,7 @@ export const MediaEditor: React.FC<MediaEditorProps> = ({
           ...mediaData.slice(index + 1),
         ]
     );
-  }, []);
+  }, [setMediaData]);
   return (
     <>
       <ul>
