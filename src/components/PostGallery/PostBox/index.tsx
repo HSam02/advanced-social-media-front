@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { IPost } from "../../../app/slices/posts";
 import { MediaBox } from "../../AppComponents";
 import {
@@ -11,7 +12,7 @@ type PostBoxProps = {
   post: IPost;
 };
 
-export const PostBox: React.FC<PostBoxProps> = ({ post }) => {
+export const PostBox: React.FC<PostBoxProps> = memo(({ post }) => {
   console.log("PostBox");
 
   // const mediaClassName = `${scss.mediaBox} ${
@@ -55,4 +56,4 @@ export const PostBox: React.FC<PostBoxProps> = ({ post }) => {
       )}
     </div>
   );
-};
+});

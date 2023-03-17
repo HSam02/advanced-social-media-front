@@ -1,0 +1,17 @@
+.box {
+  list-style: none;
+  width: 400px;
+
+  >li {
+    text-align: center;
+    padding: 14.5px;
+    border-top: 1px solid #dbdbdb;
+    cursor: pointer;
+
+    &:first-child {
+      font-weight: 700;
+      color: #ed4956;
+      border-top: none;
+    }
+  }
+}

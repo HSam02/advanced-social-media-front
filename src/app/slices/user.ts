@@ -201,6 +201,14 @@ export const userSlice = createSlice({
       }
       state.user.saved = state.user.saved.filter((post) => !post.deleted);
     },
+    deletePost: (state, action: PayloadAction<string>) => {
+      if (!state.user) {
+        return;
+      }
+      const postId = action.payload;
+      state.user.posts = state.user.posts.filter((post) => post._id !== postId);
+      state.user.saved = state.user.saved.filter((post) => post._id !== postId);
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -246,6 +254,7 @@ export const {
   addUserSaved,
   userUnsave,
   removeUserUnsaves,
+  deletePost,
 } = userSlice.actions;
 
 // export const logout = ():AppThunk => (dispatch) => {
