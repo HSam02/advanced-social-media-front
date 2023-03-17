@@ -3,32 +3,6 @@
   background-color: #fff;
 }
 
-.title {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-
-  > .userInfo {
-    display: flex;
-    align-items: center;
-
-    > p {
-      margin-left: 10px;
-      > a {
-        font-weight: 600;
-      }
-      > span {
-        color: #8e8e8e;
-      }
-    }
-  }
-  > a {
-    display: flex;
-    align-items: center;
-  }
-}
-
 .photo {
   overflow: hidden;
   max-height: 550px;
@@ -43,30 +17,6 @@
 }
 
 .subtitle {
-}
-
-.icons {
-  display: flex;
-  justify-content: space-between;
-
-  > svg {
-    margin: 8px;
-    transition: 0.2s;
-    cursor: pointer;
-
-    &:hover {
-      fill: #8e8e8e;
-    }
-
-    &:first-child {
-      margin-left: 0;
-    }
-
-    &:last-child {
-      margin-left: auto;
-      margin-right: 0;
-    }
-  }
 }
 
 .likes {

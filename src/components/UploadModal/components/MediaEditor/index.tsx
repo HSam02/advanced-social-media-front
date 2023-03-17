@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { MediaCropper } from "./MediaCropper";
-import { MediaSliderArrows } from "../../../AppComponents/MediaSliderArrows";
+import { MediaSliderArrows } from "../../../";
 import { Area, Point } from "react-easy-crop";
 import { cropMediaType } from "../../types";
 
@@ -33,7 +33,7 @@ export const MediaEditor: React.FC<MediaEditorProps> = ({
           ...mediaData!.slice(index + 1),
         ]
     );
-  }, []);
+  }, [setMediaData]);
 
   const handleCropComplete = useCallback((croppedArea: Area, index: number) => {
     const scale = 100 / croppedArea.width;
@@ -57,13 +57,13 @@ export const MediaEditor: React.FC<MediaEditorProps> = ({
           ...mediaData.slice(index + 1),
         ]
     );
-  }, []);
+  }, [setMediaData]);
   return (
     <>
       <ul>
         {mediaData.map((media, i) => (
           <MediaCropper
-            key={media.url}
+            key={media.dest}
             index={i}
             media={media}
             aspect={aspect}

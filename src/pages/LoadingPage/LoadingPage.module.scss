@@ -1,0 +1,22 @@
+.loading__page {
+  width: 100vw;
+  height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  >svg {
+    width: 70px;
+    color: #f40866;
+  }
+
+  >p {
+    font-size: 20px;
+    font-weight: 500;
+    background: linear-gradient(135deg, #920af1 0%, #f71931 59%, #f40866 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}

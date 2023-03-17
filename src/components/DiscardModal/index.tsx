@@ -1,3 +1,4 @@
+import { ModalBackground } from "../AppComponents";
 import scss from "./DiscardModal.module.scss";
 
 type DiscardModalProps = {
@@ -16,15 +17,8 @@ export const DiscardModal: React.FC<DiscardModalProps> = ({
   onAccept,
 }) => {
   return (
-    <div
-      className={scss.background}
-      onClick={onClose}
-      onMouseDown={(e) => e.stopPropagation()}
-    >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className={scss.discard}
-      >
+    <ModalBackground onClose={onClose}>
+      <div className={scss.discard}>
         <h6>{title}</h6>
         <p>{text}</p>
         <ul>
@@ -32,6 +26,6 @@ export const DiscardModal: React.FC<DiscardModalProps> = ({
           <li onClick={onClose}>Cancel</li>
         </ul>
       </div>
-    </div>
+    </ModalBackground>
   );
 };

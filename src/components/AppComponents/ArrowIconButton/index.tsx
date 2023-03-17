@@ -4,7 +4,7 @@ import scss from "./ArrowIconButton.module.scss";
 
 type ArrowIconButtonProps = {
   side: "left" | "right";
-  type?: "black" | "white";
+  type?: "black" | "white" | "dark-white";
   size?: number;
   onClick?: () => void;
 };

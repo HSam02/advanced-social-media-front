@@ -1,6 +1,6 @@
 import { useState, useCallback, memo } from "react";
 import { BottomArrowIcon } from "../../../../../icons";
-import { AppSlider } from "../../../../../AppComponents/AppSlider";
+import { AppSlider } from "../../../../..";
 import { postInfoType } from "../../../../types";
 import scss from "./AdvancedSettings.module.scss";
 

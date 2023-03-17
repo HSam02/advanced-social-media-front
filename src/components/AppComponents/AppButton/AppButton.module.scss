@@ -1,0 +1,29 @@
+.button {
+  background-color: #0095f6;
+  color: #fff;
+  font-weight: 500;
+  outline: none;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 16px;
+  transition: .2s;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #1877f2;
+  }
+}
+
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.gray {
+  background-color: #efefef;
+  color: #000;
+
+  &:hover {
+    background-color: #bdbdbd;
+  }
+}

@@ -1,0 +1,26 @@
+.title {
+  display: flex;
+  align-items: center;
+  column-gap: 10px;
+  padding: 8px 0;
+
+  >div:last-child {
+    margin-left: auto;
+    cursor: pointer;
+  }
+}
+
+.username {
+  > span {
+    font-weight: 700;
+    cursor: pointer;
+  }
+  > p {
+    display: inline;
+    color: #8e8e8e;
+  }
+}
+
+.avatar {
+  cursor: pointer;
+}

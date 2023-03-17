@@ -28,7 +28,7 @@ export const MediaCropper: React.FC<MediaCropperType> = memo(
       if (videoRef.current && currentMedia !== index) {
         videoRef.current.pause();
       }
-    }, [currentMedia]);
+    }, [currentMedia, index]);
 
     useEffect(() => {
       if (videoRef.current && currentMedia === index && !isPlay) {
@@ -46,8 +46,8 @@ export const MediaCropper: React.FC<MediaCropperType> = memo(
               zIndex: currentMedia !== index ? 0 : 1,
             },
           }}
-          image={media.type === "image" ? media.url : undefined}
-          video={media.type === "video" ? media.url : undefined}
+          image={media.type === "image" ? media.dest : undefined}
+          video={media.type === "video" ? media.dest : undefined}
           crop={media.crop}
           zoom={media.zoom}
           mediaProps={{ muted: false, autoPlay: false }}

@@ -1,0 +1,11 @@
+.arrows {
+  width: 100%;
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1000;
+
+  display: flex;
+  justify-content: space-between;
+}

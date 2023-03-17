@@ -27,3 +27,18 @@
     color: #262626;
   }
 }
+
+.dark-white {
+  background-color: rgba(255, 255, 255, .7);
+  width: 25px;
+  height: 25px;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  >svg {
+    width: 11px;
+    color: rgba(26, 26, 26, .5)
+  }
+}
