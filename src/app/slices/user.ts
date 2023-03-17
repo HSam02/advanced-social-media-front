@@ -126,11 +126,12 @@ export const userSlice = createSlice({
         state.user.posts.unshift(action.payload);
       }
     },
-    addUserLike: (
-      state,
-      action: PayloadAction<{ postId: string; userId: string }>
-    ) => {
-      const { postId, userId } = action.payload;
+    addUserLike: (state, action: PayloadAction<string>) => {
+      if (!state.user) {
+        return;
+      }
+      const postId = action.payload;
+      const userId = state.user._id;
       state.user?.posts.find(
         (post) => post._id === postId && post.likes.unshift(userId)
       );
@@ -138,14 +139,13 @@ export const userSlice = createSlice({
         (post) => post._id === postId && post.likes.unshift(userId)
       );
     },
-    removeUserLike: (
-      state,
-      action: PayloadAction<{ postId: string; userId: string }>
-    ) => {
+    removeUserLike: (state, action: PayloadAction<string>) => {
       if (!state.user) {
         return;
       }
-      const { postId, userId } = action.payload;
+      const postId = action.payload;
+      const userId = state.user._id;
+
       state.user.posts.find((post) => {
         if (post._id === postId) {
           post.likes = post.likes.filter((user) => user !== userId);
@@ -245,7 +245,7 @@ export const {
   removeUserLike,
   addUserSaved,
   userUnsave,
-  removeUserUnsaves
+  removeUserUnsaves,
 } = userSlice.actions;
 
 // export const logout = ():AppThunk => (dispatch) => {

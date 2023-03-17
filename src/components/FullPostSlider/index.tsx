@@ -9,20 +9,14 @@ import scss from "./FullPostSlider.module.scss";
 export const FullPostSlider: React.FC = () => {
   console.log("FullPostSlider");
 
+  const [currentPost, setCurrentPost] = useState<number | undefined>();
   const { user } = useAppSelector(selectUser);
   const { postId, username } = useParams();
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
   const filter = pathname.includes("saved") ? "saved" : "posts";
-
-  // const [posts, setPosts] = useState(user && user[filter]);
-
   const posts = user && user[filter];
-
-  console.log(postId);
-
-  const [currentPost, setCurrentPost] = useState<number | undefined>();
 
   useEffect(() => {
     const index = posts?.findIndex((el) => el && el._id === postId);

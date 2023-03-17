@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import { IPost } from "../../../app/slices/posts";
-import { ISavedPost, selectUser } from "../../../app/slices/user";
+import { selectUser } from "../../../app/slices/user";
 import appAxios from "../../../appAxios";
 import { BookMarkIcon, CommentIcon, HeartIcon, PlaneIcon } from "../../icons";
 import {
@@ -13,42 +13,34 @@ import {
 import scss from "./UserInteraction.module.scss";
 
 type UserInteractionProps = {
-  post: IPost | ISavedPost;
+  post: IPost;
 };
 
 export const UserInteraction: React.FC<UserInteractionProps> = ({ post }) => {
   console.log("UserInteraction");
-  
+
   const dispatch = useAppDispatch();
   const { user } = useAppSelector(selectUser);
   const [isLikeLoading, setIsLikeLoading] = useState(false);
   const [isSaveLoading, setIsSaveLoading] = useState(false);
-  // const [postCopy, setPostCopy] = useState<IPost>({...post});
 
   const liked = post.likes.includes(user!._id);
   const saved = Boolean(
-    user!.saved.find((savedPost) => savedPost && savedPost._id === post._id && !savedPost.deleted)
+    user!.saved.find(
+      (savedPost) =>
+        savedPost && savedPost._id === post._id && !savedPost.deleted
+    )
   );
-
-    console.log(saved);
 
   const handleClickLike = async () => {
     try {
       setIsLikeLoading(true);
       if (!liked) {
         await appAxios.post("/posts/like/" + post._id);
-        dispatch(addLike(post._id, user!._id));
-        // setPostCopy((prev) => ({
-        //   ...prev,
-        //   likes: [user!._id, ...prev.likes],
-        // }));
+        dispatch(addLike(post._id));
       } else {
         await appAxios.delete("/posts/like/" + post._id);
-        dispatch(removeLike(post._id, user!._id));
-        // setPostCopy((prev) => ({
-        //   ...prev,
-        //   likes: prev.likes.filter((like) => like !== user!._id),
-        // }));
+        dispatch(removeLike(post._id));
       }
     } catch (error) {
       console.log(error);
@@ -62,18 +54,10 @@ export const UserInteraction: React.FC<UserInteractionProps> = ({ post }) => {
       setIsSaveLoading(true);
       if (!saved) {
         await appAxios.post("/posts/save/" + post._id);
-        dispatch(addSaved(post, user!._id));
-        // setPostCopy((prev) => ({
-        //   ...prev,
-        //   saves: prev.saves + 1,
-        // }));
+        dispatch(addSaved(post));
       } else {
         await appAxios.delete("/posts/save/" + post._id);
-        dispatch(removeSaved(post._id, user!._id));
-        // setPostCopy((prev) => ({
-        //   ...prev,
-        //   saves: prev.saves - 1,
-        // }));
+        dispatch(removeSaved(post._id));
       }
     } catch (error) {
       console.log(error);

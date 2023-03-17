@@ -1,4 +1,3 @@
-import { IPost } from "./slices/posts";
 import {
   ISavedPost,
   addUserLike,
@@ -15,28 +14,28 @@ import { AppThunk } from "./store";
 // }
 
 export const addLike =
-  (postId: string, userId: string): AppThunk =>
+  (postId: string): AppThunk =>
   (dispatch) => {
-    dispatch(addUserLike({ postId, userId }));
+    dispatch(addUserLike(postId));
     //...
   };
 
 export const removeLike =
-  (postId: string, userId: string): AppThunk =>
+  (postId: string): AppThunk =>
   (dispatch) => {
-    dispatch(removeUserLike({ postId, userId }));
+    dispatch(removeUserLike(postId));
     //...
   };
 
 export const addSaved =
-  (post: ISavedPost, userId: string): AppThunk =>
+  (post: ISavedPost): AppThunk =>
   (dispatch) => {
     dispatch(addUserSaved(post));
     //...
   };
 
 export const removeSaved =
-  (postId: string, userId: string): AppThunk =>
+  (postId: string): AppThunk =>
   (dispatch) => {
     dispatch(userUnsave(postId));
     //...

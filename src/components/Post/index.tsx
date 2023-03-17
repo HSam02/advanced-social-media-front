@@ -1,12 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  BookMarkIcon,
-  CommentIcon,
-  DotsIcon,
-  HeartIcon,
-  PlaneIcon,
-} from "../icons";
-import { Avatar, MediaSlider, PostTitle, UserInteraction } from "../";
+import { MediaSlider, PostTitle, UserInteraction } from "../";
 import scss from "./Post.module.scss";
 import appAxios from "../../appAxios";
 import { IPost } from "../../app/slices/posts";

@@ -7,7 +7,7 @@ import { PostGallery } from "../../../components";
 export const Saved: React.FC = () => {
   const { user } = useAppSelector(selectUser);
   const dispatch = useAppDispatch();
-  console.log("Posts", user);
+  console.log("Posts");
 
   useEffect(() => {
     dispatch(removeUserUnsaves());

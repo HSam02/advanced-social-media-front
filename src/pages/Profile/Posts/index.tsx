@@ -6,7 +6,7 @@ import { SharePosts } from "../SharePosts";
 
 export const Posts: React.FC = () => {
   const { user } = useAppSelector(selectUser);
-  console.log("Posts", user);
+  console.log("Posts");
 
   if (!user) {
     return null;
