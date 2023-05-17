@@ -1,27 +1,46 @@
 import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
-import { removeUserUnsaves, selectUser } from "../../../app/slices/user";
+// import { removeUserUnsaves, selectUser } from "../../../app/slices/user";
 import { PostGallery } from "../../../components";
+import {
+  clearUnsavedPosts,
+  getUserSavedPostsAsync,
+  selectUserSavedPosts,
+} from "../../../app/slices/posts";
+import { useGetPage } from "../../../utils/hooks";
 
 export const Saved: React.FC = () => {
-  const { user } = useAppSelector(selectUser);
+  const postsData = useAppSelector(selectUserSavedPosts);
+  // const { user } = useAppSelector(selectUser);
   const dispatch = useAppDispatch();
-  console.log("Posts");
+  console.log("Saved");
+
+  const page = useGetPage(postsData);
 
   useEffect(() => {
-    dispatch(removeUserUnsaves());
+    if (
+      !postsData ||
+      (postsData.posts.length < page * 10 &&
+        postsData.posts.length < postsData.postsCount)
+    ) {
+      dispatch(getUserSavedPostsAsync(page));
+    }
+  }, [dispatch, page, postsData]);
+
+  useEffect(() => {
+    dispatch(clearUnsavedPosts());
     return () => {
-      dispatch(removeUserUnsaves());
+      dispatch(clearUnsavedPosts());
     };
   }, [dispatch]);
 
-  if (!user) {
+  if (!postsData) {
     return null;
   }
-  return user.saved.length > 0 ? (
+  return postsData && postsData.posts.length > 0 ? (
     <>
-      <PostGallery posts={user.saved} />
+      <PostGallery posts={postsData.posts} />
       <Outlet />
     </>
   ) : (

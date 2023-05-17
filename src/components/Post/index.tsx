@@ -24,8 +24,7 @@ export const Post: React.FC = () => {
   return (
     <li className={scss.post}>
       <PostTitle
-        username={post.user.username}
-        avatarDest={post.user.avatarDest}
+        post={post}
       />
       <div className={scss.photo}>
         <MediaSlider

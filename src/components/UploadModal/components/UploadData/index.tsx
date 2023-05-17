@@ -26,13 +26,6 @@ export const UploadData: React.FC<UploadDataProps> = ({
           aspect={aspect}
         />
       </div>
-      {/* <CroppedMedia
-        media={mediaData[currentMedia]}
-        aspect={aspect}
-        currentMedia={currentMedia}
-        dataCount={mediaData.length}
-        setCurrentMedia={setCurrentMedia}
-      /> */}
       <FormData postInfo={postInfo} setPostInfo={setPostInfo} />
     </div>
   );

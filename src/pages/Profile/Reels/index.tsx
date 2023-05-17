@@ -3,11 +3,11 @@ import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import { PostGallery } from "../../../components";
 import { SharePosts } from "../SharePosts";
 import { useEffect } from "react";
-import { getUserPostsAsync, selectUserPosts } from "../../../app/slices/posts";
+import { getUserReelsAsync, selectUserReels } from "../../../app/slices/posts";
 import { useGetPage } from "../../../utils/hooks";
 
-export const Posts: React.FC = () => {
-  const postsData = useAppSelector(selectUserPosts);
+export const Reels: React.FC = () => {
+  const postsData = useAppSelector(selectUserReels);
   const dispatch = useAppDispatch();
   const { username } = useParams();
 
@@ -20,11 +20,11 @@ export const Posts: React.FC = () => {
         (postsData.posts.length < page * 10 &&
           postsData.posts.length < postsData.postsCount))
     ) {
-      dispatch(getUserPostsAsync({ username, page }));
+      dispatch(getUserReelsAsync({ username, page }));
     }
   }, [dispatch, username, page, postsData]);
 
-  console.log("Posts", postsData, page);
+  console.log("Reels", postsData, page);
 
   if (!postsData) {
     return null;

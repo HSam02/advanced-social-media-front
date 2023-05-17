@@ -1,5 +1,8 @@
 import { useRef, useState, useCallback } from "react";
 import appAxios from "../../appAxios";
+import { useAppDispatch } from "../../app/hooks";
+import { IPost, addPost, mediaType } from "../../app/slices/posts";
+import { activeModalType, cropMediaType, uploadStatusType } from "./types";
 import { DiscardModal, ModalBackground } from "../";
 import {
   FirstUpload,
@@ -9,11 +12,7 @@ import {
   UploadSub,
   UploadTitle,
 } from "./components/";
-import { IPost, mediaType } from "../../app/slices/posts";
-import { activeModalType, cropMediaType, uploadStatusType } from "./types";
 import scss from "./UploadModal.module.scss";
-import { useAppDispatch } from "../../app/hooks";
-import { addPost } from "../../app/slices/user";
 
 type UploadModalProps = {
   onClose: () => void;

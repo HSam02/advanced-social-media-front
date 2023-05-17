@@ -1,22 +1,24 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useAppSelector } from "../../app/hooks";
-import { selectUser } from "../../app/slices/user";
 import { MediaSliderArrows, ModalBackground } from "../AppComponents";
 import { FullPost } from "./FullPost";
 import scss from "./FullPostSlider.module.scss";
+import { IPost } from "../../app/slices/posts";
+import { useGetPostFilter } from "../../utils/hooks";
 
-export const FullPostSlider: React.FC = () => {
+type FullPostSliderProps = {
+  posts: IPost[];
+};
+
+export const FullPostSlider: React.FC<FullPostSliderProps> = ({ posts }) => {
   console.log("FullPostSlider");
 
   const [currentPost, setCurrentPost] = useState<number | undefined>();
-  const { user } = useAppSelector(selectUser);
   const { postId, username } = useParams();
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
-  const filter = pathname.includes("saved") ? "saved" : "posts";
-  const posts = user && user[filter];
+  const filter = useGetPostFilter();
 
   useEffect(() => {
     const index = posts?.findIndex((el) => el && el._id === postId);
@@ -35,10 +37,18 @@ export const FullPostSlider: React.FC = () => {
       navigate(
         filter === "posts"
           ? `/${username}/${posts[currentPost]._id}`
+          : filter === "reels"
+          ? `/${username}/reels/${posts[currentPost]._id}`
           : `/${username}/saved/${posts[currentPost]._id}`
       );
     } else if (posts && !posts.find((el) => el && el._id === postId)) {
-      navigate(filter === "posts" ? `/${username}` : `/${username}/saved`);
+      navigate(
+        filter === "posts"
+          ? `/${username}`
+          : filter === "reels"
+          ? `/${username}/reels`
+          : `/${username}/saved`
+      );
     }
   }, [currentPost, navigate, posts, username, filter, pathname, postId]);
 
@@ -50,7 +60,13 @@ export const FullPostSlider: React.FC = () => {
     <>
       <ModalBackground
         onClose={() =>
-          navigate(filter === "posts" ? `/${username}` : `/${username}/saved`)
+          navigate(
+            filter === "posts"
+              ? `/${username}`
+              : filter === "reels"
+              ? `/${username}/reels`
+              : `/${username}/saved`
+          )
         }
       >
         <div>

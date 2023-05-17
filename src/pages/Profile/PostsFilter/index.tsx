@@ -1,11 +1,15 @@
 import { NavLink, useLocation, useParams } from "react-router-dom";
-import { BookMarkIcon, WebIcon } from "../../../components/icons";
+import { BookMarkIcon, ReelsIcon, WebIcon } from "../../../components/icons";
 import scss from "./PostsFilter.module.scss";
 
 export const PostsFilter: React.FC = () => {
   const { pathname } = useLocation();
   const { username } = useParams();
-  const filter = pathname.includes("saved") ? "saved" : "posts";
+  const filter = pathname.includes("saved")
+    ? "saved"
+    : pathname.includes("reels")
+    ? "reels"
+    : "posts";
   console.log("PostsFilter");
 
   return (
@@ -13,6 +17,11 @@ export const PostsFilter: React.FC = () => {
       <li className={filter === "posts" ? scss.active : ""}>
         <NavLink to={`/${username}`}>
           <WebIcon /> POSTS
+        </NavLink>
+      </li>
+      <li className={filter === "reels" ? scss.active : ""}>
+        <NavLink to={`reels`}>
+          <ReelsIcon /> REELS
         </NavLink>
       </li>
       <li className={filter === "saved" ? scss.active : ""}>

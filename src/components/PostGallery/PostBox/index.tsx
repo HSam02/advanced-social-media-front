@@ -1,9 +1,11 @@
+import { memo } from "react";
 import { IPost } from "../../../app/slices/posts";
 import { MediaBox } from "../../AppComponents";
 import {
   CommentFillIcon,
   HeartFilledIcon,
   MediaGalleryFilledIcon,
+  ReelsFilledIcon,
 } from "../../icons";
 import scss from "./PostBox.module.scss";
 
@@ -11,7 +13,7 @@ type PostBoxProps = {
   post: IPost;
 };
 
-export const PostBox: React.FC<PostBoxProps> = ({ post }) => {
+export const PostBox: React.FC<PostBoxProps> = memo(({ post }) => {
   console.log("PostBox");
 
   // const mediaClassName = `${scss.mediaBox} ${
@@ -37,6 +39,11 @@ export const PostBox: React.FC<PostBoxProps> = ({ post }) => {
           <MediaGalleryFilledIcon />
         </span>
       )}
+      {post.media.length === 1 && post.media[0].type === "video" && (
+        <span className={scss.galleryIcon}>
+          <ReelsFilledIcon />
+        </span>
+      )}
       {!(post.hideComments && post.hideLikes) && (
         <div className={scss.hoverDiv}>
           <div>
@@ -55,4 +62,4 @@ export const PostBox: React.FC<PostBoxProps> = ({ post }) => {
       )}
     </div>
   );
-};
+});
