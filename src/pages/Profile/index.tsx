@@ -1,4 +1,4 @@
-import { useAppSelector } from "../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { Outlet, useParams } from "react-router-dom";
 import { selectUser } from "../../app/slices/user";
 import { AppButton } from "../../components";
@@ -7,11 +7,24 @@ import { SettingsIcon } from "../../components/icons";
 import { ProfileAvatar } from "./ProfileAvatar";
 import { PostsFilter } from "./PostsFilter";
 import scss from "./Profile.module.scss";
+import { useEffect } from "react";
+import {
+  clearPostSlice,
+  selectUserPosts,
+} from "../../app/slices/posts";
 
 export const Profile: React.FC = () => {
   console.log("Profile");
   const { user } = useAppSelector(selectUser);
+  const postData = useAppSelector(selectUserPosts);
   const { username } = useParams();
+
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    return () => {
+      dispatch(clearPostSlice());
+    };
+  }, [dispatch]);
 
   if (!user || !username) {
     return null;
@@ -34,7 +47,7 @@ export const Profile: React.FC = () => {
             </div>
             <ul>
               <li>
-                <span>{user.posts.length}</span> posts
+                <span>{postData?.postsCount || 0}</span> posts
               </li>
               <li>
                 <a href="/">

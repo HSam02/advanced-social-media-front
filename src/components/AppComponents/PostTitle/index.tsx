@@ -13,7 +13,7 @@ type PostTitleProps = {
 };
 
 export const PostTitle: React.FC<PostTitleProps> = memo(({ post, date }) => {
-  const [showPostSettings, setShowPostSettings] = useState(true);
+  const [showPostSettings, setShowPostSettings] = useState(false);
   console.log("PostTitle");
 
   return (

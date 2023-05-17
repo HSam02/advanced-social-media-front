@@ -9,6 +9,8 @@ import { FullPostSlider } from "./components";
 import { Posts } from "./pages/Profile/Posts";
 import { Saved } from "./pages/Profile/Saved";
 import scss from "./App.module.scss";
+import { PostsSlider, ReelsSlider, SavedSlider } from "./pages/Profile/PostsFilter/filters";
+import { Reels } from "./pages/Profile/Reels";
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -25,10 +27,13 @@ const App: React.FC = () => {
             <Route index element={<Home />} />
             <Route path=":username" element={<Profile />}>
               <Route path="" element={<Posts />}>
-                <Route path=":postId" element={<FullPostSlider />} />
+                <Route path=":postId" element={<PostsSlider />} />
+              </Route>
+              <Route path="reels" element={<Reels />}>
+                <Route path=":postId" element={<ReelsSlider />} />
               </Route>
               <Route path="saved" element={<Saved />}>
-                <Route path=":postId" element={<FullPostSlider />} />
+                <Route path=":postId" element={<SavedSlider />} />
               </Route>
             </Route>
             <Route path="direct" element={<Messages />} />

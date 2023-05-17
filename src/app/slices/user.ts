@@ -22,8 +22,9 @@ export interface IUser {
   username: string;
   fullname?: string;
   avatarDest?: string;
-  posts: IPost[];
-  saved: ISavedPost[];
+  // postsCount?: number;
+  // posts: IPost[];
+  // saved: ISavedPost[];
   // following: IUser[];
   // followers: IUser[];
   // privateAccount: boolean;
@@ -121,94 +122,132 @@ export const userSlice = createSlice({
         state.user.avatarDest = action.payload;
       }
     },
-    addPost: (state, action: PayloadAction<IPost>) => {
-      if (state.user) {
-        state.user.posts.unshift(action.payload);
-      }
-    },
-    addUserLike: (state, action: PayloadAction<string>) => {
-      if (!state.user) {
-        return;
-      }
-      const postId = action.payload;
-      const userId = state.user._id;
-      state.user?.posts.find(
-        (post) => post._id === postId && post.likes.unshift(userId)
-      );
-      state.user?.saved.find(
-        (post) => post._id === postId && post.likes.unshift(userId)
-      );
-    },
-    removeUserLike: (state, action: PayloadAction<string>) => {
-      if (!state.user) {
-        return;
-      }
-      const postId = action.payload;
-      const userId = state.user._id;
+    // addPost: (state, action: PayloadAction<IPost>) => {
+    //   if (state.user) {
+    //     state.user.posts.unshift(action.payload);
+    //   }
+    // },
+    // addUserLike: (state, action: PayloadAction<string>) => {
+    //   if (!state.user) {
+    //     return;
+    //   }
+    //   const postId = action.payload;
+    //   const userId = state.user._id;
+    //   state.user?.posts.find(
+    //     (post) => post._id === postId && post.likes.unshift(userId)
+    //   );
+    //   state.user?.saved.find(
+    //     (post) => post._id === postId && post.likes.unshift(userId)
+    //   );
+    // },
+    // removeUserLike: (state, action: PayloadAction<string>) => {
+    //   if (!state.user) {
+    //     return;
+    //   }
+    //   const postId = action.payload;
+    //   const userId = state.user._id;
 
-      state.user.posts.find((post) => {
-        if (post._id === postId) {
-          post.likes = post.likes.filter((user) => user !== userId);
-          return true;
-        }
-        return false;
-      });
-      state.user.saved.find((post) => {
-        if (post._id === postId) {
-          post.likes = post.likes.filter((user) => user !== userId);
-          return true;
-        }
-        return false;
-      });
-    },
-    addUserSaved: (state, action: PayloadAction<IPost>) => {
-      if (!state.user) {
-        return;
-      }
-      const post = action.payload;
-      state.user.posts.find(
-        (userPost) => userPost._id === post._id && userPost.saves++
-      );
+    //   state.user.posts.find((post) => {
+    //     if (post._id === postId) {
+    //       post.likes = post.likes.filter((user) => user !== userId);
+    //       return true;
+    //     }
+    //     return false;
+    //   });
+    //   state.user.saved.find((post) => {
+    //     if (post._id === postId) {
+    //       post.likes = post.likes.filter((user) => user !== userId);
+    //       return true;
+    //     }
+    //     return false;
+    //   });
+    // },
+    // addUserSaved: (state, action: PayloadAction<IPost>) => {
+    //   if (!state.user) {
+    //     return;
+    //   }
+    //   const post = action.payload;
+    //   state.user.posts.find(
+    //     (userPost) => userPost._id === post._id && userPost.saves++
+    //   );
 
-      !state.user.saved.find((savedPost) => {
-        if (savedPost._id === post._id) {
-          savedPost.deleted = false;
-          return true;
-        }
-        return false;
-      }) && state.user.saved.unshift(post);
-    },
-    userUnsave: (state, action: PayloadAction<string>) => {
-      if (!state.user) {
-        return;
-      }
-      const postId = action.payload;
-      state.user.posts.find(
-        (userPost) => userPost._id === postId && userPost.saves--
-      );
+    //   !state.user.saved.find((savedPost) => {
+    //     if (savedPost._id === post._id) {
+    //       savedPost.deleted = false;
+    //       return true;
+    //     }
+    //     return false;
+    //   }) && state.user.saved.unshift(post);
+    // },
+    // userUnsave: (state, action: PayloadAction<string>) => {
+    //   if (!state.user) {
+    //     return;
+    //   }
+    //   const postId = action.payload;
+    //   state.user.posts.find(
+    //     (userPost) => userPost._id === postId && userPost.saves--
+    //   );
 
-      state.user.saved.find((savedPost) => {
-        if (savedPost._id === postId) {
-          savedPost.deleted = true;
-          return true;
-        }
-        return false;
-      });
-    },
-    removeUserUnsaves: (state) => {
-      if (!state.user) {
-        return;
-      }
-      state.user.saved = state.user.saved.filter((post) => !post.deleted);
-    },
-    deletePost: (state, action: PayloadAction<string>) => {
-      if (!state.user) {
-        return;
-      }
-      const postId = action.payload;
-      state.user.posts = state.user.posts.filter((post) => post._id !== postId);
-      state.user.saved = state.user.saved.filter((post) => post._id !== postId);
-    },
+    //   state.user.saved.find((savedPost) => {
+    //     if (savedPost._id === postId) {
+    //       savedPost.deleted = true;
+    //       return true;
+    //     }
+    //     return false;
+    //   });
+    // },
+    // removeUserUnsaves: (state) => {
+    //   if (!state.user) {
+    //     return;
+    //   }
+    //   state.user.saved = state.user.saved.filter((post) => !post.deleted);
+    // },
+    // deletePost: (state, action: PayloadAction<string>) => {
+    //   if (!state.user) {
+    //     return;
+    //   }
+    //   const postId = action.payload;
+    //   state.user.posts = state.user.posts.filter((post) => post._id !== postId);
+    //   state.user.saved = state.user.saved.filter((post) => post._id !== postId);
+    // },
+    // userEditPost: (state, action: PayloadAction<Partial<IPost>>) => {
+    //   if (!state.user) {
+    //     return;
+    //   }
+    //   const newData = action.payload;
+    //   // state.user.posts.find((post) => {
+    //   //   if (post._id === newData._id) {
+    //   //     console.log("dataaaaaaaaaa", newData);
+
+    //   //     post = {
+    //   //       ...post,
+    //   //       ...newData,
+    //   //     };
+    //   //     console.log("possstttt", post);
+
+    //   //     return true;
+    //   //   }
+    //   //   return false;
+    //   // });
+    //   const postId = state.user.posts.findIndex(
+    //     (post) => post._id === newData._id
+    //   );
+    //   if (postId !== -1) {
+    //     state.user.posts[postId] = {
+    //       ...state.user.posts[postId],
+    //       ...newData,
+    //     };
+    //   }
+    //   const savedId = state.user.saved.findIndex(
+    //     (post) => post._id === newData._id
+    //   );
+    //   if (savedId !== -1) {
+    //     state.user.saved[postId] = {
+    //       ...state.user.saved[postId],
+    //       ...newData,
+    //     };
+    //   }
+    // },
   },
   extraReducers: (builder) => {
     builder
@@ -248,13 +287,14 @@ export const userSlice = createSlice({
 export const {
   logout,
   updateAvatar,
-  addPost,
-  addUserLike,
-  removeUserLike,
-  addUserSaved,
-  userUnsave,
-  removeUserUnsaves,
-  deletePost,
+  // addPost,
+  // addUserLike,
+  // removeUserLike,
+  // addUserSaved,
+  // userUnsave,
+  // removeUserUnsaves,
+  // deletePost,
+  // userEditPost,
 } = userSlice.actions;
 
 // export const logout = ():AppThunk => (dispatch) => {
@@ -262,7 +302,7 @@ export const {
 // }
 
 export const selectUser = (state: RootState) => state.user;
-export const selectUserPosts = (state: RootState) => state.user.user?.posts;
+// export const selectUserPosts = (state: RootState) => state.user.user?.posts;
 // export const selectUserValue = (state: RootState) => state.user.user;
 // export const selectUserStatus = (state: RootState) => state.user.status;
 // export const selectUserError = (state: RootState) => state.user.error;

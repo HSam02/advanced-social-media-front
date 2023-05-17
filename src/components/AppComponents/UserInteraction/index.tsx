@@ -1,15 +1,9 @@
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
-import { IPost } from "../../../app/slices/posts";
+import { IPost, addLike, addToSaved, removeLike, unsavePost } from "../../../app/slices/posts";
 import { selectUser } from "../../../app/slices/user";
 import appAxios from "../../../appAxios";
 import { BookMarkIcon, CommentIcon, HeartIcon, PlaneIcon } from "../../icons";
-import {
-  addLike,
-  addSaved,
-  removeLike,
-  removeSaved,
-} from "../../../app/thunks";
 import scss from "./UserInteraction.module.scss";
 
 type UserInteractionProps = {
@@ -24,23 +18,18 @@ export const UserInteraction: React.FC<UserInteractionProps> = ({ post }) => {
   const [isLikeLoading, setIsLikeLoading] = useState(false);
   const [isSaveLoading, setIsSaveLoading] = useState(false);
 
-  const liked = post.likes.includes(user!._id);
-  const saved = Boolean(
-    user!.saved.find(
-      (savedPost) =>
-        savedPost && savedPost._id === post._id && !savedPost.deleted
-    )
-  );
+  const liked = post.liked;
+  const saved = post.saved;
 
   const handleClickLike = async () => {
     try {
       setIsLikeLoading(true);
       if (!liked) {
         await appAxios.post("/posts/like/" + post._id);
-        dispatch(addLike(post._id));
+        dispatch(addLike({ postId: post._id, userId: user?._id || "" }));
       } else {
         await appAxios.delete("/posts/like/" + post._id);
-        dispatch(removeLike(post._id));
+        dispatch(removeLike({ postId: post._id, userId: user?._id || "" }));
       }
     } catch (error) {
       console.log(error);
@@ -54,10 +43,10 @@ export const UserInteraction: React.FC<UserInteractionProps> = ({ post }) => {
       setIsSaveLoading(true);
       if (!saved) {
         await appAxios.post("/posts/save/" + post._id);
-        dispatch(addSaved(post));
+        dispatch(addToSaved(post));
       } else {
         await appAxios.delete("/posts/save/" + post._id);
-        dispatch(removeSaved(post._id));
+        dispatch(unsavePost(post._id));
       }
     } catch (error) {
       console.log(error);

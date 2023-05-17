@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useAppDispatch } from "../../app/hooks";
-import { IPost } from "../../app/slices/posts";
-import { deletePost } from "../../app/slices/user";
+import { IPost, deletePost, editPost } from "../../app/slices/posts";
+// import { deletePost } from "../../app/slices/user";
 import appAxios from "../../appAxios";
 import { ModalBackground } from "../AppComponents";
 import scss from "./PostSettingsModal.module.scss";
 import { DiscardModal } from "../DiscardModal";
 import { useLocation, useNavigate } from "react-router-dom";
+// import { editPost } from "../../app/thunks";
 
 type PostSettingsModalProps = {
   post: IPost;
@@ -34,6 +35,36 @@ export const PostSettingsModal: React.FC<PostSettingsModalProps> = ({
     }
   };
 
+  const handleSwitchHideLikes = async () => {
+    try {
+      const newData = {
+        hideLikes: !post.hideLikes,
+      };
+      await appAxios.patch(`/posts/${post._id}`, newData);
+      dispatch(editPost({ _id: post._id, ...newData }));
+    } catch (error) {
+      alert("Post didn't update");
+      console.log(error);
+    } finally {
+      onClose();
+    }
+  };
+
+  const handleSwitchHideComments = async () => {
+    try {
+      const newData = {
+        hideComments: !post.hideComments,
+      };
+      await appAxios.patch(`/posts/${post._id}`, newData);
+      dispatch(editPost({ _id: post._id, ...newData }));
+    } catch (error) {
+      alert("Post didn't update");
+      console.log(error);
+    } finally {
+      onClose();
+    }
+  };
+
   if (showDiscardModal) {
     return (
       <DiscardModal
@@ -51,8 +82,12 @@ export const PostSettingsModal: React.FC<PostSettingsModalProps> = ({
       <ul className={scss.box}>
         <li onClick={() => setShowDiscardModal(true)}>Delete</li>
         <li>Edit</li>
-        <li>Hide like count</li>
-        <li>Turn off commenting</li>
+        <li onClick={handleSwitchHideLikes}>
+          {post.hideLikes ? "Unhide like count" : "Hide like count"}
+        </li>
+        <li onClick={handleSwitchHideComments}>
+          {post.hideComments ? "Turn on commenting" : "Turn off commenting"}
+        </li>
         <li>Go to post</li>
         <li>Share to Direct</li>
         <li>Copy link</li>

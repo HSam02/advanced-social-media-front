@@ -5,6 +5,7 @@ import {
   CommentFillIcon,
   HeartFilledIcon,
   MediaGalleryFilledIcon,
+  ReelsFilledIcon,
 } from "../../icons";
 import scss from "./PostBox.module.scss";
 
@@ -36,6 +37,11 @@ export const PostBox: React.FC<PostBoxProps> = memo(({ post }) => {
       {post.media.length > 1 && (
         <span className={scss.galleryIcon}>
           <MediaGalleryFilledIcon />
+        </span>
+      )}
+      {post.media.length === 1 && post.media[0].type === "video" && (
+        <span className={scss.galleryIcon}>
+          <ReelsFilledIcon />
         </span>
       )}
       {!(post.hideComments && post.hideLikes) && (
