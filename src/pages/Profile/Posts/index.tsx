@@ -4,14 +4,14 @@ import { PostGallery } from "../../../components";
 import { SharePosts } from "../SharePosts";
 import { useEffect } from "react";
 import { getUserPostsAsync, selectUserPosts } from "../../../app/slices/posts";
-import { useGetPage } from "../../../utils/hooks";
+import { usePage } from "../../../utils/hooks";
 
 export const Posts: React.FC = () => {
   const postsData = useAppSelector(selectUserPosts);
   const dispatch = useAppDispatch();
-  const { username } = useParams();
+  const { username, postId } = useParams();
 
-  const page = useGetPage(postsData);
+  const { page, setPage } = usePage(postsData);
 
   useEffect(() => {
     if (
@@ -21,8 +21,18 @@ export const Posts: React.FC = () => {
           postsData.posts.length < postsData.postsCount))
     ) {
       dispatch(getUserPostsAsync({ username, page }));
+      return;
     }
-  }, [dispatch, username, page, postsData]);
+
+    if (
+      postsData &&
+      page < postsData.pages &&
+      postsData.posts.findIndex((post) => postId === post._id) ===
+        postsData.posts.length - 2
+    ) {
+      setPage(page + 1);
+    }
+  }, [dispatch, username, page, setPage, postsData, postId]);
 
   console.log("Posts", postsData, page);
 

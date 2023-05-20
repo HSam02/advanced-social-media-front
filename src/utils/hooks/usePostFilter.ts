@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom";
 
-export const useGetPostFilter = () => {
+export const usePostFilter = () => {
   const { pathname } = useLocation();
 
   const filter = pathname.includes("saved")

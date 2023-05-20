@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { usePostFilter } from "../../utils/hooks";
+import { IPost } from "../../app/slices/posts";
 import { MediaSliderArrows, ModalBackground } from "../AppComponents";
 import { FullPost } from "./FullPost";
 import scss from "./FullPostSlider.module.scss";
-import { IPost } from "../../app/slices/posts";
-import { useGetPostFilter } from "../../utils/hooks";
 
 type FullPostSliderProps = {
   posts: IPost[];
@@ -13,27 +13,48 @@ type FullPostSliderProps = {
 export const FullPostSlider: React.FC<FullPostSliderProps> = ({ posts }) => {
   console.log("FullPostSlider");
 
-  const [currentPost, setCurrentPost] = useState<number | undefined>();
+  const [currentPost, setCurrentPost] = useState<number>();
   const { postId, username } = useParams();
-  const { pathname } = useLocation();
   const navigate = useNavigate();
+  const tempIndex = useRef<number>();
+  const tempPostId = useRef<string | undefined>(postId);
 
-  const filter = useGetPostFilter();
+  const filter = usePostFilter();
+  const navigateToGallery = useCallback(() => {
+    navigate(
+      filter === "posts"
+        ? `/${username}`
+        : filter === "reels"
+        ? `/${username}/reels`
+        : `/${username}/saved`
+    );
+  }, [navigate, filter, username]);
 
   useEffect(() => {
-    const index = posts?.findIndex((el) => el && el._id === postId);
-    if (index !== -1) {
-      setCurrentPost(index);
+    if (
+      currentPost &&
+      currentPost !== tempIndex.current &&
+      postId === tempPostId.current
+    ) {
+      return;
     }
-  }, [posts, postId]);
+    const index = posts.findIndex((el) => el && el._id === postId);
+    if (index === -1) {
+      navigateToGallery();
+      return;
+    }
+    setCurrentPost(index);
+    tempIndex.current = index;
+  }, [posts, postId, navigateToGallery, currentPost]);
 
   useEffect(() => {
     if (
       currentPost !== undefined &&
-      posts &&
-      posts[currentPost] &&
-      !pathname.includes(posts[currentPost]._id)
+      postId === tempPostId.current &&
+      postId !== posts[currentPost]._id
     ) {
+      tempIndex.current = currentPost;
+      tempPostId.current = posts[currentPost]._id;
       navigate(
         filter === "posts"
           ? `/${username}/${posts[currentPost]._id}`
@@ -41,36 +62,20 @@ export const FullPostSlider: React.FC<FullPostSliderProps> = ({ posts }) => {
           ? `/${username}/reels/${posts[currentPost]._id}`
           : `/${username}/saved/${posts[currentPost]._id}`
       );
-    } else if (posts && !posts.find((el) => el && el._id === postId)) {
-      navigate(
-        filter === "posts"
-          ? `/${username}`
-          : filter === "reels"
-          ? `/${username}/reels`
-          : `/${username}/saved`
-      );
+    } else {
+      tempPostId.current = postId;
     }
-  }, [currentPost, navigate, posts, username, filter, pathname, postId]);
+  }, [currentPost, navigate, posts, username, filter, postId]);
 
-  if (!posts || !username || currentPost === undefined) {
+  if (currentPost === undefined) {
     return null;
   }
 
   return (
     <>
-      <ModalBackground
-        onClose={() =>
-          navigate(
-            filter === "posts"
-              ? `/${username}`
-              : filter === "reels"
-              ? `/${username}/reels`
-              : `/${username}/saved`
-          )
-        }
-      >
+      <ModalBackground onClose={navigateToGallery}>
         <div>
-          <FullPost post={posts[currentPost]} />
+          <FullPost post={posts[currentPost!]} />
         </div>
       </ModalBackground>
       {currentPost !== undefined && (
