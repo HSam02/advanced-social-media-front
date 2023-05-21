@@ -1,8 +1,8 @@
+import { useEffect } from "react";
 import { Outlet, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import { PostGallery } from "../../../components";
 import { SharePosts } from "../SharePosts";
-import { useEffect } from "react";
 import { getUserPostsAsync, selectUserPosts } from "../../../app/slices/posts";
 import { usePage } from "../../../utils/hooks";
 
@@ -17,9 +17,12 @@ export const Posts: React.FC = () => {
     if (
       username &&
       (!postsData ||
-        (postsData.posts.length < page * 10 &&
+        (postsData.status !== "loading" &&
+          postsData.posts.length < page * 10 &&
           postsData.posts.length < postsData.postsCount))
     ) {
+      console.warn("dispatch posts");
+
       dispatch(getUserPostsAsync({ username, page }));
       return;
     }
@@ -30,6 +33,8 @@ export const Posts: React.FC = () => {
       postsData.posts.findIndex((post) => postId === post._id) ===
         postsData.posts.length - 2
     ) {
+      console.warn("setPage");
+
       setPage(page + 1);
     }
   }, [dispatch, username, page, setPage, postsData, postId]);

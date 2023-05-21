@@ -20,7 +20,8 @@ export const Saved: React.FC = () => {
   useEffect(() => {
     if (
       !postsData ||
-      (postsData.posts.length < page * 10 &&
+      (postsData.status !== "loading" &&
+        postsData.posts.length < page * 10 &&
         postsData.posts.length < postsData.postsCount)
     ) {
       dispatch(getUserSavedPostsAsync(page));

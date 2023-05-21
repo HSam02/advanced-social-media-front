@@ -1,4 +1,9 @@
-import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import {
+  PayloadAction,
+  createAsyncThunk,
+  createSlice,
+  isPending,
+} from "@reduxjs/toolkit";
 import { IUser } from "./user";
 import appAxios from "../../appAxios";
 import { RootState } from "../store";
@@ -30,6 +35,7 @@ export type postsDataType = {
   posts: IPost[];
   pages: number;
   postsCount: number;
+  status: "loading" | "idle";
 };
 
 type initialStateType = {
@@ -137,7 +143,11 @@ const PostsSlice = createSlice({
       action: PayloadAction<{ postId: string; userId: string }>
     ) => {
       const { postId, userId } = action.payload;
-      [state.userPosts?.posts, state.savedPosts?.posts, state.userReels?.posts].forEach((array) =>
+      [
+        state.userPosts?.posts,
+        state.savedPosts?.posts,
+        state.userReels?.posts,
+      ].forEach((array) =>
         array?.find((post) => {
           if (post._id === postId) {
             post.likes && post.likes.unshift(userId);
@@ -153,7 +163,11 @@ const PostsSlice = createSlice({
       action: PayloadAction<{ postId: string; userId: string }>
     ) => {
       const { postId, userId } = action.payload;
-      [state.userPosts?.posts, state.savedPosts?.posts, state.userReels?.posts].forEach((array) =>
+      [
+        state.userPosts?.posts,
+        state.savedPosts?.posts,
+        state.userReels?.posts,
+      ].forEach((array) =>
         array?.find((post) => {
           if (post._id === postId) {
             post.likes = post.likes.filter((user) => user !== userId);
@@ -170,7 +184,11 @@ const PostsSlice = createSlice({
       }
       const newData = action.payload;
 
-      [state.userPosts?.posts, state.savedPosts?.posts, state.userReels?.posts].forEach((array) => {
+      [
+        state.userPosts?.posts,
+        state.savedPosts?.posts,
+        state.userReels?.posts,
+      ].forEach((array) => {
         if (!array) {
           return;
         }
@@ -188,7 +206,11 @@ const PostsSlice = createSlice({
         return;
       }
       const savingPost = { ...action.payload, saved: true };
-      [state.userPosts?.posts, state.savedPosts?.posts, state.userReels?.posts].forEach((array) => {
+      [
+        state.userPosts?.posts,
+        state.savedPosts?.posts,
+        state.userReels?.posts,
+      ].forEach((array) => {
         if (!array) {
           return;
         }
@@ -210,7 +232,11 @@ const PostsSlice = createSlice({
     },
     unsavePost: (state, action: PayloadAction<string>) => {
       const postId = action.payload;
-      [state.userPosts?.posts, state.savedPosts?.posts, state.userReels?.posts].forEach((array) => {
+      [
+        state.userPosts?.posts,
+        state.savedPosts?.posts,
+        state.userReels?.posts,
+      ].forEach((array) => {
         if (!array) {
           return;
         }
@@ -267,6 +293,7 @@ const PostsSlice = createSlice({
             posts: [...state.userPosts.posts, ...action.payload.posts],
           };
         }
+        state.userPosts.status = "idle";
       })
       .addCase(getUserSavedPostsAsync.fulfilled, (state, action) => {
         if (!state.savedPosts) {
@@ -277,6 +304,7 @@ const PostsSlice = createSlice({
             posts: [...state.savedPosts.posts, ...action.payload.posts],
           };
         }
+        state.savedPosts.status = "idle";
       })
       .addCase(getUserReelsAsync.fulfilled, (state, action) => {
         if (!state.userReels) {
@@ -286,6 +314,22 @@ const PostsSlice = createSlice({
             ...action.payload,
             posts: [...state.userReels.posts, ...action.payload.posts],
           };
+        }
+        state.userReels.status = "idle";
+      })
+      .addCase(getUserPostsAsync.pending, (state) => {
+        if (state.userPosts) {
+          state.userPosts.status = "loading";
+        }
+      })
+      .addCase(getUserReelsAsync.pending, (state) => {
+        if (state.userReels) {
+          state.userReels.status = "loading";
+        }
+      })
+      .addCase(getUserSavedPostsAsync.pending, (state) => {
+        if (state.savedPosts) {
+          state.savedPosts.status = "loading";
         }
       });
   },

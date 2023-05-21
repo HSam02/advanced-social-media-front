@@ -17,7 +17,8 @@ export const Reels: React.FC = () => {
     if (
       username &&
       (!postsData ||
-        (postsData.posts.length < page * 10 &&
+        (postsData.status !== "loading" &&
+          postsData.posts.length < page * 10 &&
           postsData.posts.length < postsData.postsCount))
     ) {
       dispatch(getUserReelsAsync({ username, page }));
