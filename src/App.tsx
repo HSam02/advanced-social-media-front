@@ -1,16 +1,17 @@
 import React, { useEffect } from "react";
+import { Route, Routes } from "react-router-dom";
 import { useAppDispatch } from "./app/hooks";
 import { getUserAsync } from "./app/slices/user";
 import { Home, Login, Messages, Profile, Register } from "./pages";
-import { Route, Routes } from "react-router-dom";
 import { LoginRoute } from "./components/RouteComponents/LoginRoute";
 import { PrivateRoute } from "./components/RouteComponents/PrivateRoute";
-import { FullPostSlider } from "./components";
-import { Posts } from "./pages/Profile/Posts";
-import { Saved } from "./pages/Profile/Saved";
+import { Posts, Reels, Saved } from "./pages/Profile/content/";
+import {
+  PostsSlider,
+  ReelsSlider,
+  SavedSlider,
+} from "./pages/Profile/PostsFilter/filters";
 import scss from "./App.module.scss";
-import { PostsSlider, ReelsSlider, SavedSlider } from "./pages/Profile/PostsFilter/filters";
-import { Reels } from "./pages/Profile/Reels";
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();
