@@ -15,11 +15,12 @@ export const FullPostSlider: React.FC<FullPostSliderProps> = ({ posts }) => {
 
   const [currentPost, setCurrentPost] = useState<number>();
   const { postId, username } = useParams();
-  const navigate = useNavigate();
   const tempIndex = useRef<number>();
   const tempPostId = useRef<string | undefined>(postId);
-
+  const navigate = useNavigate();
+  
   const filter = usePostFilter();
+  
   const navigateToGallery = useCallback(() => {
     navigate(
       filter === "posts"

@@ -116,12 +116,16 @@ export const UploadModal: React.FC<UploadModalProps> = ({ onClose }) => {
       dispatch(addPost(data));
 
       setUploadStatus("Post shared");
+      setActiveModal(null);
+      setTimeout(() => {
+        onClose();
+      }, 3000);
     } catch (error) {
       console.log(error);
       alert("Post didn't share");
       setUploadStatus("idle");
     }
-  }, [postInfo, mediaData, aspect, dispatch]);
+  }, [postInfo, mediaData, aspect, dispatch, onClose]);
 
   const handleCloseModal = () => {
     setActiveModal(null);
@@ -219,19 +223,14 @@ export const UploadModal: React.FC<UploadModalProps> = ({ onClose }) => {
           )}
         </div>
       </ModalBackground>
-      {activeModal === "cancel" && (
+      {activeModal && (
         <DiscardModal
-          title="Discard post?"
-          text="If you leave, your edits won't be saved."
-          acceptText="Discard"
-          onClose={handleCloseModal}
-          onAccept={handleAcceptModal}
-        />
-      )}
-      {(activeModal === "delete" || activeModal === "close") && (
-        <DiscardModal
-          title="Discard photo?"
-          text="This will remove the photo from your post."
+          title={`Discard ${
+            activeModal === "delete" ? mediaData![currentMedia].type : "post"
+          }?`}
+          text={`This will remove the ${
+            activeModal === "delete" ? mediaData![currentMedia].type : "post"
+          } from your post.`}
           acceptText="Discard"
           onClose={handleCloseModal}
           onAccept={handleAcceptModal}
