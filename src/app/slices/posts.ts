@@ -1,12 +1,8 @@
-import {
-  PayloadAction,
-  createAsyncThunk,
-  createSlice,
-  isPending,
-} from "@reduxjs/toolkit";
-import { IUser } from "./user";
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import appAxios from "../../appAxios";
 import { RootState } from "../store";
+import { IUser } from "./user";
+import { getTimeAgo } from "../../utils/getTimeAgo";
 
 export type mediaType = {
   dest: string;
@@ -29,6 +25,7 @@ export interface IPost {
   saved: boolean;
   liked: boolean;
   // comments: [];
+  createdAt: string;
 }
 
 export type postsDataType = {
@@ -65,6 +62,10 @@ export const getUserPostsAsync = createAsyncThunk<
       const { data } = await appAxios.get<postsDataType>(
         `/user/posts/${username}?limit=10&page=${page}`
       );
+      data.posts = data.posts.map((post) => ({
+        ...post,
+        createdAt: getTimeAgo(post.createdAt),
+      }));
       return data;
     } catch (error: any) {
       console.log(error);
@@ -86,6 +87,10 @@ export const getUserReelsAsync = createAsyncThunk<
       const { data } = await appAxios.get<postsDataType>(
         `/user/reels/${username}?limit=10&page=${page}`
       );
+      data.posts = data.posts.map((post) => ({
+        ...post,
+        createdAt: getTimeAgo(post.createdAt),
+      }));
       return data;
     } catch (error: any) {
       console.log(error);
@@ -105,6 +110,10 @@ export const getUserSavedPostsAsync = createAsyncThunk<
     const { data } = await appAxios.get<postsDataType>(
       `/user/saved?limit=10&page=${page}`
     );
+    data.posts = data.posts.map((post) => ({
+      ...post,
+      createdAt: getTimeAgo(post.createdAt),
+    }));
     return data;
   } catch (error: any) {
     console.log(error);

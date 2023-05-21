@@ -5,15 +5,11 @@ import { UserInteraction } from "../../AppComponents/UserInteraction";
 import scss from "./FullPost.module.scss";
 
 type FullPostProps = {
-  post?: IPost;
+  post: IPost;
 };
 
 export const FullPost: React.FC<FullPostProps> = ({ post }) => {
-  console.log("FullPost", post);
-
-  if (!post) {
-    return null;
-  }
+  console.log("FullPost", post)
 
   return (
     <div className={scss.fullPost}>
@@ -27,15 +23,13 @@ export const FullPost: React.FC<FullPostProps> = ({ post }) => {
       </div>
       <div className={scss.postInfo}>
         <div className={scss.container}>
-          <PostTitle
-            post={post}
-          />
+          <PostTitle post={post} />
         </div>
         <div className={`${scss.comments} ${scss.container}`}></div>
         <div className={scss.container}>
           <UserInteraction post={post} />
           <p className={scss.likes}>{post.likes.length} likes</p>
-          <p className={scss.date}>5 days ago</p>
+          <p className={scss.date}>{post.createdAt}</p>
         </div>
         <div className={scss.addComment}></div>
       </div>

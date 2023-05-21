@@ -21,8 +21,6 @@ export const Posts: React.FC = () => {
           postsData.posts.length < page * 10 &&
           postsData.posts.length < postsData.postsCount))
     ) {
-      console.warn("dispatch posts");
-
       dispatch(getUserPostsAsync({ username, page }));
       return;
     }
@@ -33,8 +31,6 @@ export const Posts: React.FC = () => {
       postsData.posts.findIndex((post) => postId === post._id) ===
         postsData.posts.length - 2
     ) {
-      console.warn("setPage");
-
       setPage(page + 1);
     }
   }, [dispatch, username, page, setPage, postsData, postId]);
