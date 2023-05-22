@@ -47,7 +47,7 @@ export const Profile: React.FC = () => {
             </div>
             <ul>
               <li>
-                <span>{postData?.postsCount || 0}</span> posts
+                <span>{user.postsCount}</span> posts
               </li>
               <li>
                 <a href="/">

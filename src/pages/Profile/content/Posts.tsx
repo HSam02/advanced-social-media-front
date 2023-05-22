@@ -3,11 +3,16 @@ import { Outlet, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import { PostGallery } from "../../../components";
 import { SharePosts } from "../SharePosts";
-import { getUserPostsAsync, selectUserPosts } from "../../../app/slices/posts";
+import {
+  getUserPostsAsync,
+  selectPostsStatus,
+  selectUserPosts,
+} from "../../../app/slices/posts";
 import { usePage } from "../../../utils/hooks";
 
 export const Posts: React.FC = () => {
   const postsData = useAppSelector(selectUserPosts);
+  const status = useAppSelector(selectPostsStatus);
   const dispatch = useAppDispatch();
   const { username, postId } = useParams();
 
@@ -38,7 +43,7 @@ export const Posts: React.FC = () => {
   console.log("Posts", postsData, page);
 
   if (!postsData) {
-    return null;
+    return status === "loading" ? null : <SharePosts />;
   }
 
   const { posts } = postsData;

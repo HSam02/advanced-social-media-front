@@ -1,4 +1,9 @@
-import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import {
+  PayloadAction,
+  createAsyncThunk,
+  createSlice,
+  isPending,
+} from "@reduxjs/toolkit";
 import appAxios from "../../appAxios";
 import { RootState } from "../store";
 import { IUser } from "./user";
@@ -303,6 +308,7 @@ const PostsSlice = createSlice({
           };
         }
         state.userPosts.status = "idle";
+        state.status = "idle";
       })
       .addCase(getUserSavedPostsAsync.fulfilled, (state, action) => {
         if (!state.savedPosts) {
@@ -314,6 +320,7 @@ const PostsSlice = createSlice({
           };
         }
         state.savedPosts.status = "idle";
+        state.status = "idle";
       })
       .addCase(getUserReelsAsync.fulfilled, (state, action) => {
         if (!state.userReels) {
@@ -325,6 +332,7 @@ const PostsSlice = createSlice({
           };
         }
         state.userReels.status = "idle";
+        state.status = "idle";
       })
       .addCase(getUserPostsAsync.pending, (state) => {
         if (state.userPosts) {
@@ -340,7 +348,13 @@ const PostsSlice = createSlice({
         if (state.savedPosts) {
           state.savedPosts.status = "loading";
         }
-      });
+      })
+      .addMatcher(
+        isPending(getUserPostsAsync, getUserReelsAsync, getUserSavedPostsAsync),
+        (state) => {
+          state.status = "loading";
+        }
+      );
   },
 });
 
@@ -360,5 +374,6 @@ export const selectUserPosts = (state: RootState) => state.posts.userPosts;
 export const selectUserReels = (state: RootState) => state.posts.userReels;
 export const selectUserSavedPosts = (state: RootState) =>
   state.posts.savedPosts;
+export const selectPostsStatus = (state: RootState) => state.posts.status;
 
 export default PostsSlice.reducer;

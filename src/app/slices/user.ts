@@ -22,7 +22,7 @@ export interface IUser {
   username: string;
   fullname?: string;
   avatarDest?: string;
-  // postsCount?: number;
+  postsCount: number;
   // posts: IPost[];
   // saved: ISavedPost[];
   // following: IUser[];
