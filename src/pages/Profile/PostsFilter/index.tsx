@@ -1,15 +1,11 @@
-import { NavLink, useLocation, useParams } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import { BookMarkIcon, ReelsIcon, WebIcon } from "../../../components/icons";
 import scss from "./PostsFilter.module.scss";
+import { usePostFilter } from "../../../utils/hooks";
 
 export const PostsFilter: React.FC = () => {
-  const { pathname } = useLocation();
   const { username } = useParams();
-  const filter = pathname.includes("saved")
-    ? "saved"
-    : pathname.includes("reels")
-    ? "reels"
-    : "posts";
+  const filter = usePostFilter();
   console.log("PostsFilter");
 
   return (

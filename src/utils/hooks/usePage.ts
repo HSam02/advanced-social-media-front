@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { postsDataType } from "../../app/slices/posts";
 
-export const useGetPage =  (postsData: postsDataType | null) => {
+export const usePage = (postsData: postsDataType | null) => {
   const [page, setPage] = useState(1);
-  
+
   useEffect(() => {
     const onScroll = (event: Event) => {
       const scrollY = document.documentElement.scrollTop;
@@ -24,5 +24,5 @@ export const useGetPage =  (postsData: postsDataType | null) => {
     return () => window.removeEventListener("scroll", onScroll);
   }, [postsData, page]);
 
-  return page;
-}
+  return { page, setPage };
+};

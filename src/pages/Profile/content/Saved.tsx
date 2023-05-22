@@ -1,32 +1,42 @@
 import { useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
-// import { removeUserUnsaves, selectUser } from "../../../app/slices/user";
 import { PostGallery } from "../../../components";
 import {
   clearUnsavedPosts,
   getUserSavedPostsAsync,
   selectUserSavedPosts,
 } from "../../../app/slices/posts";
-import { useGetPage } from "../../../utils/hooks";
+import { usePage } from "../../../utils/hooks";
 
 export const Saved: React.FC = () => {
   const postsData = useAppSelector(selectUserSavedPosts);
-  // const { user } = useAppSelector(selectUser);
+  const { postId } = useParams();
   const dispatch = useAppDispatch();
   console.log("Saved");
 
-  const page = useGetPage(postsData);
+  const { page, setPage } = usePage(postsData);
 
   useEffect(() => {
     if (
       !postsData ||
-      (postsData.posts.length < page * 10 &&
+      (postsData.status !== "loading" &&
+        postsData.posts.length < page * 10 &&
         postsData.posts.length < postsData.postsCount)
     ) {
       dispatch(getUserSavedPostsAsync(page));
+      return;
     }
-  }, [dispatch, page, postsData]);
+
+    if (
+      postsData &&
+      page < postsData.pages &&
+      postsData.posts.findIndex((post) => postId === post._id) ===
+        postsData.posts.length - 2
+    ) {
+      setPage(page + 1);
+    }
+  }, [dispatch, page, setPage, postsData, postId]);
 
   useEffect(() => {
     dispatch(clearUnsavedPosts());
