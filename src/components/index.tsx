@@ -19,3 +19,5 @@ export { MediaSlider } from "./MediaSlider";
 export { DiscardModal } from "./DiscardModal";
 export { PostGallery } from "./PostGallery";
 export { FullPostSlider } from "./FullPostSlider";
+export { CommentInput } from "./Comments/CommentInput";
+export { Comments } from "./Comments";

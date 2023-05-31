@@ -32,3 +32,13 @@ export const getTimeAgo = (timestamp: string) => {
 
   return (years === 1 ? "1 year" : years + " years") + " ago";
 };
+
+export const getFormattedTime = (timestamp: string) => {
+  const timeString = getTimeAgo(timestamp);
+  const match = timeString.match(/(\d+)\s*(\w)/);
+  if (match) {
+    const [, number, unit] = match;
+    return `${number}${unit}`;
+  }
+  return "";
+};

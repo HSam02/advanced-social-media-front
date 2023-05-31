@@ -36,5 +36,6 @@
 }
 
 .comments {
-  flex: 1;
+  height: calc(90vh - 190px);
+  overflow-y: auto;
 }

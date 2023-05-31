@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { useAppDispatch } from "../../app/hooks";
-import { IPost, deletePost, editPost } from "../../app/slices/posts";
-// import { deletePost } from "../../app/slices/user";
+import { IPost, editPost } from "../../app/slices/posts";
 import appAxios from "../../appAxios";
 import { ModalBackground } from "../AppComponents";
-import scss from "./PostSettingsModal.module.scss";
 import { DiscardModal } from "../DiscardModal";
 import { useLocation, useNavigate } from "react-router-dom";
-// import { editPost } from "../../app/thunks";
+import { deleteUserPost } from "../../app/thunks";
+import scss from "./PostSettingsModal.module.scss";
 
 type PostSettingsModalProps = {
   post: IPost;
@@ -28,10 +27,10 @@ export const PostSettingsModal: React.FC<PostSettingsModalProps> = ({
     try {
       navigate(pathname.split("/").slice(0, -1).join("/"));
       await appAxios.delete(`/posts/${post._id}`);
-      dispatch(deletePost(post._id));
+      dispatch(deleteUserPost(post._id));
     } catch (error) {
       alert("Post didn't delete");
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -44,7 +43,7 @@ export const PostSettingsModal: React.FC<PostSettingsModalProps> = ({
       dispatch(editPost({ _id: post._id, ...newData }));
     } catch (error) {
       alert("Post didn't update");
-      console.log(error);
+      console.error(error);
     } finally {
       onClose();
     }
@@ -59,7 +58,7 @@ export const PostSettingsModal: React.FC<PostSettingsModalProps> = ({
       dispatch(editPost({ _id: post._id, ...newData }));
     } catch (error) {
       alert("Post didn't update");
-      console.log(error);
+      console.error(error);
     } finally {
       onClose();
     }

@@ -24,12 +24,11 @@ export interface IPost {
   media: mediaType[];
   user: IUser;
   hideComments: boolean;
+  commentsCount?: number;
   hideLikes: boolean;
   likes: string[];
-  // saves: string[];
-  saved: boolean;
   liked: boolean;
-  // comments: [];
+  saved: boolean;
   createdAt: string;
 }
 
@@ -73,7 +72,7 @@ export const getUserPostsAsync = createAsyncThunk<
       }));
       return data;
     } catch (error: any) {
-      console.log(error);
+      console.error(error);
       return rejectWithValue(
         error.response?.data.message || error.message || ""
       );
@@ -98,7 +97,7 @@ export const getUserReelsAsync = createAsyncThunk<
       }));
       return data;
     } catch (error: any) {
-      console.log(error);
+      console.error(error);
       return rejectWithValue(
         error.response?.data.message || error.message || ""
       );
@@ -121,7 +120,7 @@ export const getUserSavedPostsAsync = createAsyncThunk<
     }));
     return data;
   } catch (error: any) {
-    console.log(error);
+    console.error(error);
     return rejectWithValue(error.response?.data.message || error.message || "");
   }
 });
@@ -295,6 +294,25 @@ const PostsSlice = createSlice({
         state.userReels.postsCount--;
       }
     },
+    changeCommentsCount: (
+      state,
+      action: PayloadAction<{ postId: string; operation: number }>
+    ) => {
+      const { postId, operation } = action.payload;
+      [
+        state.userPosts?.posts,
+        state.savedPosts?.posts,
+        state.userReels?.posts,
+      ].forEach((array) =>
+        array?.find((post) => {
+          if (post._id === postId && post.commentsCount !== undefined) {
+            post.commentsCount += operation;
+            return true;
+          }
+          return false;
+        })
+      );
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -368,6 +386,7 @@ export const {
   editPost,
   deletePost,
   clearPostSlice,
+  changeCommentsCount,
 } = PostsSlice.actions;
 
 export const selectUserPosts = (state: RootState) => state.posts.userPosts;

@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { IPost } from "../../../app/slices/posts";
-import { PostTitle } from "../../AppComponents";
+import { PostTitle, UserInteraction } from "../../AppComponents";
 import { MediaSlider } from "../../MediaSlider";
-import { UserInteraction } from "../../AppComponents/UserInteraction";
+import { CommentInput } from "../../Comments/CommentInput";
+import { Comments } from "../../Comments";
+import TextareaContext from "../../Comments/TextareaContext";
 import scss from "./FullPost.module.scss";
 
 type FullPostProps = {
@@ -9,7 +12,10 @@ type FullPostProps = {
 };
 
 export const FullPost: React.FC<FullPostProps> = ({ post }) => {
-  console.log("FullPost", post)
+  console.log("FullPost", post);
+
+  const [inputRef, setInputRef] =
+    useState<React.RefObject<HTMLTextAreaElement> | null>(null);
 
   return (
     <div className={scss.fullPost}>
@@ -25,13 +31,19 @@ export const FullPost: React.FC<FullPostProps> = ({ post }) => {
         <div className={scss.container}>
           <PostTitle post={post} />
         </div>
-        <div className={`${scss.comments} ${scss.container}`}></div>
+        <div className={`${scss.comments} ${scss.container}`}>
+          <TextareaContext.Provider value={inputRef}>
+            <Comments postId={post._id} />
+          </TextareaContext.Provider>
+        </div>
         <div className={scss.container}>
           <UserInteraction post={post} />
           <p className={scss.likes}>{post.likes.length} likes</p>
           <p className={scss.date}>{post.createdAt}</p>
         </div>
-        <div className={scss.addComment}></div>
+        <div className={scss.addComment}>
+          <CommentInput postId={post._id} setInputRef={setInputRef} />
+        </div>
       </div>
     </div>
   );

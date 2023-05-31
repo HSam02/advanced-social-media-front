@@ -33,7 +33,7 @@ export const FullPostSlider: React.FC<FullPostSliderProps> = ({ posts }) => {
 
   useEffect(() => {
     if (
-      currentPost &&
+      currentPost !== undefined &&
       currentPost !== tempIndex.current &&
       postId === tempPostId.current
     ) {
