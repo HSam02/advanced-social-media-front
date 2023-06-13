@@ -1,7 +1,7 @@
 import { NavLink, useParams } from "react-router-dom";
+import { usePostFilter } from "../../../utils/hooks";
 import { BookMarkIcon, ReelsIcon, WebIcon } from "../../../components/icons";
 import scss from "./PostsFilter.module.scss";
-import { usePostFilter } from "../../../utils/hooks";
 
 export const PostsFilter: React.FC = () => {
   const { username } = useParams();

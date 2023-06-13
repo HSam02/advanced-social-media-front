@@ -5,52 +5,44 @@ import { SharePosts } from "../SharePosts";
 import { useEffect } from "react";
 import {
   getUserReelsAsync,
-  selectPostsStatus,
   selectUserReels,
 } from "../../../app/slices/posts";
 import { usePage } from "../../../utils/hooks";
 
 export const Reels: React.FC = () => {
+  console.log("Reels");
+  
   const postsData = useAppSelector(selectUserReels);
-  const status = useAppSelector(selectPostsStatus);
   const dispatch = useAppDispatch();
   const { username, postId } = useParams();
 
-  const { page, setPage } = usePage(postsData);
+  usePage(postsData, () => {
+    if (username) {
+      dispatch(getUserReelsAsync(username));
+    }
+  });
 
   useEffect(() => {
     if (
       username &&
-      (!postsData ||
-        (postsData.status !== "loading" &&
-          postsData.posts.length < page * 10 &&
-          postsData.posts.length < postsData.postsCount))
-    ) {
-      dispatch(getUserReelsAsync({ username, page }));
-      return;
-    }
-
-    if (
-      postsData &&
-      page < postsData.pages &&
+      postsData.status !== "loading" &&
+      postsData.posts &&
+      postsData.postsCount &&
+      postsData.posts.length < postsData.postsCount &&
       postsData.posts.findIndex((post) => postId === post._id) ===
-        postsData.posts.length - 2
+        postsData.posts.length - 3
     ) {
-      setPage(page + 1);
+      dispatch(getUserReelsAsync(username));
     }
-  }, [dispatch, username, page, setPage, postsData, postId]);
+  }, [dispatch, username, postId, postsData]);
 
-  console.log("Reels", postsData, page);
-
-  if (!postsData) {
-    return status === "loading" ? null : <SharePosts />;
+  if (!postsData.posts) {
+    return postsData.status === "loading" ? null : <SharePosts />;
   }
 
-  const { posts } = postsData;
-
-  return posts.length > 0 ? (
+  return postsData.posts.length > 0 ? (
     <>
-      <PostGallery posts={posts} />
+      <PostGallery posts={postsData.posts} />
       <Outlet />
     </>
   ) : (

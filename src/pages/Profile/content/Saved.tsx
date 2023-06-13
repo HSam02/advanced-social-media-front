@@ -10,33 +10,27 @@ import {
 import { usePage } from "../../../utils/hooks";
 
 export const Saved: React.FC = () => {
+  console.log("Saved");
   const postsData = useAppSelector(selectUserSavedPosts);
   const { postId } = useParams();
   const dispatch = useAppDispatch();
-  console.log("Saved");
 
-  const { page, setPage } = usePage(postsData);
+  usePage(postsData, () => {
+    dispatch(getUserSavedPostsAsync());
+  });
 
   useEffect(() => {
     if (
-      !postsData ||
-      (postsData.status !== "loading" &&
-        postsData.posts.length < page * 10 &&
-        postsData.posts.length < postsData.postsCount)
-    ) {
-      dispatch(getUserSavedPostsAsync(page));
-      return;
-    }
-
-    if (
-      postsData &&
-      page < postsData.pages &&
+      postsData.status !== "loading" &&
+      postsData.posts &&
+      postsData.postsCount &&
+      postsData.posts.length < postsData.postsCount &&
       postsData.posts.findIndex((post) => postId === post._id) ===
-        postsData.posts.length - 2
+        postsData.posts.length - 3
     ) {
-      setPage(page + 1);
+      dispatch(getUserSavedPostsAsync());
     }
-  }, [dispatch, page, setPage, postsData, postId]);
+  }, [dispatch, postId, postsData]);
 
   useEffect(() => {
     dispatch(clearUnsavedPosts());
@@ -45,10 +39,10 @@ export const Saved: React.FC = () => {
     };
   }, [dispatch]);
 
-  if (!postsData) {
+  if (!postsData.posts) {
     return null;
   }
-  return postsData && postsData.posts.length > 0 ? (
+  return postsData.posts.length > 0 ? (
     <>
       <PostGallery posts={postsData.posts} />
       <Outlet />

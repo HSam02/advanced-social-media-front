@@ -5,7 +5,7 @@ import { FullPostSlider } from "../../../../components";
 export const ReelsSlider = () => {
   const postsData = useAppSelector(selectUserReels);
 
-  if (!postsData) {
+  if (!postsData.posts) {
     return <></>;
   }
 
