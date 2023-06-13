@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { postsDataType } from "../../app/slices/posts";
 
 export const usePage = (postsData: postsDataType, callback: () => void) => {
-  // const [page, setPage] = useState(1);
-
   useEffect(() => {
     if (!postsData.posts && postsData.status !== "loading") {
       callback();
@@ -22,19 +20,10 @@ export const usePage = (postsData: postsDataType, callback: () => void) => {
       ) {
         callback();
       }
-      // if (scrollHeight - scrollY < 200 && postsData && page < postsData.pages) {
-      //   setPage(
-      //     Math.floor(
-      //       (postsData.posts.length / postsData.postsCount) * postsData.pages
-      //     ) + 1
-      //   );
-      // }
     };
 
     window.addEventListener("scroll", onScroll);
 
     return () => window.removeEventListener("scroll", onScroll);
   }, [postsData, callback]);
-
-  // return { page, setPage };
 };

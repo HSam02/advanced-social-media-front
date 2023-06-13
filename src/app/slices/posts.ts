@@ -73,16 +73,12 @@ export const getUserPostsAsync = createAsyncThunk<
         -1
       )?._id;
 
-      // const { data } = await appAxios.get<postsDataType>(
-      //   `/user/posts/${username}?limit=10&page=${page}`
-      // );
       const { data } = await appAxios.get<postsDataType>(
         `/user/posts/${username}?limit=10${lastId ? `&lastId=${lastId}` : ""}`
       );
-      data.posts = data.posts?.map((post) => ({
-        ...post,
-        createdAt: getTimeAgo(post.createdAt),
-      }));
+      data.posts?.forEach(
+        (post) => (post.createdAt = getTimeAgo(post.createdAt))
+      );
       return data;
     } catch (error: any) {
       console.error(error);
@@ -109,14 +105,9 @@ export const getUserReelsAsync = createAsyncThunk<
         `/user/reels/${username}?limit=10${lastId ? `&lastId=${lastId}` : ""}`
       );
 
-      // const { data } = await appAxios.get<postsDataType>(
-      //   `/user/reels/${username}?limit=10&page=${page}`
-      // );
-
-      data.posts = data.posts?.map((post) => ({
-        ...post,
-        createdAt: getTimeAgo(post.createdAt),
-      }));
+      data.posts?.forEach(
+        (post) => (post.createdAt = getTimeAgo(post.createdAt))
+      );
       return data;
     } catch (error: any) {
       console.error(error);
@@ -129,7 +120,6 @@ export const getUserReelsAsync = createAsyncThunk<
 
 export const getUserSavedPostsAsync = createAsyncThunk<
   postsDataType,
-  // number,
   undefined,
   { rejectValue: string }
 >("posts/getUserSavedPostsAsync", async (_, { rejectWithValue, getState }) => {
@@ -142,13 +132,9 @@ export const getUserSavedPostsAsync = createAsyncThunk<
       `/user/saved?limit=10${lastId ? `&lastId=${lastId}` : ""}`
     );
 
-    // const { data } = await appAxios.get<postsDataType>(
-    //   `/user/saved?limit=10&page=${page}`
-    // );
-    data.posts = data.posts?.map((post) => ({
-      ...post,
-      createdAt: getTimeAgo(post.createdAt),
-    }));
+    data.posts?.forEach(
+      (post) => (post.createdAt = getTimeAgo(post.createdAt))
+    );
     return data;
   } catch (error: any) {
     console.error(error);
@@ -174,7 +160,10 @@ const PostsSlice = createSlice({
       state.status = "idle";
     },
     addPost: (state, action: PayloadAction<IPost>) => {
-      const post = action.payload;
+      const post = {
+        ...action.payload,
+        createdAt: getTimeAgo(action.payload.createdAt),
+      };
       if (state.userPosts.posts && state.userPosts.postsCount) {
         state.userPosts.posts.unshift(post);
         state.userPosts.postsCount++;

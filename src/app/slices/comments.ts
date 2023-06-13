@@ -1,7 +1,8 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { RootState } from "../store";
 import { IUser } from "./user";
 import appAxios from "../../appAxios";
-import { RootState } from "../store";
+import { getFormattedTime } from "../../utils/getTimeAgo";
 
 export interface IComment {
   _id: string;
@@ -12,7 +13,6 @@ export interface IComment {
   likesCount: number;
   repliesCount: number;
   replies: IReply[];
-  // inputRef?: React.RefObject<HTMLTextAreaElement>;
   createdAt: string;
 }
 
@@ -23,27 +23,23 @@ export interface IReply extends Omit<IComment, "repliesCount" | "replies"> {
 export type commentsDataType = {
   postId: string;
   comments: IComment[];
-  pages: number;
   commentsCount: number;
 };
 
 export type repliesDataType = {
   parentId: string;
   replies: IReply[];
-  pages: number;
-  commentsCount: number;
+  repliesCount: number;
 };
 
 type initialStateType = {
   postComments: commentsDataType[];
   reply: IComment | IReply | null;
-  // focusTextarea: (() => void) | null;
 };
 
 const initialState: initialStateType = {
   postComments: [],
   reply: null,
-  // focusTextarea: null,
 };
 
 const findCommentOrReplyById = (id: string, data: commentsDataType[]) => {
@@ -78,7 +74,10 @@ export const getPostCommentsAsync = createAsyncThunk<
       const { data } = await appAxios.get<commentsDataType>(
         `comment/${postId}?limit=10&page=${page}`
       );
-      data.comments.forEach((comment) => (comment.replies = []));
+      data.comments.forEach((comment) => {
+        comment.replies = [];
+        comment.createdAt = getFormattedTime(comment.createdAt);
+      });
       return data;
     } catch (error: any) {
       console.error(error);
@@ -100,6 +99,9 @@ export const getCommentRepliesAsync = createAsyncThunk<
       const { data } = await appAxios.get<repliesDataType>(
         `reply/${parentId}?limit=10&page=${page}`
       );
+      data.replies.forEach((replie) => {
+        replie.createdAt = getFormattedTime(replie.createdAt);
+      });
       return data;
     } catch (error: any) {
       console.error(error);
@@ -120,11 +122,11 @@ const commentsSlice = createSlice({
     clearReply: (state) => {
       state.reply = null;
     },
-    // setFocusTextarea: (state, action: PayloadAction<(() => void) | null>) => {
-    //   state.focusTextarea = action.payload;
-    // },
     addComment: (state, action: PayloadAction<IComment>) => {
-      const newComment = action.payload;
+      const newComment = {
+        ...action.payload,
+        createdAt: getFormattedTime(action.payload.createdAt),
+      };
       const { postId } = newComment;
 
       const postIndex = state.postComments.findIndex(
@@ -139,12 +141,14 @@ const commentsSlice = createSlice({
           postId,
           comments: [newComment],
           commentsCount: 1,
-          pages: 1,
         });
       }
     },
     addReply: (state, action: PayloadAction<IReply>) => {
-      const newReply = action.payload;
+      const newReply = {
+        ...action.payload,
+        createdAt: getFormattedTime(action.payload.createdAt),
+      };
 
       const postIndex = state.postComments.findIndex(
         (post) => post.postId === newReply.postId
@@ -245,7 +249,6 @@ const commentsSlice = createSlice({
 export const {
   setReply,
   clearReply,
-  // setFocusTextarea,
   addComment,
   addReply,
   addLike,
@@ -254,8 +257,6 @@ export const {
 } = commentsSlice.actions;
 
 export const selectReply = (state: RootState) => state.comments.reply;
-// export const selectTextareaRef = (state: RootState) =>
-//   state.comments.focusTextarea;
 export const selectPostComments = (postId: string) => (state: RootState) =>
   state.comments.postComments.find((comment) => comment.postId === postId);
 

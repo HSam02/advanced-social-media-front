@@ -9,7 +9,6 @@ import {
   setReply,
 } from "../../../app/slices/comments";
 import appAxios from "../../../appAxios";
-import { getFormattedTime } from "../../../utils/getTimeAgo";
 import { Avatar } from "../../AppComponents";
 import { DotsIcon, HeartIcon } from "../../icons";
 import { Reply } from "../Reply";
@@ -25,8 +24,6 @@ export const Comment: React.FC<commentProps> = ({ comment }) => {
   console.log("Comment", comment.text);
 
   const dispatch = useAppDispatch();
-  const timeAgo = getFormattedTime(comment.createdAt);
-  // const focusTextarea = useAppSelector(selectTextareaRef);
   const textareaRef = useContext(TextareaContext);
 
   const [showReplies, setShowReplies] = useState(false);
@@ -71,7 +68,7 @@ export const Comment: React.FC<commentProps> = ({ comment }) => {
             {comment.text}
           </pre>
           <div className={scss.info}>
-            <span>{timeAgo}</span>
+            <span>{comment.createdAt}</span>
 
             {comment.likesCount ? (
               <span>
