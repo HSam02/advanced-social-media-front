@@ -1,0 +1,135 @@
+.comment {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  padding: 16px 0;
+
+  &:hover .dots>svg {
+    display: block !important;
+  }
+}
+
+.avatar {
+  margin-right: 18px;
+}
+
+.content {
+  >pre {
+    color: #000;
+    font-weight: 300;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+
+    >span {
+      color: #262626;
+      font-weight: 700;
+      margin-right: 4px;
+    }
+  }
+
+  .info {
+    display: flex;
+    align-items: center;
+    margin-top: 8px;
+
+    >span {
+      color: #737373;
+      font-size: 12px;
+      margin-right: 12px;
+      cursor: pointer;
+
+      &:first-child {
+        cursor: unset;
+      }
+    }
+
+    .dots {
+      position: relative;
+      width: 24px;
+      height: 12px;
+      margin-left: auto;
+      cursor: pointer;
+
+      >svg {
+        display: none;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 24px;
+        color: #737373;
+      }
+    }
+  }
+}
+
+.likeButton {
+  height: 12px;
+  margin: 9px 0 0 auto;
+  cursor: pointer;
+  transition: .2s;
+
+  &:hover>svg {
+    color: #a0a0a0;
+  }
+
+  >svg {
+    width: 12px;
+  }
+}
+
+.replies {
+  margin-left: 54px;
+
+  .replies__button {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+
+    &:active {
+      >span {
+        background-color: #a9a9a9;
+      }
+
+      >p {
+        color: #a9a9a9;
+      }
+    }
+
+    >span {
+      display: block;
+      width: 24px;
+      height: 1px;
+      margin-right: 16px;
+      background-color: #a0a0a0;
+    }
+
+    >p {
+      color: #737373;
+      font-size: 12px;
+    }
+
+    >div:last-child {
+      width: 16px;
+      height: 16px;
+      margin-left: 16px;
+
+      >svg {
+        color: #a9a9a9;
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+
+  .disabled {
+    pointer-events: none;
+
+    >span {
+      background-color: #a9a9a9;
+    }
+
+    >p {
+      color: #a9a9a9;
+    }
+  }
+}

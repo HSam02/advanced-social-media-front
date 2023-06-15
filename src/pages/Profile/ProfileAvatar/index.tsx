@@ -42,7 +42,7 @@ export const ProfileAvatar: React.FC<ProfileAvatarProps> = memo(({ dest }) => {
       dispatch(updateAvatar(data));
       setIsAvatarLoading(false);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       setIsAvatarLoading(false);
       alert("Avatar didn't update");
     }
@@ -56,7 +56,7 @@ export const ProfileAvatar: React.FC<ProfileAvatarProps> = memo(({ dest }) => {
       dispatch(updateAvatar(""));
       setIsAvatarLoading(false);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       setIsAvatarLoading(false);
       alert("Avatar didn't remove");
     }

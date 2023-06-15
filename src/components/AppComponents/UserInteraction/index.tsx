@@ -32,7 +32,7 @@ export const UserInteraction: React.FC<UserInteractionProps> = ({ post }) => {
         dispatch(removeLike({ postId: post._id, userId: user?._id || "" }));
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       setIsLikeLoading(false);
     }
@@ -49,7 +49,7 @@ export const UserInteraction: React.FC<UserInteractionProps> = ({ post }) => {
         dispatch(unsavePost(post._id));
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       setIsSaveLoading(false);
     }

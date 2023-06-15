@@ -24,56 +24,64 @@ export interface IPost {
   media: mediaType[];
   user: IUser;
   hideComments: boolean;
+  commentsCount?: number;
   hideLikes: boolean;
   likes: string[];
-  // saves: string[];
-  saved: boolean;
   liked: boolean;
-  // comments: [];
+  saved: boolean;
   createdAt: string;
 }
 
 export type postsDataType = {
-  posts: IPost[];
-  pages: number;
-  postsCount: number;
+  posts?: IPost[];
+  // pages: number;
+  postsCount?: number;
   status: "loading" | "idle";
 };
 
 type initialStateType = {
-  userPosts: postsDataType | null;
-  savedPosts: postsDataType | null;
-  userReels: postsDataType | null;
+  userPosts: postsDataType;
+  savedPosts: postsDataType;
+  userReels: postsDataType;
   status: "idle" | "loading" | "failed";
   error: string | null;
 };
 
 const initialState: initialStateType = {
-  userPosts: null,
-  savedPosts: null,
-  userReels: null,
+  userPosts: {
+    status: "idle",
+  },
+  savedPosts: {
+    status: "idle",
+  },
+  userReels: {
+    status: "idle",
+  },
   status: "idle",
   error: null,
 };
 
 export const getUserPostsAsync = createAsyncThunk<
   postsDataType,
-  { username: string; page: number },
+  string,
   { rejectValue: string }
 >(
   "posts/getUserPostsAsync",
-  async ({ username, page }, { rejectWithValue }) => {
+  async (username, { rejectWithValue, getState }) => {
     try {
+      const lastId = (getState() as RootState).posts.userPosts.posts?.at(
+        -1
+      )?._id;
+
       const { data } = await appAxios.get<postsDataType>(
-        `/user/posts/${username}?limit=10&page=${page}`
+        `/user/posts/${username}?limit=10${lastId ? `&lastId=${lastId}` : ""}`
       );
-      data.posts = data.posts.map((post) => ({
-        ...post,
-        createdAt: getTimeAgo(post.createdAt),
-      }));
+      data.posts?.forEach(
+        (post) => (post.createdAt = getTimeAgo(post.createdAt))
+      );
       return data;
     } catch (error: any) {
-      console.log(error);
+      console.error(error);
       return rejectWithValue(
         error.response?.data.message || error.message || ""
       );
@@ -83,22 +91,26 @@ export const getUserPostsAsync = createAsyncThunk<
 
 export const getUserReelsAsync = createAsyncThunk<
   postsDataType,
-  { username: string; page: number },
+  string,
   { rejectValue: string }
 >(
   "posts/getUserReelsAsync",
-  async ({ username, page }, { rejectWithValue }) => {
+  async (username, { rejectWithValue, getState }) => {
     try {
+      const lastId = (getState() as RootState).posts.userReels.posts?.at(
+        -1
+      )?._id;
+
       const { data } = await appAxios.get<postsDataType>(
-        `/user/reels/${username}?limit=10&page=${page}`
+        `/user/reels/${username}?limit=10${lastId ? `&lastId=${lastId}` : ""}`
       );
-      data.posts = data.posts.map((post) => ({
-        ...post,
-        createdAt: getTimeAgo(post.createdAt),
-      }));
+
+      data.posts?.forEach(
+        (post) => (post.createdAt = getTimeAgo(post.createdAt))
+      );
       return data;
     } catch (error: any) {
-      console.log(error);
+      console.error(error);
       return rejectWithValue(
         error.response?.data.message || error.message || ""
       );
@@ -108,20 +120,24 @@ export const getUserReelsAsync = createAsyncThunk<
 
 export const getUserSavedPostsAsync = createAsyncThunk<
   postsDataType,
-  number,
+  undefined,
   { rejectValue: string }
->("posts/getUserSavedPostsAsync", async (page, { rejectWithValue }) => {
+>("posts/getUserSavedPostsAsync", async (_, { rejectWithValue, getState }) => {
   try {
+    const lastId = (getState() as RootState).posts.savedPosts.posts?.at(
+      -1
+    )?._id;
+
     const { data } = await appAxios.get<postsDataType>(
-      `/user/saved?limit=10&page=${page}`
+      `/user/saved?limit=10${lastId ? `&lastId=${lastId}` : ""}`
     );
-    data.posts = data.posts.map((post) => ({
-      ...post,
-      createdAt: getTimeAgo(post.createdAt),
-    }));
+
+    data.posts?.forEach(
+      (post) => (post.createdAt = getTimeAgo(post.createdAt))
+    );
     return data;
   } catch (error: any) {
-    console.log(error);
+    console.error(error);
     return rejectWithValue(error.response?.data.message || error.message || "");
   }
 });
@@ -131,20 +147,30 @@ const PostsSlice = createSlice({
   initialState,
   reducers: {
     clearPostSlice: (state) => {
-      state.userPosts = null;
-      state.userReels = null;
-      state.savedPosts = null;
+      state.userPosts = {
+        status: "idle",
+      };
+      state.userReels = {
+        status: "idle",
+      };
+      state.savedPosts = {
+        status: "idle",
+      };
       state.error = null;
       state.status = "idle";
     },
     addPost: (state, action: PayloadAction<IPost>) => {
-      const post = action.payload;
-      if (state.userPosts) {
+      const post = {
+        ...action.payload,
+        createdAt: getTimeAgo(action.payload.createdAt),
+      };
+      if (state.userPosts.posts && state.userPosts.postsCount) {
         state.userPosts.posts.unshift(post);
         state.userPosts.postsCount++;
       }
       if (
-        state.userReels &&
+        state.userReels.posts &&
+        state.userReels.postsCount &&
         post.media.length === 1 &&
         post.media[0].type === "video"
       ) {
@@ -238,10 +264,10 @@ const PostsSlice = createSlice({
       });
       if (
         !Boolean(
-          state.savedPosts?.posts.find((post) => post._id === savingPost._id)
+          state.savedPosts.posts?.find((post) => post._id === savingPost._id)
         )
       ) {
-        state.savedPosts?.posts.unshift(savingPost);
+        state.savedPosts.posts?.unshift(savingPost);
       }
     },
     unsavePost: (state, action: PayloadAction<string>) => {
@@ -264,10 +290,10 @@ const PostsSlice = createSlice({
       });
     },
     clearUnsavedPosts: (state) => {
-      if (state.savedPosts) {
+      if (state.savedPosts.posts) {
         state.savedPosts.posts = state.savedPosts.posts.filter((post) => {
           if (post.saved) {
-            state.savedPosts && state.savedPosts.postsCount--;
+            state.savedPosts.postsCount && state.savedPosts.postsCount--;
             return true;
           }
           return false;
@@ -276,59 +302,78 @@ const PostsSlice = createSlice({
     },
     deletePost: (state, action: PayloadAction<string>) => {
       const postId = action.payload;
-      if (state.userPosts) {
+      if (state.userPosts.posts && state.userPosts.postsCount) {
         state.userPosts.posts = state.userPosts.posts.filter(
           (post) => post._id !== postId
         );
         state.userPosts.postsCount--;
       }
-      if (state.savedPosts) {
+      if (state.savedPosts.posts && state.savedPosts.postsCount) {
         state.savedPosts.posts = state.savedPosts.posts.filter(
           (post) => post._id !== postId
         );
         state.savedPosts.postsCount--;
       }
-      if (state.userReels) {
+      if (state.userReels.posts && state.userReels.postsCount) {
         state.userReels.posts = state.userReels.posts.filter(
           (post) => post._id !== postId
         );
         state.userReels.postsCount--;
       }
     },
+    changeCommentsCount: (
+      state,
+      action: PayloadAction<{ postId: string; operation: number }>
+    ) => {
+      const { postId, operation } = action.payload;
+      [
+        state.userPosts?.posts,
+        state.savedPosts?.posts,
+        state.userReels?.posts,
+      ].forEach((array) =>
+        array?.find((post) => {
+          if (post._id === postId && post.commentsCount !== undefined) {
+            post.commentsCount += operation;
+            return true;
+          }
+          return false;
+        })
+      );
+    },
   },
   extraReducers: (builder) => {
     builder
       .addCase(getUserPostsAsync.fulfilled, (state, action) => {
-        if (!state.userPosts) {
+        if (!state.userPosts.posts) {
           state.userPosts = action.payload;
         } else {
           state.userPosts = {
             ...action.payload,
-            posts: [...state.userPosts.posts, ...action.payload.posts],
+            posts: [...state.userPosts.posts, ...action.payload.posts!],
           };
         }
         state.userPosts.status = "idle";
         state.status = "idle";
       })
       .addCase(getUserSavedPostsAsync.fulfilled, (state, action) => {
-        if (!state.savedPosts) {
+        if (!state.savedPosts.posts) {
           state.savedPosts = action.payload;
         } else {
           state.savedPosts = {
             ...action.payload,
-            posts: [...state.savedPosts.posts, ...action.payload.posts],
+            posts: [...state.savedPosts.posts, ...action.payload.posts!],
           };
         }
         state.savedPosts.status = "idle";
         state.status = "idle";
       })
       .addCase(getUserReelsAsync.fulfilled, (state, action) => {
-        if (!state.userReels) {
+        if (!state.userReels.posts) {
           state.userReels = action.payload;
         } else {
           state.userReels = {
             ...action.payload,
-            posts: [...state.userReels.posts, ...action.payload.posts],
+            posts: [...state.userReels.posts, ...action.payload.posts!],
           };
         }
         state.userReels.status = "idle";
@@ -368,6 +413,7 @@ export const {
   editPost,
   deletePost,
   clearPostSlice,
+  changeCommentsCount,
 } = PostsSlice.actions;
 
 export const selectUserPosts = (state: RootState) => state.posts.userPosts;

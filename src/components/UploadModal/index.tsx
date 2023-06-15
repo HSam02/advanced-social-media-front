@@ -1,7 +1,7 @@
 import { useRef, useState, useCallback } from "react";
 import appAxios from "../../appAxios";
 import { useAppDispatch } from "../../app/hooks";
-import { IPost, addPost, mediaType } from "../../app/slices/posts";
+import { IPost, mediaType } from "../../app/slices/posts";
 import { activeModalType, cropMediaType, uploadStatusType } from "./types";
 import { DiscardModal, ModalBackground } from "../";
 import {
@@ -13,6 +13,7 @@ import {
   UploadTitle,
 } from "./components/";
 import scss from "./UploadModal.module.scss";
+import { addUserPost } from "../../app/thunks";
 
 type UploadModalProps = {
   onClose: () => void;
@@ -113,7 +114,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ onClose }) => {
       const { data } = await appAxios.post<IPost>("/posts", formData, {
         signal: uploadController.current.signal,
       });
-      dispatch(addPost(data));
+      dispatch(addUserPost(data));
 
       setUploadStatus("Post shared");
       setActiveModal(null);
@@ -121,7 +122,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ onClose }) => {
         onClose();
       }, 3000);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       alert("Post didn't share");
       setUploadStatus("idle");
     }

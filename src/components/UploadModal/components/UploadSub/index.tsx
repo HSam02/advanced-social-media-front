@@ -40,6 +40,7 @@ export const UploadSub: React.FC<UploadSubProps> = ({
   const onClose = useCallback(() => {
     setActiveIconButton(null);
   }, []);
+  
   return (
     <div className={scss.upload__sub}>
       <div>

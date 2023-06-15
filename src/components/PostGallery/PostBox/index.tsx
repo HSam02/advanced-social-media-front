@@ -54,7 +54,7 @@ export const PostBox: React.FC<PostBoxProps> = memo(({ post }) => {
             )}
             {!post.hideComments && (
               <span>
-                <CommentFillIcon /> 5465
+                <CommentFillIcon /> {post.commentsCount || 0}
               </span>
             )}
           </div>

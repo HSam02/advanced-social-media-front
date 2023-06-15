@@ -45,7 +45,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
               (video) => video !== videoRef.current && video.pause()
             );
           } catch (error) {
-            console.log(error);
+            console.error(error);
 
             setIsPlay(false);
           }
