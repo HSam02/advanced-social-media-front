@@ -1,8 +1,12 @@
-import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import {
+  PayloadAction,
+  createAsyncThunk,
+  createSlice
+} from "@reduxjs/toolkit";
 import { RootState } from "../store";
 import { IUser } from "./user";
-import appAxios from "../../appAxios";
 import { getFormattedTime } from "../../utils/getTimeAgo";
+import appAxios from "../../appAxios";
 
 export interface IComment {
   _id: string;
@@ -13,7 +17,9 @@ export interface IComment {
   likesCount: number;
   repliesCount: number;
   replies: IReply[];
+  repliesStatus: "loading" | "idle";
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface IReply extends Omit<IComment, "repliesCount" | "replies"> {
@@ -24,6 +30,7 @@ export type commentsDataType = {
   postId: string;
   comments: IComment[];
   commentsCount: number;
+  status: "loading" | "idle";
 };
 
 export type repliesDataType = {
@@ -65,17 +72,21 @@ const findCommentOrReplyById = (id: string, data: commentsDataType[]) => {
 
 export const getPostCommentsAsync = createAsyncThunk<
   commentsDataType,
-  { postId: string; page: number },
+  string,
   { rejectValue: string }
 >(
   "comments/getPostCommentsAsync",
-  async ({ postId, page }, { rejectWithValue }) => {
+  async (postId, { rejectWithValue, getState }) => {
     try {
+      const lastId = (getState() as RootState).comments.postComments
+        .find((comment) => comment.postId === postId)
+        ?.comments.at(-1)?._id;
       const { data } = await appAxios.get<commentsDataType>(
-        `comment/${postId}?limit=10&page=${page}`
+        `comment/${postId}?limit=15${lastId ? `&lastId=${lastId}` : ""}`
       );
       data.comments.forEach((comment) => {
         comment.replies = [];
+        comment.repliesStatus = "idle";
         comment.createdAt = getFormattedTime(comment.createdAt);
       });
       return data;
@@ -90,14 +101,20 @@ export const getPostCommentsAsync = createAsyncThunk<
 
 export const getCommentRepliesAsync = createAsyncThunk<
   repliesDataType,
-  { parentId: string; page: number },
+  string,
   { rejectValue: string }
 >(
   "comments/getCommentRepliesAsync",
-  async ({ parentId, page }, { rejectWithValue }) => {
+  async (parentId, { rejectWithValue, getState }) => {
     try {
+      const lastId = (
+        findCommentOrReplyById(
+          parentId,
+          (getState() as RootState).comments.postComments
+        ) as IComment
+      )?.replies[0]?._id;
       const { data } = await appAxios.get<repliesDataType>(
-        `reply/${parentId}?limit=10&page=${page}`
+        `reply/${parentId}?limit=15${lastId ? `&lastId=${lastId}` : ""}`
       );
       data.replies.forEach((replie) => {
         replie.createdAt = getFormattedTime(replie.createdAt);
@@ -141,6 +158,7 @@ const commentsSlice = createSlice({
           postId,
           comments: [newComment],
           commentsCount: 1,
+          status: "idle",
         });
       }
     },
@@ -222,7 +240,7 @@ const commentsSlice = createSlice({
           (comment) => comment.postId === action.payload.postId
         );
         if (commentsIndex === -1) {
-          state.postComments.push(action.payload);
+          state.postComments.push({ ...action.payload, status: "idle" });
         } else {
           state.postComments[commentsIndex]! = {
             ...action.payload,
@@ -230,6 +248,7 @@ const commentsSlice = createSlice({
               ...state.postComments[commentsIndex]!.comments,
               ...action.payload.comments,
             ],
+            status: "idle",
           };
         }
       })
@@ -240,7 +259,26 @@ const commentsSlice = createSlice({
           state.postComments
         ) as IComment;
         if (comment) {
-          comment.replies.push(...replies);
+          comment.repliesStatus = "idle";
+          comment.replies.unshift(...replies);
+        }
+      })
+      .addCase(getPostCommentsAsync.pending, (state, action) => {
+        state.postComments.find((comments) => {
+          if (comments.postId === action.meta.arg) {
+            comments.status = "loading";
+            return true;
+          }
+          return false;
+        });
+      })
+      .addCase(getCommentRepliesAsync.pending, (state, action) => {
+        const comment = findCommentOrReplyById(
+          action.meta.arg,
+          state.postComments
+        ) as IComment;
+        if (comment) {
+          comment.repliesStatus = "loading";
         }
       });
   },

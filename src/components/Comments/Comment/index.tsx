@@ -10,7 +10,7 @@ import {
 } from "../../../app/slices/comments";
 import appAxios from "../../../appAxios";
 import { Avatar } from "../../AppComponents";
-import { DotsIcon, HeartIcon } from "../../icons";
+import { DotsIcon, HeartIcon, LoadingIcon } from "../../icons";
 import { Reply } from "../Reply";
 import { CommentSettingsModal } from "../CommentSettingsModal";
 import scss from "./Comment.module.scss";
@@ -31,11 +31,11 @@ export const Comment: React.FC<commentProps> = ({ comment }) => {
 
   const handleCloseSettings = useCallback(() => setShowSettings(false), []);
 
-  useEffect(() => {
-    if (showReplies && comment.replies.length === 0) {
-      dispatch(getCommentRepliesAsync({ parentId: comment._id, page: 1 }));
-    }
-  }, [showReplies, dispatch, comment]);
+  // useEffect(() => {
+  //   if (showReplies && comment.replies.length === 0) {
+  //     dispatch(getCommentRepliesAsync(comment._id));
+  //   }
+  // }, [showReplies, dispatch, comment]);
 
   const handleClickLike = async () => {
     try {
@@ -49,6 +49,15 @@ export const Comment: React.FC<commentProps> = ({ comment }) => {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleClickShowMore = () => {
+    if (comment.repliesCount === comment.replies.length) {
+      setShowReplies((prev) => !prev);
+      return;
+    }
+    setShowReplies(true);
+    dispatch(getCommentRepliesAsync(comment._id));
   };
 
   const handleClickReply = () => {
@@ -89,14 +98,27 @@ export const Comment: React.FC<commentProps> = ({ comment }) => {
       <div className={scss.replies}>
         {comment.repliesCount > 0 && (
           <div
-            onClick={() =>  setShowReplies((prev) => !prev)}
-            className={scss.replies__button}
+            onClick={handleClickShowMore}
+            className={`${scss.replies__button} ${
+              comment.repliesStatus === "loading" ? scss.disabled : ""
+            }`}
           >
             <span></span>
-            {showReplies && comment.replies.length ? (
+            {showReplies && comment.replies.length === comment.repliesCount ? (
               <p>Hide replies</p>
             ) : (
-              <p>View replies ({comment.repliesCount})</p>
+              <p>
+                View replies (
+                {showReplies
+                  ? comment.repliesCount - comment.replies.length
+                  : comment.repliesCount}
+                )
+              </p>
+            )}
+            {comment.repliesStatus === "loading" && (
+              <div>
+                <LoadingIcon />
+              </div>
             )}
           </div>
         )}

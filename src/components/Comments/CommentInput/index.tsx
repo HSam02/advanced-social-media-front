@@ -13,11 +13,10 @@ import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import {
   IComment,
   IReply,
-  addReply,
   clearReply,
   selectReply,
 } from "../../../app/slices/comments";
-import { addPostComment } from "../../../app/thunks";
+import { addCommentReply, addPostComment } from "../../../app/thunks";
 
 type CommentInputProps = {
   postId: string;
@@ -107,7 +106,7 @@ export const CommentInput: React.FC<CommentInputProps> = ({
         const { data } = await appAxios.post<IReply>("/reply/" + reply._id, {
           text: text.trim(),
         });
-        dispatch(addReply(data));
+        dispatch(addCommentReply(data));
       } else {
         const { data } = await appAxios.post<IComment>("/comment/" + postId, {
           text: text.trim(),

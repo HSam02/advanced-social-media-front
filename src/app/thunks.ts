@@ -53,7 +53,7 @@ export const removeCommentOrReply = //??????
         if (replyIndex !== -1) {
           dispatch(
             changeCommentsCount({
-              postId: comments[commentIndex].postId,
+              postId: comments[replyIndex].postId,
               operation: -1,
             })
           );

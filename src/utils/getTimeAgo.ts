@@ -23,10 +23,10 @@ export const getTimeAgo = (timestamp: string) => {
   if (days < 7) {
     return (days === 1 ? "1 day" : days + " days") + " ago";
   }
-  if (weeks < 4) {
+  if (weeks < 4 || months === 0) {
     return (weeks === 1 ? "1 week" : weeks + " weeks") + " ago";
   }
-  if (months < 12) {
+  if (months < 12 || years === 0) {
     return (months === 1 ? "1 month" : months + " months") + " ago";
   }
 

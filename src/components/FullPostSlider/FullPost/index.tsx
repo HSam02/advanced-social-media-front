@@ -33,7 +33,7 @@ export const FullPost: React.FC<FullPostProps> = ({ post }) => {
         </div>
         <div className={`${scss.comments} ${scss.container}`}>
           <TextareaContext.Provider value={inputRef}>
-            <Comments postId={post._id} />
+            <Comments post={post} />
           </TextareaContext.Provider>
         </div>
         <div className={scss.container}>

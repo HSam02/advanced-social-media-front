@@ -10,14 +10,16 @@
 
 .media {
   // height: 100%;
-  flex: 1;
+  // flex: 1;
+  width: 35vw;
   display: flex;
   align-items: center;
   background-color: #000;
 }
 
 .postInfo {
-  flex: 1.5;
+  // flex: 1.5;
+  width: 50vw;
   display: flex;
   flex-direction: column;
 }
