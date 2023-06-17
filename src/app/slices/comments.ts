@@ -228,6 +228,24 @@ const commentsSlice = createSlice({
         }
       }
     },
+    updateAvatarComments: (
+      state,
+      action: PayloadAction<{ avatarDest: string; userId?: string }>
+    ) => {
+      const { avatarDest, userId } = action.payload;
+      state.postComments.forEach((postComment) => {
+        postComment.comments.forEach((comment) => {
+          if (comment.user._id === userId) {
+            comment.user.avatarDest = avatarDest;
+          }
+          comment.replies.forEach((reply) => {
+            if (reply.user._id === userId) {
+              reply.user.avatarDest = avatarDest;
+            }
+          });
+        });
+      });
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -272,6 +290,10 @@ const commentsSlice = createSlice({
         ) as IComment;
         if (comment) {
           comment.repliesStatus = "idle";
+          if (!replies.length) {
+            comment.repliesCount = comment.replies.length;
+            return;
+          }
           comment.replies.unshift(...replies);
         }
       })
@@ -315,6 +337,7 @@ export const {
   addLike,
   removeLike,
   removeComment,
+  updateAvatarComments,
 } = commentsSlice.actions;
 
 export const selectReply = (state: RootState) => state.comments.reply;

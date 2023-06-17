@@ -31,12 +31,6 @@ export const Comment: React.FC<commentProps> = ({ comment }) => {
 
   const handleCloseSettings = useCallback(() => setShowSettings(false), []);
 
-  // useEffect(() => {
-  //   if (showReplies && comment.replies.length === 0) {
-  //     dispatch(getCommentRepliesAsync(comment._id));
-  //   }
-  // }, [showReplies, dispatch, comment]);
-
   const handleClickLike = async () => {
     try {
       if (comment.liked) {
@@ -57,7 +51,12 @@ export const Comment: React.FC<commentProps> = ({ comment }) => {
       return;
     }
     setShowReplies(true);
-    dispatch(getCommentRepliesAsync(comment._id));
+    if (
+      (showReplies && comment.repliesCount > comment.replies.length) ||
+      comment.replies.length === 0
+    ) {
+      dispatch(getCommentRepliesAsync(comment._id));
+    }
   };
 
   const handleClickReply = () => {

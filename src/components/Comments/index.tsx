@@ -6,7 +6,7 @@ import {
 } from "../../app/slices/comments";
 import { IPost } from "../../app/slices/posts";
 import { Comment } from "./Comment";
-import { Avatar, TextButton } from "../AppComponents";
+import { TextButton } from "../AppComponents";
 import { LoadingIcon, PlusCircleIcon } from "../icons";
 import scss from "./Comments.module.scss";
 

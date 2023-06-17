@@ -340,6 +340,17 @@ const PostsSlice = createSlice({
         })
       );
     },
+    updateAvatarPosts: (state, action: PayloadAction<string>) => {
+      [
+        state.userPosts?.posts,
+        state.savedPosts?.posts,
+        state.userReels?.posts,
+      ].forEach((array) =>
+        array?.forEach((post) => {
+          post.user.avatarDest = action.payload;
+        })
+      );
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -414,6 +425,7 @@ export const {
   deletePost,
   clearPostSlice,
   changeCommentsCount,
+  updateAvatarPosts,
 } = PostsSlice.actions;
 
 export const selectUserPosts = (state: RootState) => state.posts.userPosts;
