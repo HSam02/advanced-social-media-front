@@ -1,0 +1,33 @@
+.content {
+  margin-right: 9px;
+
+  >pre {
+    color: #000;
+    font-weight: 300;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+
+    >span {
+      color: #262626;
+      font-weight: 700;
+      margin-right: 4px;
+    }
+  }
+
+  .info {
+    display: flex;
+    align-items: center;
+    margin-top: 8px;
+
+    >span {
+      color: #737373;
+      font-size: 12px;
+      margin-right: 12px;
+      cursor: pointer;
+
+      &:first-child {
+        cursor: unset;
+      }
+    }
+  }
+}

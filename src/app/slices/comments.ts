@@ -129,6 +129,9 @@ const commentsSlice = createSlice({
   name: "comments",
   initialState,
   reducers: {
+    clearComments: (state) => {
+      state.postComments = [];
+    },
     setReply: (state, action: PayloadAction<IComment | IReply>) => {
       state.reply = action.payload;
     },
@@ -253,9 +256,6 @@ const commentsSlice = createSlice({
         const commentsIndex = state.postComments.findIndex(
           (comment) => comment.postId === action.payload.postId
         );
-        // if (commentsIndex === -1) {
-        //   state.postComments.push({ ...action.payload, status: "idle" });
-        // } else {
         state.postComments[commentsIndex]! = {
           ...action.payload,
           comments: [
@@ -264,7 +264,6 @@ const commentsSlice = createSlice({
           ],
           status: "idle",
         };
-        // }
       })
       .addCase(getPostCommentsAsync.pending, (state, action) => {
         const postId = action.meta.arg;
@@ -330,6 +329,7 @@ const commentsSlice = createSlice({
 });
 
 export const {
+  clearComments,
   setReply,
   clearReply,
   addComment,

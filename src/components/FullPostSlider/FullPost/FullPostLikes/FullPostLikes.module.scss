@@ -1,0 +1,16 @@
+.likes {
+  >span {
+    font-weight: 500;
+    cursor: pointer;
+    transition: .2s;
+
+    &:hover {
+      opacity: .5;
+    }
+  }
+
+  .likeLoading {
+    pointer-events: none;
+    opacity: .5;
+  }
+}

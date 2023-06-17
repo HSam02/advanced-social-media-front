@@ -1,0 +1,16 @@
+.dots {
+  position: relative;
+  width: 24px;
+  height: 12px;
+  margin-left: auto;
+  cursor: pointer;
+
+  >svg {
+    display: none;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    color: #737373;
+  }
+}
