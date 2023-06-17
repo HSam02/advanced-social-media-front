@@ -1,4 +1,5 @@
 export { AppButton } from "./AppButton";
+export { TextButton } from "./TextButton";
 export { AppSlider } from "./AppSlider";
 export { ArrowIconButton } from "./ArrowIconButton";
 export { Avatar } from "./Avatar";

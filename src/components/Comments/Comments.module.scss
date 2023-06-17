@@ -2,46 +2,15 @@
   width: 100%;
 }
 
-.noComments {
-  height: 100%;
+.center {
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-
-  >h6 {
-    color: #000;
-    font-size: 24px;
-    margin-bottom: 8px;
-  }
-
-  >p {
-    color: #000;
-    font-size: 14px;
-  }
-}
-
-.postDescription {
-  display: flex;
-  justify-content: flex-start;
+  align-items: center;
   width: 100%;
-  padding: 16px 0;
+  height: 100%;
 
-  >div:first-child {
-    margin-right: 16px;
-  }
-
-  >pre {
-    color: #000;
-    font-weight: 300;
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-
-    >span {
-      color: #262626;
-      font-weight: 700;
-      margin-right: 4px;
-    }
+  >svg {
+    width: 32px;
   }
 }
 

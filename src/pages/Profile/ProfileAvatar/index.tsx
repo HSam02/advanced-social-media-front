@@ -1,6 +1,6 @@
 import { useState, useRef, memo } from "react";
 import { useAppDispatch } from "../../../app/hooks";
-import { updateAvatar } from "../../../app/slices/user";
+import { updateUserAvatar } from "../../../app/thunks";
 import appAxios from "../../../appAxios";
 import { Avatar } from "../../../components";
 import { LoadingIcon } from "../../../components/icons";
@@ -39,7 +39,7 @@ export const ProfileAvatar: React.FC<ProfileAvatarProps> = memo(({ dest }) => {
 
       const { data } = await appAxios.post<string>("/auth/avatar", formData);
 
-      dispatch(updateAvatar(data));
+      dispatch(updateUserAvatar(data));
       setIsAvatarLoading(false);
     } catch (error) {
       console.error(error);
@@ -53,7 +53,7 @@ export const ProfileAvatar: React.FC<ProfileAvatarProps> = memo(({ dest }) => {
     try {
       setIsAvatarLoading(true);
       await appAxios.delete("/auth/avatar");
-      dispatch(updateAvatar(""));
+      dispatch(updateUserAvatar(""));
       setIsAvatarLoading(false);
     } catch (error) {
       console.error(error);

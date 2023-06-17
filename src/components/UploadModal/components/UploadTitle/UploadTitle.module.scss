@@ -21,15 +21,4 @@
     height: 24px;
     cursor: pointer;
   }
-
-  >.next {
-    cursor: pointer;
-    user-select: none;
-    color: #0095f6;
-    transition: .2s;
-
-    &:hover {
-      color: #00376b;
-    }
-  }
 }

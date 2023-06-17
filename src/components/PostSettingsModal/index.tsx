@@ -92,15 +92,6 @@ export const PostSettingsModal: React.FC<PostSettingsModalProps> = ({
         <li>Copy link</li>
         <li onClick={onClose}>Cancel</li>
       </ul>
-      {/* {showDiscardModal && (
-        <DiscardModal
-          acceptText="Delete"
-          title="Delete post?"
-          text="Are you sure you want to delete this post?"
-          onAccept={handleDeletePost}
-          onClose={() => setShowDiscardModal(false)}
-        />
-      )} */}
     </ModalBackground>
   );
 };

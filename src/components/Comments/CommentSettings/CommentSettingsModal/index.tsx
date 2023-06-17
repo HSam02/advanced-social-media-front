@@ -1,17 +1,19 @@
-import { useAppDispatch } from "../../../app/hooks";
-import { removeCommentOrReply } from "../../../app/thunks";
-import appAxios from "../../../appAxios";
-import { ModalBackground } from "../../AppComponents";
+import { useAppDispatch } from "../../../../app/hooks";
+import { removeCommentOrReply } from "../../../../app/thunks";
+import appAxios from "../../../../appAxios";
+import { ModalBackground } from "../../../AppComponents";
 import scss from "./CommentSettingsModal.module.scss";
 
 type commentSettingsModalProps = {
   commentId: string;
   onClose: () => void;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const CommentSettingsModal: React.FC<commentSettingsModalProps> = ({
   commentId,
   onClose,
+  setLoading,
 }) => {
   console.log("CommentSettingsModal");
 
@@ -19,11 +21,14 @@ export const CommentSettingsModal: React.FC<commentSettingsModalProps> = ({
 
   const handleDeleteComment = async () => {
     try {
+      setLoading(true);
       onClose();
       await appAxios.delete("/comment/" + commentId);
       dispatch(removeCommentOrReply(commentId));
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 

@@ -1,10 +1,17 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
-import { IPost, addLike, addToSaved, removeLike, unsavePost } from "../../../app/slices/posts";
+import {
+  IPost,
+  addLike,
+  addToSaved,
+  removeLike,
+  unsavePost,
+} from "../../../app/slices/posts";
 import { selectUser } from "../../../app/slices/user";
 import appAxios from "../../../appAxios";
 import { BookMarkIcon, CommentIcon, HeartIcon, PlaneIcon } from "../../icons";
 import scss from "./UserInteraction.module.scss";
+import TextareaContext from "../../Comments/TextareaContext";
 
 type UserInteractionProps = {
   post: IPost;
@@ -17,6 +24,7 @@ export const UserInteraction: React.FC<UserInteractionProps> = ({ post }) => {
   const { user } = useAppSelector(selectUser);
   const [isLikeLoading, setIsLikeLoading] = useState(false);
   const [isSaveLoading, setIsSaveLoading] = useState(false);
+  const textareaRef = useContext(TextareaContext);
 
   const liked = post.liked;
   const saved = post.saved;
@@ -63,9 +71,11 @@ export const UserInteraction: React.FC<UserInteractionProps> = ({ post }) => {
       >
         <HeartIcon active={liked} />
       </li>
-      <li>
-        <CommentIcon />
-      </li>
+      {!post.hideComments && (
+        <li onClick={() => textareaRef?.current?.focus()}>
+          <CommentIcon />
+        </li>
+      )}
       <li>
         <PlaneIcon />
       </li>

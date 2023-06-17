@@ -1,77 +1,97 @@
-import { useEffect, useState } from "react";
+import { useEffect, memo } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import {
   getPostCommentsAsync,
   selectPostComments,
 } from "../../app/slices/comments";
 import { Comment } from "./Comment";
-import scss from "./Comments.module.scss";
-import { IPost } from "../../app/slices/posts";
-import { Avatar } from "../AppComponents";
+import { NoComments } from "./NoComments";
+import { TextButton } from "../AppComponents";
 import { LoadingIcon, PlusCircleIcon } from "../icons";
+import scss from "./Comments.module.scss";
 
 type CommentsProps = {
-  post: IPost;
+  postId: string;
+  postText: boolean;
+  hideComments: boolean;
 };
 
-export const Comments: React.FC<CommentsProps> = ({ post }) => {
-  console.log("Comments");
+export const Comments: React.FC<CommentsProps> = memo(
+  ({ hideComments, postId, postText }) => {
+    console.log("Comments");
 
-  const dispatch = useAppDispatch();
-  const commentsData = useAppSelector(selectPostComments(post._id));
+    const dispatch = useAppDispatch();
+    const commentsData = useAppSelector(selectPostComments(postId));
 
-  const [isLoading, setIsLoading] = useState(false);
+    useEffect(() => {
+      if (!commentsData && !hideComments) {
+        dispatch(getPostCommentsAsync(postId));
+      }
+    }, [postId, hideComments, dispatch, commentsData]);
 
-  useEffect(() => {
-    if (!commentsData) {
-      dispatch(getPostCommentsAsync(post._id));
+    if (
+      ((commentsData?.status === "idle" &&
+        commentsData.comments.length === 0) ||
+        hideComments) &&
+      !postText
+    ) {
+      return <NoComments />;
     }
-  }, [post, dispatch, commentsData]);
 
-  if (!commentsData) {
-    return null;
-  }
+    if (!commentsData || hideComments) {
+      return null;
+    }
 
-  if (commentsData.comments.length === 0 && !post.text) {
+    if (commentsData.status === "error" && commentsData.comments.length === 0) {
+      return (
+        <div
+          className={scss.center}
+          style={postText ? { height: "unset" } : undefined}
+        >
+          <TextButton onClick={() => dispatch(getPostCommentsAsync(postId))}>
+            Retry
+          </TextButton>
+        </div>
+      );
+    }
+
+    if (
+      commentsData.status === "loading" &&
+      commentsData.comments.length === 0
+    ) {
+      return (
+        <div
+          className={scss.center}
+          style={postText ? { height: "unset" } : undefined}
+        >
+          <LoadingIcon />
+        </div>
+      );
+    }
+
     return (
-      <div className={scss.noComments}>
-        <h6>No comments yet.</h6>
-        <p>Start the conversation</p>
-      </div>
-    );
-  }
-
-  return (
-    <ul className={scss.comments}>
-      {post.text && (
-        <li className={scss.postDescription}>
-          <Avatar size="32px" dest={post.user.avatarDest} />
-          <pre>
-            <span>{post.user.username}</span>
-            {post.text}
-          </pre>
-        </li>
-      )}
-      {commentsData.comments.map((comment) => (
-        <li key={comment._id}>
-          <Comment comment={comment} />
-        </li>
-      ))}
-      {commentsData.comments.length < commentsData.commentsCount &&
-        (commentsData.status === "loading" ? (
-          <div className={scss.showMore}>
-            <LoadingIcon />
-          </div>
-        ) : (
-          <li
-            onClick={() => {
-              dispatch(getPostCommentsAsync(post._id));
-            }}
-            className={scss.showMore}
-          >
-            <PlusCircleIcon />
+      <ul className={scss.comments}>
+        {commentsData.comments.map((comment) => (
+          <li key={comment._id}>
+            <Comment comment={comment} />
           </li>
         ))}
-    </ul>
-  );
-};
+        {commentsData.comments.length < commentsData.commentsCount &&
+          (commentsData.status === "loading" ? (
+            <div className={scss.showMore}>
+              <LoadingIcon />
+            </div>
+          ) : (
+            <li
+              onClick={() => {
+                dispatch(getPostCommentsAsync(postId));
+              }}
+              className={scss.showMore}
+            >
+              <PlusCircleIcon />
+            </li>
+          ))}
+      </ul>
+    );
+  }
+);

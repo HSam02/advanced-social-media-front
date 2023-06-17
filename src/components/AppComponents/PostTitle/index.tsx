@@ -1,14 +1,12 @@
 import { memo, useState } from "react";
+import { IPost } from "../../../app/slices/posts";
 import { DotsIcon } from "../../icons";
 import { Avatar } from "../Avatar";
-import scss from "./PostTitle.module.scss";
-import { IPost } from "../../../app/slices/posts";
 import { PostSettingsModal } from "../../PostSettingsModal";
+import scss from "./PostTitle.module.scss";
 
 type PostTitleProps = {
   post: IPost;
-  // username: string;
-  // avatarDest?: string;
   date?: boolean;
 };
 
