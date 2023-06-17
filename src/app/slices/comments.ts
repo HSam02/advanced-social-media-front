@@ -1,8 +1,4 @@
-import {
-  PayloadAction,
-  createAsyncThunk,
-  createSlice
-} from "@reduxjs/toolkit";
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 import { IUser } from "./user";
 import { getFormattedTime } from "../../utils/getTimeAgo";
@@ -17,7 +13,7 @@ export interface IComment {
   likesCount: number;
   repliesCount: number;
   replies: IReply[];
-  repliesStatus: "loading" | "idle";
+  repliesStatus: "loading" | "idle" | "error";
   createdAt: string;
   updatedAt: string;
 }
@@ -30,7 +26,7 @@ export type commentsDataType = {
   postId: string;
   comments: IComment[];
   commentsCount: number;
-  status: "loading" | "idle";
+  status: "loading" | "idle" | "error";
 };
 
 export type repliesDataType = {
@@ -114,7 +110,7 @@ export const getCommentRepliesAsync = createAsyncThunk<
         ) as IComment
       )?.replies[0]?._id;
       const { data } = await appAxios.get<repliesDataType>(
-        `reply/${parentId}?limit=15${lastId ? `&lastId=${lastId}` : ""}`
+        `reply/${parentId}?limit=9${lastId ? `&lastId=${lastId}` : ""}`
       );
       data.replies.forEach((replie) => {
         replie.createdAt = getFormattedTime(replie.createdAt);
@@ -239,17 +235,33 @@ const commentsSlice = createSlice({
         const commentsIndex = state.postComments.findIndex(
           (comment) => comment.postId === action.payload.postId
         );
-        if (commentsIndex === -1) {
-          state.postComments.push({ ...action.payload, status: "idle" });
+        // if (commentsIndex === -1) {
+        //   state.postComments.push({ ...action.payload, status: "idle" });
+        // } else {
+        state.postComments[commentsIndex]! = {
+          ...action.payload,
+          comments: [
+            ...state.postComments[commentsIndex]!.comments,
+            ...action.payload.comments,
+          ],
+          status: "idle",
+        };
+        // }
+      })
+      .addCase(getPostCommentsAsync.pending, (state, action) => {
+        const postId = action.meta.arg;
+        const postComments = state.postComments.find(
+          (comments) => comments.postId === postId
+        );
+        if (postComments) {
+          postComments.status = "loading";
         } else {
-          state.postComments[commentsIndex]! = {
-            ...action.payload,
-            comments: [
-              ...state.postComments[commentsIndex]!.comments,
-              ...action.payload.comments,
-            ],
-            status: "idle",
-          };
+          state.postComments.push({
+            postId,
+            comments: [],
+            commentsCount: 0,
+            status: "loading",
+          });
         }
       })
       .addCase(getCommentRepliesAsync.fulfilled, (state, action) => {
@@ -263,22 +275,33 @@ const commentsSlice = createSlice({
           comment.replies.unshift(...replies);
         }
       })
-      .addCase(getPostCommentsAsync.pending, (state, action) => {
-        state.postComments.find((comments) => {
-          if (comments.postId === action.meta.arg) {
-            comments.status = "loading";
-            return true;
-          }
-          return false;
-        });
-      })
       .addCase(getCommentRepliesAsync.pending, (state, action) => {
+        const postId = action.meta.arg;
         const comment = findCommentOrReplyById(
-          action.meta.arg,
+          postId,
           state.postComments
-        ) as IComment;
+        ) as IComment | null;
         if (comment) {
           comment.repliesStatus = "loading";
+        }
+      })
+      .addCase(getPostCommentsAsync.rejected, (state, action) => {
+        const postId = action.meta.arg;
+        const postComments = state.postComments.find(
+          (comments) => comments.postId === postId
+        );
+        if (postComments) {
+          postComments.status = "error";
+        }
+      })
+      .addCase(getCommentRepliesAsync.rejected, (state, action) => {
+        const postId = action.meta.arg;
+        const comment = findCommentOrReplyById(
+          postId,
+          state.postComments
+        ) as IComment | null;
+        if (comment) {
+          comment.repliesStatus = "error";
         }
       });
   },

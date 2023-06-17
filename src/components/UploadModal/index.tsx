@@ -95,7 +95,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ onClose }) => {
       const formData = new FormData();
       const requestData = {
         aspect,
-        text,
+        text: text.trim(),
         hideComments,
         hideLikes,
         media: [] as mediaType[],

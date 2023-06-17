@@ -2,6 +2,18 @@
   width: 100%;
 }
 
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+
+  >svg {
+    width: 32px;
+  }
+}
+
 .noComments {
   height: 100%;
   display: flex;
@@ -18,30 +30,6 @@
   >p {
     color: #000;
     font-size: 14px;
-  }
-}
-
-.postDescription {
-  display: flex;
-  justify-content: flex-start;
-  width: 100%;
-  padding: 16px 0;
-
-  >div:first-child {
-    margin-right: 16px;
-  }
-
-  >pre {
-    color: #000;
-    font-weight: 300;
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-
-    >span {
-      color: #262626;
-      font-weight: 700;
-      margin-right: 4px;
-    }
   }
 }
 

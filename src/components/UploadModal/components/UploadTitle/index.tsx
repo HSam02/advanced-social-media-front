@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { LeftArrowIcon } from "../../../icons";
 import { uploadStatusType } from "../../types";
+import { TextButton } from "../../../AppComponents";
 import scss from "./UploadTitle.module.scss";
 
 type UploadTitleProps = {
@@ -32,9 +33,9 @@ export const UploadTitle: React.FC<UploadTitleProps> = memo(
             )}
             <h3>Create new post</h3>
             {showButtos && (
-              <div onClick={handleClickButton} className={scss.next}>
+              <TextButton onClick={handleClickButton}>
                 {isCropSuccess ? "Share" : "Next"}
-              </div>
+              </TextButton>
             )}
           </>
         ) : (
