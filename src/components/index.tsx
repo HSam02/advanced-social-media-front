@@ -21,3 +21,4 @@ export { PostGallery } from "./PostGallery";
 export { FullPostSlider } from "./FullPostSlider";
 export { CommentInput } from "./Comments/CommentInput";
 export { Comments } from "./Comments";
+export { Search } from "./Search";

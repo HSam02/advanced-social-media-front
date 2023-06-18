@@ -1,152 +1,114 @@
-import { useState, useEffect } from "react";
-import { NavLink, useLocation } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { logout, selectUser } from "../../app/slices/user";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAppSelector } from "../../app/hooks";
+import { selectUser } from "../../app/slices/user";
 import {
-  ActivityIcon,
   AddIcon,
-  BarsIcon,
   BellIcon,
-  BookMarkIcon,
   HouseIcon,
   LogoIcon,
   MessageIcon,
-  ReportIcon,
+  ReelsIcon,
   SearchIcon,
-  SettingsIcon,
-  ThemeIcon,
-  UserIcon,
 } from "../icons";
+import { Avatar, UploadModal } from "../";
+import { SideBarSettings } from "./SideBarSettings";
 import scss from "./SideBar.module.scss";
-import { UploadModal } from "../";
+
+const sideBarList = [
+  {
+    name: "/",
+    icon: <HouseIcon />,
+  },
+  {
+    name: "search",
+    icon: <SearchIcon />,
+  },
+  {
+    name: "/explore",
+    icon: <LogoIcon />,
+  },
+  {
+    name: "/reels",
+    icon: <ReelsIcon />,
+  },
+  {
+    name: "/direct",
+    icon: <MessageIcon />,
+  },
+  {
+    name: "bell",
+    icon: <BellIcon />,
+  },
+  {
+    name: "add",
+    icon: <AddIcon />,
+  },
+];
 
 export const SideBar: React.FC = () => {
+  console.log("SideBar");
+
   const { user } = useAppSelector(selectUser);
   const [activeLink, setActiveLink] = useState<string>("");
-  const [showMoreMenu, setShowMoreMenu] = useState<boolean>(false);
-  const [showUploadModal, setShowUploadModal] = useState<boolean>(false);
+  const [activeModal, setActiveModal] = useState<string | null>(null);
   const location = useLocation();
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    const hideMoreMenu = () => setShowMoreMenu(false);
-    if (showMoreMenu) {
-      window.addEventListener("click", hideMoreMenu);
-    }
-
-    return () => window.removeEventListener("click", hideMoreMenu);
-  }, [showMoreMenu]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setActiveLink("/" + location.pathname.split("/")[1]);
   }, [location.pathname]);
 
+  useEffect(() => {
+    if (
+      activeLink.includes("/") &&
+      activeLink !== "/" + location.pathname.split("/")[1]
+    ) {
+      navigate(activeLink);
+    }
+  }, [navigate, activeLink, location.pathname]);
+
+  useEffect(() => {
+    if (!activeLink.includes("/")) {
+      setActiveModal(activeLink);
+    }
+  }, [activeLink]);
+
   const closeModal = () => {
-    setShowUploadModal(false);
+    setActiveModal(null);
     setActiveLink("/" + location.pathname.split("/")[1]);
   };
 
-  // useEffect(() => {
-
-  //   console.log(showUploadModal);
-  // }, [showUploadModal])
-
-  // console.log(showUploadModal);
-
   return (
     <>
-      {showUploadModal && <UploadModal onClose={closeModal} />}
       <div className={scss.block}>
         <div className={scss.sideBar}>
           <div className={scss.logo} onClick={() => setActiveLink("/")}>
-            <NavLink to="/">
-              <LogoIcon />
-            </NavLink>
+            <LogoIcon />
           </div>
           <ul className={scss.links}>
-            <li onClick={() => setActiveLink("/")}>
-              <NavLink to="/">
-                <HouseIcon active={activeLink === "/"} />
-              </NavLink>
-            </li>
-            <li onClick={() => setActiveLink("search")}>
-              <SearchIcon active={activeLink === "search"} />
-            </li>
-            <li onClick={() => setActiveLink("/direct")}>
-              <NavLink to="/direct">
-                <MessageIcon active={activeLink === "/direct"} />
-              </NavLink>
-            </li>
-            <li onClick={() => setActiveLink("bell")}>
-              <BellIcon active={activeLink === "bell"} />
-            </li>
+            {sideBarList?.map((link, i) => (
+              <li key={i} onClick={() => setActiveLink(link.name)}>
+                {React.createElement(link.icon.type, {
+                  active: activeLink === link.name,
+                })}
+              </li>
+            ))}
             <li
-              onClick={() => {
-                setActiveLink("add");
-                setShowUploadModal(true);
-              }}
+              onClick={() => setActiveLink(`/${user?.username}`)}
+              className={
+                activeLink === `/${user?.username}`
+                  ? scss.avatarActive
+                  : undefined
+              }
             >
-              <AddIcon active={activeLink === "add"} />
-            </li>
-            <li onClick={() => setActiveLink(`/${user?.username}`)}>
-              <NavLink to={`/${user?.username}`}>
-                <UserIcon active={activeLink === `/${user?.username}`} />
-              </NavLink>
+              <Avatar size="28px" dest={user?.avatarDest} />
             </li>
           </ul>
-          <div
-            className={scss.bars}
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowMoreMenu((prev) => !prev);
-            }}
-          >
-            <BarsIcon active={showMoreMenu} />
-            {showMoreMenu && (
-              <ul className={scss.more__menu}>
-                <li>
-                  <NavLink to="/settings">
-                    <div>
-                      Settings
-                      <SettingsIcon />
-                    </div>
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/saved">
-                    <div>
-                      Saved
-                      <BookMarkIcon />
-                    </div>
-                  </NavLink>
-                </li>
-                <li>
-                  <div>
-                    Switch apperance
-                    <ThemeIcon />
-                  </div>
-                </li>
-                <li>
-                  <NavLink to="/your_activity">
-                    <div>
-                      Your activity
-                      <ActivityIcon />
-                    </div>
-                  </NavLink>
-                </li>
-                <li>
-                  <div>
-                    Report a problem <ReportIcon />
-                  </div>
-                </li>
-                <li>
-                  <div onClick={() => dispatch(logout())}>Log out</div>
-                </li>
-              </ul>
-            )}
-          </div>
+          <SideBarSettings />
         </div>
       </div>
+      {activeModal === "add" && <UploadModal onClose={closeModal} />}
     </>
   );
 };
