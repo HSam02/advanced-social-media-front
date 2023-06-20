@@ -3,9 +3,9 @@ import { IPost } from "../../../app/slices/posts";
 import { MediaBox } from "../../AppComponents";
 import {
   CommentFillIcon,
-  HeartFilledIcon,
+  HeartIcon,
   MediaGalleryFilledIcon,
-  ReelsFilledIcon,
+  ReelsIcon,
 } from "../../icons";
 import scss from "./PostBox.module.scss";
 
@@ -41,7 +41,7 @@ export const PostBox: React.FC<PostBoxProps> = memo(({ post }) => {
       )}
       {post.media.length === 1 && post.media[0].type === "video" && (
         <span className={scss.galleryIcon}>
-          <ReelsFilledIcon />
+          <ReelsIcon active />
         </span>
       )}
       {!(post.hideComments && post.hideLikes) && (
@@ -49,7 +49,7 @@ export const PostBox: React.FC<PostBoxProps> = memo(({ post }) => {
           <div>
             {!post.hideLikes && (
               <span>
-                <HeartFilledIcon /> {post.likes.length}
+                <HeartIcon active /> {post.likes.length}
               </span>
             )}
             {!post.hideComments && (

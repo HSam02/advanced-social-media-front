@@ -69,7 +69,7 @@ export const UserInteraction: React.FC<UserInteractionProps> = ({ post }) => {
         onClick={handleClickLike}
         className={isLikeLoading ? scss.loading : ""}
       >
-        <HeartIcon active={liked} />
+        <HeartIcon active={liked} red />
       </li>
       {!post.hideComments && (
         <li onClick={() => textareaRef?.current?.focus()}>

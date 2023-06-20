@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useMemo } from "react";
+import { useLocation } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { selectUser } from "../../app/slices/user";
+import { NavLink } from "react-router-dom";
 import {
   AddIcon,
-  BellIcon,
+  ExploreIcon,
+  HeartIcon,
   HouseIcon,
   LogoIcon,
   MessageIcon,
   ReelsIcon,
   SearchIcon,
 } from "../icons";
-import { Avatar, UploadModal } from "../";
+import { Avatar, Search, UploadModal } from "../";
 import { SideBarSettings } from "./SideBarSettings";
 import scss from "./SideBar.module.scss";
 
@@ -26,7 +28,7 @@ const sideBarList = [
   },
   {
     name: "/explore",
-    icon: <LogoIcon />,
+    icon: <ExploreIcon />,
   },
   {
     name: "/reels",
@@ -38,7 +40,7 @@ const sideBarList = [
   },
   {
     name: "bell",
-    icon: <BellIcon />,
+    icon: <HeartIcon />,
   },
   {
     name: "add",
@@ -53,20 +55,12 @@ export const SideBar: React.FC = () => {
   const [activeLink, setActiveLink] = useState<string>("");
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const location = useLocation();
-  const navigate = useNavigate();
+
+  const pathValue = useMemo(() => location.pathname.split("/")[1], [location]);
 
   useEffect(() => {
-    setActiveLink("/" + location.pathname.split("/")[1]);
-  }, [location.pathname]);
-
-  useEffect(() => {
-    if (
-      activeLink.includes("/") &&
-      activeLink !== "/" + location.pathname.split("/")[1]
-    ) {
-      navigate(activeLink);
-    }
-  }, [navigate, activeLink, location.pathname]);
+    setActiveLink("/" + pathValue);
+  }, [pathValue]);
 
   useEffect(() => {
     if (!activeLink.includes("/")) {
@@ -76,7 +70,7 @@ export const SideBar: React.FC = () => {
 
   const closeModal = () => {
     setActiveModal(null);
-    setActiveLink("/" + location.pathname.split("/")[1]);
+    setActiveLink("/" + pathValue);
   };
 
   return (
@@ -88,10 +82,26 @@ export const SideBar: React.FC = () => {
           </div>
           <ul className={scss.links}>
             {sideBarList?.map((link, i) => (
-              <li key={i} onClick={() => setActiveLink(link.name)}>
-                {React.createElement(link.icon.type, {
-                  active: activeLink === link.name,
-                })}
+              <li
+                key={i}
+                onClick={() =>
+                  activeLink === link.name
+                    ? closeModal()
+                    : setActiveLink(link.name)
+                }
+                onMouseDown={(e) => e.stopPropagation()}
+              >
+                {link.name.includes("/") ? (
+                  <NavLink to={link.name}>
+                    {React.createElement(link.icon.type, {
+                      active: activeLink === link.name,
+                    })}
+                  </NavLink>
+                ) : (
+                  React.createElement(link.icon.type, {
+                    active: activeLink === link.name,
+                  })
+                )}
               </li>
             ))}
             <li
@@ -102,13 +112,16 @@ export const SideBar: React.FC = () => {
                   : undefined
               }
             >
-              <Avatar size="28px" dest={user?.avatarDest} />
+              <NavLink to={`/${user?.username}`}>
+                <Avatar size="28px" dest={user?.avatarDest} />
+              </NavLink>
             </li>
           </ul>
           <SideBarSettings />
         </div>
       </div>
       {activeModal === "add" && <UploadModal onClose={closeModal} />}
+      {activeModal === "search" && <Search onClose={closeModal} />}
     </>
   );
 };

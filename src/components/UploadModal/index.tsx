@@ -133,7 +133,6 @@ export const UploadModal: React.FC<UploadModalProps> = ({ onClose }) => {
   };
 
   const handleAcceptModal = () => {
-    setActiveModal(null);
     switch (activeModal) {
       case "cancel":
         setMediaData(null);
