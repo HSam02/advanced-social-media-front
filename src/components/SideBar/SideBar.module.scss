@@ -52,3 +52,25 @@
     border-radius: 50%;
   }
 }
+
+.sideMenu {
+  position: fixed;
+  z-index: 1000;
+  left: -400px;
+  height: 100vh;
+
+  transition: .5s;
+
+  // animation-name: appear;
+  // animation-duration: .5s;
+}
+
+// @keyframes appear {
+//   0% {
+//     left: -400px;
+//   }
+
+//   100% {
+//     left: 77px;
+//   }
+// }

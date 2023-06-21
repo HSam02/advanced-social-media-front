@@ -1,5 +1,6 @@
-import { useState, memo } from "react";
+import { useState, useContext, memo } from "react";
 import { useNavigate } from "react-router-dom";
+import { OnCloseContext } from "../../SideBar/utils";
 import appAxios from "../../../appAxios";
 import { IUser } from "../../../app/slices/user";
 import { CloseIcon } from "../../icons";
@@ -17,10 +18,12 @@ export const SearchListItem: React.FC<SearchListItemProps> = memo(
   ({ searchItem, deletable, setRecents }) => {
     console.log("SearchItem");
 
+    const onClose = useContext(OnCloseContext);
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
 
     const handleGoToUser = () => {
+      onClose();
       navigate("/" + searchItem.username);
       appAxios.post("/recent/search/" + searchItem._id);
     };

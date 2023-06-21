@@ -1,83 +1,77 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  useCallback,
+} from "react";
 import { useLocation } from "react-router-dom";
 import { useAppSelector } from "../../app/hooks";
 import { selectUser } from "../../app/slices/user";
+import { OnCloseContext, sideBarList } from "./utils";
 import { NavLink } from "react-router-dom";
-import {
-  AddIcon,
-  ExploreIcon,
-  HeartIcon,
-  HouseIcon,
-  LogoIcon,
-  MessageIcon,
-  ReelsIcon,
-  SearchIcon,
-} from "../icons";
+import { LogoIcon } from "../icons";
 import { Avatar, Search, UploadModal } from "../";
 import { SideBarSettings } from "./SideBarSettings";
 import scss from "./SideBar.module.scss";
-
-const sideBarList = [
-  {
-    name: "/",
-    icon: <HouseIcon />,
-  },
-  {
-    name: "search",
-    icon: <SearchIcon />,
-  },
-  {
-    name: "/explore",
-    icon: <ExploreIcon />,
-  },
-  {
-    name: "/reels",
-    icon: <ReelsIcon />,
-  },
-  {
-    name: "/direct",
-    icon: <MessageIcon />,
-  },
-  {
-    name: "bell",
-    icon: <HeartIcon />,
-  },
-  {
-    name: "add",
-    icon: <AddIcon />,
-  },
-];
 
 export const SideBar: React.FC = () => {
   console.log("SideBar");
 
   const { user } = useAppSelector(selectUser);
-  const [activeLink, setActiveLink] = useState<string>("");
-  const [activeModal, setActiveModal] = useState<string | null>(null);
   const location = useLocation();
+  
+  const [activeLink, setActiveLink] = useState<string>("");
+  const [activeSideMenu, setActiveSideMenu] = useState<string | null>(null);
+  const [sideMenuLeft, setSideMenuLeft] = useState<string | undefined>();
+  
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const pathValue = useMemo(() => location.pathname.split("/")[1], [location]);
+
+  const closeSideMenu = useCallback(() => {
+    if (!timeoutRef.current && activeSideMenu) {
+      setSideMenuLeft("-400px");
+    }
+    if (timeoutRef.current && activeSideMenu) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+      setSideMenuLeft("77px");
+      return;
+    }
+    timeoutRef.current = setTimeout(() => {
+      setActiveSideMenu(null);
+      setActiveLink("/" + pathValue);
+      timeoutRef.current = null;
+    }, 500);
+  }, [pathValue, activeSideMenu]);
+
+  const handleClickLink = (linkName: string) => {
+    if (linkName.includes("/")) {
+      setActiveLink(linkName);
+    } else {
+      setActiveSideMenu(linkName);
+    }
+  };
 
   useEffect(() => {
     setActiveLink("/" + pathValue);
   }, [pathValue]);
 
   useEffect(() => {
-    if (!activeLink.includes("/")) {
-      setActiveModal(activeLink);
+    if (activeSideMenu) {
+      setSideMenuLeft("77px");
+    } else {
+      setActiveLink("/" + pathValue);
     }
-  }, [activeLink]);
-
-  const closeModal = () => {
-    setActiveModal(null);
-    setActiveLink("/" + pathValue);
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSideMenu]);
 
   return (
     <>
       <div className={scss.block}>
         <div className={scss.sideBar}>
-          <div className={scss.logo} onClick={() => setActiveLink("/")}>
+          <div className={scss.logo} onClick={() => handleClickLink("/")}>
             <LogoIcon />
           </div>
           <ul className={scss.links}>
@@ -85,27 +79,29 @@ export const SideBar: React.FC = () => {
               <li
                 key={i}
                 onClick={() =>
-                  activeLink === link.name
-                    ? closeModal()
-                    : setActiveLink(link.name)
+                  activeSideMenu ? closeSideMenu() : handleClickLink(link.name)
                 }
                 onMouseDown={(e) => e.stopPropagation()}
               >
                 {link.name.includes("/") ? (
                   <NavLink to={link.name}>
                     {React.createElement(link.icon.type, {
-                      active: activeLink === link.name,
+                      active: activeSideMenu
+                        ? activeSideMenu === link.name
+                        : activeLink === link.name,
                     })}
                   </NavLink>
                 ) : (
                   React.createElement(link.icon.type, {
-                    active: activeLink === link.name,
+                    active: activeSideMenu
+                      ? activeSideMenu === link.name
+                      : activeLink === link.name,
                   })
                 )}
               </li>
             ))}
             <li
-              onClick={() => setActiveLink(`/${user?.username}`)}
+              onClick={() => handleClickLink(`/${user?.username}`)}
               className={
                 activeLink === `/${user?.username}`
                   ? scss.avatarActive
@@ -120,8 +116,14 @@ export const SideBar: React.FC = () => {
           <SideBarSettings />
         </div>
       </div>
-      {activeModal === "add" && <UploadModal onClose={closeModal} />}
-      {activeModal === "search" && <Search onClose={closeModal} />}
+      <OnCloseContext.Provider value={closeSideMenu}>
+        {activeSideMenu === "add" && <UploadModal onClose={closeSideMenu} />}
+        {activeSideMenu === "search" && (
+          <div className={scss.sideMenu} style={{ left: sideMenuLeft }}>
+            <Search />
+          </div>
+        )}
+      </OnCloseContext.Provider>
     </>
   );
 };

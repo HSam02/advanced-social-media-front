@@ -1,4 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
+import { useClickOutside } from "../../utils/hooks";
+import { OnCloseContext } from "../SideBar/utils";
 import { IUser } from "../../app/slices/user";
 import appAxios from "../../appAxios";
 import { LoadingIcon } from "../icons";
@@ -6,16 +8,16 @@ import { SearchInput } from "./SearchInput";
 import { SearchResult } from "./SearchResult";
 import { Recent } from "./Recent";
 import scss from "./Search.module.scss";
-import { useClickOutside } from "../../utils/hooks";
 
 const initialResult = {
   users: [],
   usersCount: 0,
 };
 
-export const Search: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+export const Search: React.FC = () => {
   console.log("Search");
 
+  const onClose = useContext(OnCloseContext);
   const [searchText, setSearchText] = useState("");
   const [result, setResult] = useState<{ users: IUser[]; usersCount: number }>(
     initialResult

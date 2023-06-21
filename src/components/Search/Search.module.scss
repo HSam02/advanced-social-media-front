@@ -1,9 +1,5 @@
 .search {
-  position: fixed;
-  z-index: 1000;
-  left: 77px;
   height: 100%;
-
   display: flex;
   flex-direction: column;
 
@@ -33,8 +29,4 @@
   >svg {
     margin: auto;
   }
-}
-
-@keyframes appear {
-  
 }

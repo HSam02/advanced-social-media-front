@@ -46,13 +46,15 @@ export const Recent = () => {
   };
 
   const clearModalElement = showClearModal ? (
-    <DiscardModal
-      acceptText="Clear all"
-      title="Clear search history?"
-      text="You won't be able to undo this. If you clear your search history, you may still see accounts you've searched for as suggested results."
-      onClose={() => setShowClearModal(false)}
-      onAccept={clearAll}
-    />
+    <div onMouseDown={(e) => e.stopPropagation()}>
+      <DiscardModal
+        acceptText="Clear all"
+        title="Clear search history?"
+        text="You won't be able to undo this. If you clear your search history, you may still see accounts you've searched for as suggested results."
+        onClose={() => setShowClearModal(false)}
+        onAccept={clearAll}
+      />
+    </div>
   ) : null;
 
   return (
