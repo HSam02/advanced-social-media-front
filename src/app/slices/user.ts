@@ -21,6 +21,7 @@ export interface IUser {
   email: string;
   username: string;
   fullname?: string;
+  bio?: string;
   avatarDest?: string;
   postsCount: number;
   // saved: ISavedPost[];

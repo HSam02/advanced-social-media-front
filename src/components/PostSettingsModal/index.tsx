@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { useAppDispatch } from "../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { selectUser } from "../../app/slices/user";
 import { IPost, editPost } from "../../app/slices/posts";
 import appAxios from "../../appAxios";
 import { ModalBackground } from "../AppComponents";
 import { DiscardModal } from "../DiscardModal";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { deleteUserPost } from "../../app/thunks";
 import scss from "./PostSettingsModal.module.scss";
 
@@ -18,9 +19,13 @@ export const PostSettingsModal: React.FC<PostSettingsModalProps> = ({
   onClose,
 }) => {
   console.log("PostSettingsModal");
+
   const dispatch = useAppDispatch();
-  const { pathname } = useLocation();
   const navigate = useNavigate();
+  const { user } = useAppSelector(selectUser);
+  const { username } = useParams();
+  const { pathname } = useLocation();
+
   const [showDiscardModal, setShowDiscardModal] = useState(false);
 
   const handleDeletePost = async () => {
@@ -64,6 +69,16 @@ export const PostSettingsModal: React.FC<PostSettingsModalProps> = ({
     }
   };
 
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      console.log("Alert copied success");
+      onClose();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   if (showDiscardModal) {
     return (
       <DiscardModal
@@ -76,20 +91,28 @@ export const PostSettingsModal: React.FC<PostSettingsModalProps> = ({
     );
   }
 
+  console.log("aaaaaaaaaaaaaa", username, user);
+
   return (
     <ModalBackground onClose={onClose}>
       <ul className={scss.box}>
-        <li onClick={() => setShowDiscardModal(true)}>Delete</li>
-        <li>Edit</li>
-        <li onClick={handleSwitchHideLikes}>
-          {post.hideLikes ? "Unhide like count" : "Hide like count"}
-        </li>
-        <li onClick={handleSwitchHideComments}>
-          {post.hideComments ? "Turn on commenting" : "Turn off commenting"}
-        </li>
+        {user?.username === username ? (
+          <>
+            <li onClick={() => setShowDiscardModal(true)}>Delete</li>
+            <li>Edit</li>
+            <li onClick={handleSwitchHideLikes}>
+              {post.hideLikes ? "Unhide like count" : "Hide like count"}
+            </li>
+            <li onClick={handleSwitchHideComments}>
+              {post.hideComments ? "Turn on commenting" : "Turn off commenting"}
+            </li>
+          </>
+        ) : (
+          <li>Report</li>
+        )}
         <li>Go to post</li>
         <li>Share to Direct</li>
-        <li>Copy link</li>
+        <li onClick={handleCopyLink}>Copy link</li>
         <li onClick={onClose}>Cancel</li>
       </ul>
     </ModalBackground>
