@@ -30,12 +30,12 @@ export const MyProfile = () => {
             </li>
             <li>
               <a href="/">
-                <span>{112}</span> followers
+                <span>{user.followData.followersCount}</span> followers
               </a>
             </li>
             <li>
               <a href="/">
-                <span>{473}</span> following
+                <span>{user.followData.followingCount}</span> following
               </a>
             </li>
           </ul>

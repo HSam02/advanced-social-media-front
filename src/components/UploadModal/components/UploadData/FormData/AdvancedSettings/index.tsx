@@ -1,5 +1,5 @@
 import { useState, useCallback, memo } from "react";
-import { BottomArrowIcon } from "../../../../../icons";
+import { VerticalArrowIcon } from "../../../../../icons";
 import { AppSlider } from "../../../../..";
 import { postInfoType } from "../../../../types";
 import scss from "./AdvancedSettings.module.scss";
@@ -41,7 +41,7 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = memo(
               transform: `rotate(${showAdvancedSettings ? 0 : 180}deg)`,
             }}
           >
-            <BottomArrowIcon />
+            <VerticalArrowIcon />
           </div>
         </div>
 

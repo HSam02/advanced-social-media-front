@@ -24,10 +24,16 @@ export interface IUser {
   bio?: string;
   avatarDest?: string;
   postsCount: number;
-  // saved: ISavedPost[];
+  privateAccount: boolean;
+  followData: {
+    followed?: boolean;
+    following?: boolean;
+    followersCount: number;
+    followingCount: number;
+    status: "idle" | "loading";
+  };
   // following: IUser[];
   // followers: IUser[];
-  // privateAccount: boolean;
   // chats: [];
 }
 
@@ -49,12 +55,20 @@ type statusType =
 
 type userStateType = {
   user: IUser | null;
+  otherUser: {
+    user: IUser | null;
+    status: "loading" | "idle";
+  };
   status: statusType;
   error: string | null;
 };
 
 const initialState: userStateType = {
   user: null,
+  otherUser: {
+    user: null,
+    status: "idle",
+  },
   status: "idle",
   error: null,
 };
@@ -70,6 +84,11 @@ export const registerAsync = createAsyncThunk<
       reqData
     );
     localStorage.setItem("token", data.token);
+    data.user.followData = {
+      followersCount: 0,
+      followingCount: 0,
+      status: "idle",
+    };
     return data.user;
   } catch (error: any) {
     // problem??
@@ -95,15 +114,60 @@ export const loginAsync = createAsyncThunk<
   }
 });
 
-export const getUserAsync = createAsyncThunk("user/getUser", async () => {
+export const getUserAsync = createAsyncThunk<
+  IUser,
+  undefined,
+  { rejectValue: string }
+>("user/getUser", async (_, { rejectWithValue }) => {
   try {
     if (!localStorage.getItem("token")) {
       throw new Error("No token");
     }
-    const { data } = await appAxios.get<IUser>("./auth/me");
+    const { data } = await appAxios.get<IUser>("/user");
     return data;
-  } catch (error) {
-    console.error(error);
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data.message || error.message || "");
+  }
+});
+
+export const getOtherUserAsync = createAsyncThunk<
+  IUser,
+  string,
+  { rejectValue: string }
+>("user/getOtherUser", async (username, { rejectWithValue }) => {
+  try {
+    const { data } = await appAxios.get<IUser>("/user/" + username);
+    return data;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data.message || error.message || "");
+  }
+});
+
+export const followUserAsync = createAsyncThunk<
+  undefined,
+  undefined,
+  { rejectValue: string }
+>("user/followUser", async (_, { rejectWithValue, getState }) => {
+  try {
+    await appAxios.post(
+      "/follow/" + (getState() as RootState).user.otherUser.user?._id
+    );
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data.message || error.message || "");
+  }
+});
+
+export const unfollowUserAsync = createAsyncThunk<
+  undefined,
+  undefined,
+  { rejectValue: string }
+>("user/unfollowUser", async (_, { rejectWithValue, getState }) => {
+  try {
+    await appAxios.delete(
+      "/follow/" + (getState() as RootState).user.otherUser.user?._id
+    );
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data.message || error.message || "");
   }
 });
 
@@ -140,6 +204,42 @@ export const userSlice = createSlice({
         state.error = null;
         state.status = "loading:access";
       })
+      .addCase(getOtherUserAsync.pending, (state) => {
+        state.otherUser.user = null;
+        state.otherUser.status = "loading";
+      })
+      .addCase(getOtherUserAsync.fulfilled, (state, action) => {
+        state.otherUser.user = action.payload;
+        state.otherUser.status = "idle";
+        state.otherUser.user.followData.status = "idle";
+      })
+      .addCase(getOtherUserAsync.rejected, (state) => {
+        state.otherUser.status = "idle";
+      })
+      .addCase(followUserAsync.fulfilled, (state) => {
+        if (state.otherUser.user) {
+          state.otherUser.user.followData.followed = true;
+          state.otherUser.user.followData.followersCount++;
+          state.otherUser.user.followData.status = "idle";
+        }
+      })
+      .addCase(unfollowUserAsync.fulfilled, (state) => {
+        if (state.otherUser.user) {
+          state.otherUser.user.followData.followed = false;
+          state.otherUser.user.followData.followersCount--;
+          state.otherUser.user.followData.status = "idle";
+        }
+      })
+      .addMatcher(isPending(followUserAsync, unfollowUserAsync), (state) => {
+        if (state.otherUser.user) {
+          state.otherUser.user.followData.status = "loading";
+        }
+      })
+      .addMatcher(isRejected(followUserAsync, unfollowUserAsync), (state) => {
+        if (state.otherUser.user) {
+          state.otherUser.user.followData.status = "idle";
+        }
+      })
       .addMatcher(isPending(registerAsync, loginAsync), (state) => {
         state.user = null;
         state.status = "loading";
@@ -156,7 +256,7 @@ export const userSlice = createSlice({
       .addMatcher(
         isFulfilled(registerAsync, loginAsync, getUserAsync),
         (state, action) => {
-          state.user = action.payload || null;
+          state.user = action.payload;
           state.status = "fulfilled";
         }
       );
@@ -166,5 +266,6 @@ export const userSlice = createSlice({
 export const { logout, updateAvatar, changePostsCount } = userSlice.actions;
 
 export const selectUser = (state: RootState) => state.user;
+export const selectOtherUser = (state: RootState) => state.user.otherUser;
 
 export default userSlice.reducer;
