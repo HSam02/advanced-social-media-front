@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Outlet, Route, Routes } from "react-router-dom";
 import { useAppDispatch } from "./app/hooks";
 import { getUserAsync } from "./app/slices/user";
 import { Home, Login, Messages, Profile, Register } from "./pages";
@@ -12,6 +12,7 @@ import {
   SavedSlider,
 } from "./pages/Profile/PostsFilter/filters";
 import scss from "./App.module.scss";
+import { FollowersModal } from "./pages/Profile/FollowersModal";
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();

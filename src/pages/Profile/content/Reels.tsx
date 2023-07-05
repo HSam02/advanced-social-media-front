@@ -7,7 +7,7 @@ import {
   getUserReelsAsync,
   selectUserReels,
 } from "../../../app/slices/posts";
-import { usePage } from "../../../utils/hooks";
+import { usePostsPage } from "../../../utils/hooks";
 
 export const Reels: React.FC = () => {
   console.log("Reels");
@@ -16,7 +16,7 @@ export const Reels: React.FC = () => {
   const dispatch = useAppDispatch();
   const { username, postId } = useParams();
 
-  usePage(postsData, () => {
+  usePostsPage(postsData, () => {
     if (username) {
       dispatch(getUserReelsAsync(username));
     }

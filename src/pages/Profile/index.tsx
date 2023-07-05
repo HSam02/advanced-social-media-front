@@ -19,7 +19,7 @@ export const Profile: React.FC = () => {
       dispatch(clearPostSlice());
       dispatch(clearComments());
     };
-  }, [dispatch, user, username]);
+  }, [dispatch, username]);
 
   if (!user || !username) {
     return null;

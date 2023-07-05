@@ -32,12 +32,12 @@ export const Search: React.FC = () => {
   useEffect(() => {
     (async () => {
       try {
+        setIsLoading(true);
         if (searchText) {
           if (isLoading) {
             searchController.current.abort();
             searchController.current = new AbortController();
           }
-          setIsLoading(true);
           const { data } = await appAxios.get("/search/" + searchText, {
             signal: searchController.current.signal,
           });

@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { IPost } from "../../../../app/slices/posts";
 import TextareaContext from "../../../Comments/TextareaContext";
-import { Avatar, PostTitle, UserInteraction } from "../../../AppComponents";
+import { Avatar } from "../../../AppComponents";
 import { Comments } from "../../../Comments";
 import { CommentInput } from "../../../Comments/CommentInput";
 import { FullPostLikes } from "../FullPostLikes";
+import { PostTitle } from "./PostTitle";
+import { UserInteraction } from "../UserInteraction";
 import scss from "./FullPostContent.module.scss";
 
 type FullPostContentProps = {

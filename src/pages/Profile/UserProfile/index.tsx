@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import { Outlet, useParams } from "react-router-dom";
 import {
+  clearOtherUser,
   followUserAsync,
   getOtherUserAsync,
   selectOtherUser,
 } from "../../../app/slices/user";
-import appAxios from "../../../appAxios";
-import { AppButton, Avatar } from "../../../components";
+import { AppButton, Avatar, FollowButton } from "../../../components";
 import {
   DotsIcon,
   LoadingIcon,
@@ -15,16 +15,26 @@ import {
 } from "../../../components/icons";
 import { PostsFilter } from "../PostsFilter";
 import { FollowSettings } from "./FollowSettings";
+import { FollowersModal } from "../FollowersModal";
 import scss from "./UserProfile.module.scss";
 
 export const UserProfile = () => {
   const dispatch = useAppDispatch();
   const { user, status } = useAppSelector(selectOtherUser);
-  const [showFollowSettings, setShowFollowSettings] = useState(false);
+  const [activeModal, setActiveModal] = useState<
+    "settings" | "followers" | "following" | null
+  >(null);
   const { username } = useParams();
 
   useEffect(() => {
-    if (username && !user) {
+    return () => {
+      dispatch(clearOtherUser());
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (username) {
+      setActiveModal(null);
       dispatch(getOtherUserAsync(username));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -50,43 +60,22 @@ export const UserProfile = () => {
           <div>
             <p>{user.username}</p>
             {user.followData.followed ? (
-              <AppButton
-                gray
-                disabled={user.followData.status === "loading"}
-                onClick={() => setShowFollowSettings(true)}
+              <FollowButton
+                user={user}
+                onClick={() => setActiveModal("settings")}
               >
                 <div style={{ display: "flex" }}>
-                  <div
-                    className={`${scss.followBtn} ${
-                      user.followData.status === "loading"
-                        ? scss.followLoading
-                        : ""
-                    }`}
-                  >
-                    <LoadingIcon />
-                    <p>Following</p>
-                  </div>
+                  <p>Following</p>
                   <span className={scss.followingArrowIcon}>
                     <VerticalArrowIcon />
                   </span>
                 </div>
-              </AppButton>
+              </FollowButton>
             ) : (
-              <AppButton
-                disabled={user.followData.status === "loading"}
+              <FollowButton
+                user={user}
                 onClick={() => dispatch(followUserAsync())}
-              >
-                <div
-                  className={`${scss.followBtn} ${
-                    user.followData.status === "loading"
-                      ? scss.followLoading
-                      : ""
-                  }`}
-                >
-                  <LoadingIcon />
-                  <p>Follow{user.followData.following ? " Back" : ""}</p>
-                </div>
-              </AppButton>
+              />
             )}
             <AppButton gray>Message</AppButton>
             <DotsIcon />
@@ -95,15 +84,11 @@ export const UserProfile = () => {
             <li>
               <span>{user.postsCount}</span> posts
             </li>
-            <li>
-              <a href="/">
-                <span>{user.followData.followersCount}</span> followers
-              </a>
+            <li onClick={() => setActiveModal("followers")}>
+              <span>{user.followData.followersCount}</span> followers
             </li>
-            <li>
-              <a href="/">
-                <span>{user.followData.followingCount}</span> following
-              </a>
+            <li onClick={() => setActiveModal("following")}>
+              <span>{user.followData.followingCount}</span> following
             </li>
           </ul>
           <h4>{user.fullname}</h4>
@@ -114,11 +99,11 @@ export const UserProfile = () => {
         <PostsFilter />
         <Outlet />
       </div>
-      {showFollowSettings && (
-        <FollowSettings
-          user={user}
-          onClose={() => setShowFollowSettings(false)}
-        />
+      {activeModal === "settings" && (
+        <FollowSettings user={user} onClose={() => setActiveModal(null)} />
+      )}
+      {activeModal === "followers" && (
+        <FollowersModal onClose={() => setActiveModal(null)} />
       )}
     </>
   );

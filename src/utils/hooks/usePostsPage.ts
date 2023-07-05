@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { postsDataType } from "../../app/slices/posts";
 
-export const usePage = (postsData: postsDataType, callback: () => void) => {
+export const usePostsPage = (postsData: postsDataType, callback: () => void) => {
   useEffect(() => {
     if (!postsData.posts && postsData.status !== "loading") {
       callback();

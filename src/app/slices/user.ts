@@ -181,6 +181,12 @@ export const userSlice = createSlice({
       state.status = "fulfilled";
       localStorage.removeItem("token");
     },
+    clearOtherUser: (state) => {
+      state.otherUser = {
+        user: null,
+        status: "idle",
+      };
+    },
     updateAvatar: (state, action: PayloadAction<string>) => {
       if (state.user) {
         state.user.avatarDest = action.payload;
@@ -189,6 +195,11 @@ export const userSlice = createSlice({
     changePostsCount: (state, action: PayloadAction<number>) => {
       if (state.user) {
         state.user.postsCount += action.payload;
+      }
+    },
+    changeFollowingCount: (state, action: PayloadAction<number>) => {
+      if (state.user) {
+        state.user.followData.followingCount += action.payload;
       }
     },
   },
@@ -217,16 +228,18 @@ export const userSlice = createSlice({
         state.otherUser.status = "idle";
       })
       .addCase(followUserAsync.fulfilled, (state) => {
-        if (state.otherUser.user) {
+        if (state.otherUser.user && state.user) {
           state.otherUser.user.followData.followed = true;
           state.otherUser.user.followData.followersCount++;
+          state.user.followData.followingCount++;
           state.otherUser.user.followData.status = "idle";
         }
       })
       .addCase(unfollowUserAsync.fulfilled, (state) => {
-        if (state.otherUser.user) {
+        if (state.otherUser.user && state.user) {
           state.otherUser.user.followData.followed = false;
           state.otherUser.user.followData.followersCount--;
+          state.user.followData.followingCount--;
           state.otherUser.user.followData.status = "idle";
         }
       })
@@ -263,7 +276,13 @@ export const userSlice = createSlice({
   },
 });
 
-export const { logout, updateAvatar, changePostsCount } = userSlice.actions;
+export const {
+  logout,
+  updateAvatar,
+  changePostsCount,
+  clearOtherUser,
+  changeFollowingCount,
+} = userSlice.actions;
 
 export const selectUser = (state: RootState) => state.user;
 export const selectOtherUser = (state: RootState) => state.user.otherUser;

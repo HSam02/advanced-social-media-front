@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import { PostGallery } from "../../../components";
 import { SharePosts } from "../SharePosts";
 import { getUserPostsAsync, selectUserPosts } from "../../../app/slices/posts";
-import { usePage } from "../../../utils/hooks";
+import { usePostsPage } from "../../../utils/hooks";
 
 export const Posts: React.FC = () => {
   console.log("Posts");
@@ -12,7 +12,7 @@ export const Posts: React.FC = () => {
   const dispatch = useAppDispatch();
   const { username, postId } = useParams();
 
-  usePage(postsData, () => {
+  usePostsPage(postsData, () => {
     if (username) {
       dispatch(getUserPostsAsync(username));
     }

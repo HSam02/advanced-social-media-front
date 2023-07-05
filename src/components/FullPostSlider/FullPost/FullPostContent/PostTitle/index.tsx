@@ -1,16 +1,15 @@
 import { memo, useState } from "react";
-import { IPost } from "../../../app/slices/posts";
-import { DotsIcon } from "../../icons";
-import { Avatar } from "../Avatar";
-import { PostSettingsModal } from "../../PostSettingsModal";
+import { IPost } from "../../../../../app/slices/posts";
+import { DotsIcon } from "../../../../icons";
+import { Avatar } from "../../../../AppComponents/Avatar";
+import { PostSettingsModal } from "../../../../PostSettingsModal";
 import scss from "./PostTitle.module.scss";
 
 type PostTitleProps = {
   post: IPost;
-  date?: boolean;
 };
 
-export const PostTitle: React.FC<PostTitleProps> = memo(({ post, date }) => {
+export const PostTitle: React.FC<PostTitleProps> = memo(({ post }) => {
   const [showPostSettings, setShowPostSettings] = useState(false);
   console.log("PostTitle");
 
@@ -21,7 +20,7 @@ export const PostTitle: React.FC<PostTitleProps> = memo(({ post, date }) => {
           <Avatar dest={post.user.avatarDest} />
         </div>
         <div className={scss.username}>
-          <span>{post.user.username}</span> &#183; {date && <p>4h</p>} Follow
+          <span>{post.user.username}</span> &#183; Follow
         </div>
         <div onClick={() => setShowPostSettings(true)}>
           <DotsIcon />

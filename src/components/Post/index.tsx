@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import { MediaSlider, PostTitle, UserInteraction } from "../";
+import { MediaSlider } from "../";
 import scss from "./Post.module.scss";
 import appAxios from "../../appAxios";
 import { IPost } from "../../app/slices/posts";
+import { PostTitle } from "../FullPostSlider/FullPost/FullPostContent/PostTitle";
+import { UserInteraction } from "../FullPostSlider/FullPost/UserInteraction";
 
 export const Post: React.FC = () => {
   const [post, setPost] = useState<IPost | null>(null);
