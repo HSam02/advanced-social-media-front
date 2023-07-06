@@ -11,6 +11,7 @@ import appAxios from "../../../appAxios";
 import {
   FollowButton,
   ModalBackground,
+  TextButton,
   UserIdentity,
 } from "../../../components";
 import { CloseIcon, LoadingIcon } from "../../../components/icons";
@@ -32,21 +33,21 @@ export const FollowersModal: React.FC<FollowersModalProps> = ({ onClose }) => {
   const [followersData, setFollowersData] = useState<followersDataType | null>(
     null
   );
-  const [isLoading, setIsLoading] = useState(false);
+  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const boxRef = useRef<HTMLDivElement>(null);
   const { user } = useAppSelector(selectUser);
   const { username } = useParams();
 
-  const getFollowersData = async () => {
-    if (isLoading) {
+  const getFollowersData = async (retry?: boolean) => {
+    if (status !== "idle" && !retry) {
       return;
     }
     try {
       if (
-        followersData &&
+        !followersData ||
         followersData.followersCount > followersData.followers.length
       ) {
-        setIsLoading(true);
+        setStatus("loading");
         const lastId = followersData?.followers.at(-1)?._id;
         const { data } = await appAxios.get<followersDataType>(
           `/follow/followers/${username}?limit=7${
@@ -61,11 +62,11 @@ export const FollowersModal: React.FC<FollowersModalProps> = ({ onClose }) => {
             ? { ...data, followers: [...prev.followers, ...data.followers] }
             : data
         );
+        setStatus("idle");
       }
     } catch (error) {
       console.error(error);
-    } finally {
-      setIsLoading(false);
+      setStatus("error");
     }
   };
 
@@ -107,7 +108,7 @@ export const FollowersModal: React.FC<FollowersModalProps> = ({ onClose }) => {
   useEffect(() => {
     (async () => {
       try {
-        setIsLoading(true);
+        setStatus("loading");
         const { data } = await appAxios.get<followersDataType>(
           `/follow/followers/${username}?limit=7`
         );
@@ -119,10 +120,10 @@ export const FollowersModal: React.FC<FollowersModalProps> = ({ onClose }) => {
             ? { ...data, followers: [...prev.followers, ...data.followers] }
             : data
         );
+        setStatus("idle");
       } catch (error) {
         console.error(error);
-      } finally {
-        setIsLoading(false);
+        setStatus("error");
       }
     })();
   }, [username]);
@@ -160,31 +161,45 @@ export const FollowersModal: React.FC<FollowersModalProps> = ({ onClose }) => {
           </span>
         </div>
         <div className={scss.content} ref={boxRef}>
-          {followersData && (
-            <ul>
-              {followersData.followers.map((follower) => (
-                <li key={follower._id}>
-                  <UserIdentity
-                    username={follower.username}
-                    fullname={follower.username}
-                    avatarDest={follower.avatarDest}
-                  />
-                  {user?._id !== follower._id && (
-                    <FollowButton
-                      user={follower}
-                      onClick={() => handleFollow(follower._id)}
+          {followersData &&
+            (followersData.followers.length ? (
+              <ul>
+                {followersData.followers.map((follower) => (
+                  <li key={follower._id}>
+                    <UserIdentity
+                      username={follower.username}
+                      fullname={follower.username}
+                      avatarDest={follower.avatarDest}
                     />
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-          {isLoading && (
+                    {user?._id !== follower._id && (
+                      <FollowButton
+                        user={follower}
+                        onClick={() => handleFollow(follower._id)}
+                      />
+                    )}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className={scss.center} style={{ flex: 1 }}>
+                No followers yet
+              </div>
+            ))}
+          {status !== "idle" && (
             <div
-              className={scss.loading}
-              style={followersData ? undefined : { flex: 10 }}
+              className={scss.center}
+              style={followersData ? undefined : { flex: 1 }}
             >
-              <LoadingIcon />
+              {status === "loading" && <LoadingIcon />}
+              {status === "error" && (
+                <TextButton
+                  onClick={() => {
+                    getFollowersData(true);
+                  }}
+                >
+                  Retry
+                </TextButton>
+              )}
             </div>
           )}
         </div>
