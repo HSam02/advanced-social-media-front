@@ -285,6 +285,7 @@ export const {
 } = userSlice.actions;
 
 export const selectUser = (state: RootState) => state.user;
+export const selectUserId = (state: RootState) => state.user.user?._id;
 export const selectOtherUser = (state: RootState) => state.user.otherUser;
 
 export default userSlice.reducer;

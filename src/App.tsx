@@ -12,7 +12,6 @@ import {
   SavedSlider,
 } from "./pages/Profile/PostsFilter/filters";
 import scss from "./App.module.scss";
-import { FollowersModal } from "./pages/Profile/FollowersModal";
 
 const App: React.FC = () => {
   const dispatch = useAppDispatch();

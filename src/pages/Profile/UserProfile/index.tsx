@@ -14,8 +14,8 @@ import {
   VerticalArrowIcon,
 } from "../../../components/icons";
 import { PostsFilter } from "../PostsFilter";
-import { FollowSettings } from "./FollowSettings";
-import { FollowersModal } from "../FollowersModal";
+import { FollowSettings } from "../FollowData/FollowSettings";
+import { FollowModal } from "../FollowData/FollowModal";
 import scss from "./UserProfile.module.scss";
 
 export const UserProfile = () => {
@@ -37,7 +37,6 @@ export const UserProfile = () => {
       setActiveModal(null);
       dispatch(getOtherUserAsync(username));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [username, dispatch]);
 
   if (status === "loading") {
@@ -103,7 +102,10 @@ export const UserProfile = () => {
         <FollowSettings user={user} onClose={() => setActiveModal(null)} />
       )}
       {activeModal === "followers" && (
-        <FollowersModal onClose={() => setActiveModal(null)} />
+        <FollowModal type="followers" onClose={() => setActiveModal(null)} />
+      )}
+      {activeModal === "following" && (
+        <FollowModal type="following" onClose={() => setActiveModal(null)} />
       )}
     </>
   );
