@@ -1,0 +1,60 @@
+.box {
+  position: relative;
+  width: 400px;
+  border-radius: 12px;
+
+  >span {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    cursor: pointer;
+
+    >svg {
+      width: 18px;
+    }
+  }
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #dbdbdb;
+
+  >h4 {
+    margin-top: 8px;
+    color: #000;
+    font-size: 14px;
+    font-weight: 500;
+  }
+}
+
+.settingsList {
+  >li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    color: #000;
+    transition: .2s;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #f2f2f2;
+    }
+
+    >span>svg {
+      width: 20px;
+    }
+  }
+}
+
+.arrow {
+  transform: rotate(90deg);
+
+  >svg {
+    color: #737373;
+    width: 14px;
+  }
+}

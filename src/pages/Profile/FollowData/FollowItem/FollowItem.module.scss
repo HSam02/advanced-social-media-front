@@ -1,0 +1,10 @@
+.followItem {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 8px 16px;
+
+  >button {
+    margin-left: auto;
+  }
+}

@@ -46,14 +46,6 @@ export const CommentInput: React.FC<CommentInputProps> = ({
     return () => setInputRef(null);
   }, [textareaRef, setInputRef]);
 
-  // useEffect(() => {
-  //   dispatch(setFocusTextarea(() => textareaRef.current?.focus()));
-
-  //   return () => {
-  //     dispatch(setFocusTextarea(null));
-  //   };
-  // }, [textareaRef, dispatch]);
-
   useEffect(() => {
     setText("");
     dispatch(clearReply());
@@ -147,7 +139,7 @@ export const CommentInput: React.FC<CommentInputProps> = ({
           </span>
         </div>
       )}
-      <div className={scss.box}>
+      <div className={scss.box} onMouseDown={(e) => e.stopPropagation()}>
         {showEmojis && (
           <div
             className={scss.emojis}

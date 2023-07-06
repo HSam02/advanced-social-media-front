@@ -1,14 +1,15 @@
 export {
   Avatar,
   AppButton,
+  TextButton,
+  FollowButton,
   AppSlider,
   ArrowIconButton,
   MediaBox,
   MediaSliderArrows,
   SliderDots,
   ModalBackground,
-  UserInteraction,
-  PostTitle,
+  UserIdentity,
 } from "./AppComponents";
 export { SideBar } from "./SideBar";
 export { Post } from "./Post";
@@ -21,3 +22,4 @@ export { PostGallery } from "./PostGallery";
 export { FullPostSlider } from "./FullPostSlider";
 export { CommentInput } from "./Comments/CommentInput";
 export { Comments } from "./Comments";
+export { Search } from "./Search";

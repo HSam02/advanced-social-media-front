@@ -7,7 +7,7 @@ import {
   getUserSavedPostsAsync,
   selectUserSavedPosts,
 } from "../../../app/slices/posts";
-import { usePage } from "../../../utils/hooks";
+import { usePostsPage } from "../../../utils/hooks";
 
 export const Saved: React.FC = () => {
   console.log("Saved");
@@ -15,7 +15,7 @@ export const Saved: React.FC = () => {
   const { postId } = useParams();
   const dispatch = useAppDispatch();
 
-  usePage(postsData, () => {
+  usePostsPage(postsData, () => {
     dispatch(getUserSavedPostsAsync());
   });
 

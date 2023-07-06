@@ -5,6 +5,7 @@ type DiscardModalProps = {
   title: string;
   text: string;
   acceptText: string;
+  cancelText?: string;
   onClose: () => void;
   onAccept: () => void;
 };
@@ -13,6 +14,7 @@ export const DiscardModal: React.FC<DiscardModalProps> = ({
   title,
   text,
   acceptText,
+  cancelText,
   onClose,
   onAccept,
 }) => {
@@ -22,8 +24,15 @@ export const DiscardModal: React.FC<DiscardModalProps> = ({
         <h6>{title}</h6>
         <p>{text}</p>
         <ul>
-          <li onClick={onAccept}>{acceptText}</li>
-          <li onClick={onClose}>Cancel</li>
+          <li
+            onClick={() => {
+              onAccept();
+              onClose();
+            }}
+          >
+            {acceptText}
+          </li>
+          <li onClick={onClose}>{cancelText || "Cancel"}</li>
         </ul>
       </div>
     </ModalBackground>

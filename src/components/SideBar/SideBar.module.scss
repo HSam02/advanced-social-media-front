@@ -2,7 +2,7 @@
   padding: 12px;
   cursor: pointer;
   transition: 0.2s;
-  
+
   &:hover {
     transform: scale(1.1);
   }
@@ -20,6 +20,7 @@
   position: fixed;
   left: 0;
   top: 0;
+  z-index: 1001;
 
   display: flex;
   flex-direction: column;
@@ -36,59 +37,40 @@
 
 .links {
   flex-grow: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
   >li {
     @include svgStyles();
   }
 }
 
-.bars {
-  position: relative;
-  padding: 12px;
-  cursor: pointer;
-  
-  >svg {
-    transition: 0.2s;
-  }
-
-  &:hover >svg {
-    transform: scale(1.1);
+.avatarActive {
+  >a>div {
+    border: 2px solid #262626;
+    border-radius: 50%;
   }
 }
 
-.more__menu {
-  position: absolute;
-  bottom: 60px;
-  left: 0;
-  border-radius: 6px;
-  border: 1px solid #e6e6e6;
-  background-color: #fff;
+.sideMenu {
+  position: fixed;
+  z-index: 1000;
+  left: -400px;
+  height: 100vh;
 
-  >li {
-    width: 238px;
-    a {
-      color: #262626;
-    }
-    &:last-child div {
-      border-bottom: none;
-      border-top: 5px solid #efefef;
-    }
-    div {
-      width: 100%;
-      padding: 8px 16px;
-      -webkit-filter: drop-shadow(0 0 5px rgba(0, 0, 0, .0975));
-      border-bottom: 1px solid #efefef;
+  transition: .5s;
 
-      display: flex;
-      justify-content: space-between;
-      transition: .2s;
-
-      cursor: pointer;
-      user-select: none;
-
-      &:hover {
-        background-color: #fafafa;
-      }
-    }
-  }
+  // animation-name: appear;
+  // animation-duration: .5s;
 }
+
+// @keyframes appear {
+//   0% {
+//     left: -400px;
+//   }
+
+//   100% {
+//     left: 77px;
+//   }
+// }

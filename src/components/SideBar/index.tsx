@@ -1,152 +1,129 @@
-import { useState, useEffect } from "react";
-import { NavLink, useLocation } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { logout, selectUser } from "../../app/slices/user";
-import {
-  ActivityIcon,
-  AddIcon,
-  BarsIcon,
-  BellIcon,
-  BookMarkIcon,
-  HouseIcon,
-  LogoIcon,
-  MessageIcon,
-  ReportIcon,
-  SearchIcon,
-  SettingsIcon,
-  ThemeIcon,
-  UserIcon,
-} from "../icons";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  useCallback,
+} from "react";
+import { useLocation } from "react-router-dom";
+import { useAppSelector } from "../../app/hooks";
+import { selectUser } from "../../app/slices/user";
+import { OnCloseContext, sideBarList } from "./utils";
+import { NavLink } from "react-router-dom";
+import { LogoIcon } from "../icons";
+import { Avatar, Search, UploadModal } from "../";
+import { SideBarSettings } from "./SideBarSettings";
 import scss from "./SideBar.module.scss";
-import { UploadModal } from "../";
 
 export const SideBar: React.FC = () => {
+  console.log("SideBar");
+
   const { user } = useAppSelector(selectUser);
-  const [activeLink, setActiveLink] = useState<string>("");
-  const [showMoreMenu, setShowMoreMenu] = useState<boolean>(false);
-  const [showUploadModal, setShowUploadModal] = useState<boolean>(false);
   const location = useLocation();
-  const dispatch = useAppDispatch();
+  
+  const [activeLink, setActiveLink] = useState<string>("");
+  const [activeSideMenu, setActiveSideMenu] = useState<string | null>(null);
+  const [sideMenuLeft, setSideMenuLeft] = useState<string | undefined>();
+  
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    const hideMoreMenu = () => setShowMoreMenu(false);
-    if (showMoreMenu) {
-      window.addEventListener("click", hideMoreMenu);
+  const pathValue = useMemo(() => location.pathname.split("/")[1], [location]);
+
+  const closeSideMenu = useCallback(() => {
+    if (!timeoutRef.current && activeSideMenu) {
+      setSideMenuLeft("-400px");
     }
+    if (timeoutRef.current && activeSideMenu) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+      setSideMenuLeft("77px");
+      return;
+    }
+    timeoutRef.current = setTimeout(() => {
+      setActiveSideMenu(null);
+      setActiveLink("/" + pathValue);
+      timeoutRef.current = null;
+    }, 500);
+  }, [pathValue, activeSideMenu]);
 
-    return () => window.removeEventListener("click", hideMoreMenu);
-  }, [showMoreMenu]);
-
-  useEffect(() => {
-    setActiveLink("/" + location.pathname.split("/")[1]);
-  }, [location.pathname]);
-
-  const closeModal = () => {
-    setShowUploadModal(false);
-    setActiveLink("/" + location.pathname.split("/")[1]);
+  const handleClickLink = (linkName: string) => {
+    if (linkName.includes("/")) {
+      setActiveLink(linkName);
+    } else {
+      setActiveSideMenu(linkName);
+    }
   };
 
-  // useEffect(() => {
+  useEffect(() => {
+    setActiveLink("/" + pathValue);
+  }, [pathValue]);
 
-  //   console.log(showUploadModal);
-  // }, [showUploadModal])
-
-  // console.log(showUploadModal);
+  useEffect(() => {
+    if (activeSideMenu) {
+      setSideMenuLeft("77px");
+    } else {
+      setActiveLink("/" + pathValue);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSideMenu]);
 
   return (
     <>
-      {showUploadModal && <UploadModal onClose={closeModal} />}
       <div className={scss.block}>
         <div className={scss.sideBar}>
-          <div className={scss.logo} onClick={() => setActiveLink("/")}>
-            <NavLink to="/">
-              <LogoIcon />
-            </NavLink>
+          <div className={scss.logo} onClick={() => handleClickLink("/")}>
+            <LogoIcon />
           </div>
           <ul className={scss.links}>
-            <li onClick={() => setActiveLink("/")}>
-              <NavLink to="/">
-                <HouseIcon active={activeLink === "/"} />
-              </NavLink>
-            </li>
-            <li onClick={() => setActiveLink("search")}>
-              <SearchIcon active={activeLink === "search"} />
-            </li>
-            <li onClick={() => setActiveLink("/direct")}>
-              <NavLink to="/direct">
-                <MessageIcon active={activeLink === "/direct"} />
-              </NavLink>
-            </li>
-            <li onClick={() => setActiveLink("bell")}>
-              <BellIcon active={activeLink === "bell"} />
-            </li>
+            {sideBarList?.map((link, i) => (
+              <li
+                key={i}
+                onClick={() =>
+                  activeSideMenu ? closeSideMenu() : handleClickLink(link.name)
+                }
+                onMouseDown={(e) => e.stopPropagation()}
+              >
+                {link.name.includes("/") ? (
+                  <NavLink to={link.name}>
+                    {React.createElement(link.icon.type, {
+                      active: activeSideMenu
+                        ? activeSideMenu === link.name
+                        : activeLink === link.name,
+                    })}
+                  </NavLink>
+                ) : (
+                  React.createElement(link.icon.type, {
+                    active: activeSideMenu
+                      ? activeSideMenu === link.name
+                      : activeLink === link.name,
+                  })
+                )}
+              </li>
+            ))}
             <li
-              onClick={() => {
-                setActiveLink("add");
-                setShowUploadModal(true);
-              }}
+              onClick={() => handleClickLink(`/${user?.username}`)}
+              className={
+                activeLink === `/${user?.username}`
+                  ? scss.avatarActive
+                  : undefined
+              }
             >
-              <AddIcon active={activeLink === "add"} />
-            </li>
-            <li onClick={() => setActiveLink(`/${user?.username}`)}>
               <NavLink to={`/${user?.username}`}>
-                <UserIcon active={activeLink === `/${user?.username}`} />
+                <Avatar size="28px" dest={user?.avatarDest} />
               </NavLink>
             </li>
           </ul>
-          <div
-            className={scss.bars}
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowMoreMenu((prev) => !prev);
-            }}
-          >
-            <BarsIcon active={showMoreMenu} />
-            {showMoreMenu && (
-              <ul className={scss.more__menu}>
-                <li>
-                  <NavLink to="/settings">
-                    <div>
-                      Settings
-                      <SettingsIcon />
-                    </div>
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/saved">
-                    <div>
-                      Saved
-                      <BookMarkIcon />
-                    </div>
-                  </NavLink>
-                </li>
-                <li>
-                  <div>
-                    Switch apperance
-                    <ThemeIcon />
-                  </div>
-                </li>
-                <li>
-                  <NavLink to="/your_activity">
-                    <div>
-                      Your activity
-                      <ActivityIcon />
-                    </div>
-                  </NavLink>
-                </li>
-                <li>
-                  <div>
-                    Report a problem <ReportIcon />
-                  </div>
-                </li>
-                <li>
-                  <div onClick={() => dispatch(logout())}>Log out</div>
-                </li>
-              </ul>
-            )}
-          </div>
+          <SideBarSettings />
         </div>
       </div>
+      <OnCloseContext.Provider value={closeSideMenu}>
+        {activeSideMenu === "add" && <UploadModal onClose={closeSideMenu} />}
+        {activeSideMenu === "search" && (
+          <div className={scss.sideMenu} style={{ left: sideMenuLeft }}>
+            <Search />
+          </div>
+        )}
+      </OnCloseContext.Provider>
     </>
   );
 };

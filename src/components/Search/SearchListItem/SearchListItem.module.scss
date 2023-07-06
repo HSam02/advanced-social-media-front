@@ -1,0 +1,42 @@
+.listItem {
+  padding: 8px 24px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: .2s;
+
+  &:hover {
+    background-color: #fafafa;
+  }
+
+  >div:nth-child(2) {
+    margin-left: 12px;
+
+    >h5 {
+      color: #000;
+      font-weight: 500;
+    }
+
+    >h6 {
+      color: #737373;
+      font-weight: 400;
+    }
+  }
+
+  >span {
+    height: 16px;
+    width: 16px;
+    margin-left: auto;
+    cursor: pointer;
+
+    >svg {
+      color: #737373;
+      width: 16px;
+    }
+  }
+}
+
+.loading {
+  opacity: .7;
+  pointer-events: none;
+}

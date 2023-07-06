@@ -38,7 +38,7 @@ export const LikeButton: React.FC<LikeButtonProps> = ({ id, liked }) => {
       className={scss.likeButton}
       style={isLikeLoading ? { pointerEvents: "none" } : undefined}
     >
-      <HeartIcon active={liked} />
+      <HeartIcon active={liked} red />
     </div>
   );
 };

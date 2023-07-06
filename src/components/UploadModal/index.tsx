@@ -1,6 +1,7 @@
 import { useRef, useState, useCallback } from "react";
 import appAxios from "../../appAxios";
 import { useAppDispatch } from "../../app/hooks";
+import { addUserPost } from "../../app/thunks";
 import { IPost, mediaType } from "../../app/slices/posts";
 import { activeModalType, cropMediaType, uploadStatusType } from "./types";
 import { DiscardModal, ModalBackground } from "../";
@@ -13,7 +14,6 @@ import {
   UploadTitle,
 } from "./components/";
 import scss from "./UploadModal.module.scss";
-import { addUserPost } from "../../app/thunks";
 
 type UploadModalProps = {
   onClose: () => void;
@@ -133,7 +133,6 @@ export const UploadModal: React.FC<UploadModalProps> = ({ onClose }) => {
   };
 
   const handleAcceptModal = () => {
-    setActiveModal(null);
     switch (activeModal) {
       case "cancel":
         setMediaData(null);

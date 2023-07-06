@@ -162,6 +162,7 @@ const PostsSlice = createSlice({
     addPost: (state, action: PayloadAction<IPost>) => {
       const post = {
         ...action.payload,
+        commentsCount: 0,
         createdAt: getTimeAgo(action.payload.createdAt),
       };
       if (state.userPosts.posts && state.userPosts.postsCount) {

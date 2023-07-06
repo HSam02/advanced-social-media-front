@@ -71,9 +71,11 @@ export const removeCommentOrReply = //??????
 
 export const addUserPost =
   (newPost: IPost): AppThunk =>
-  (dispatch) => {
-    dispatch(addPost(newPost));
-    dispatch(changePostsCount(1));
+  (dispatch, getState) => {
+    if (getState().user.user?._id === (newPost.user as unknown as string)) {
+      dispatch(addPost(newPost));
+      dispatch(changePostsCount(1));
+    }
   };
 
 export const deleteUserPost =

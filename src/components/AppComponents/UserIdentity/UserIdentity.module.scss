@@ -1,0 +1,24 @@
+.identity {
+  display: flex;
+  align-items: center;
+}
+
+.userInfo {
+  margin-left: 12px;
+
+  >h5 {
+    color: #000;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  >h6 {
+    color: #737373;
+    font-weight: 400;
+  }
+
+  >p {
+    color: #737373;
+    font-size: 12px;
+  }
+}

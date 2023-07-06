@@ -1,0 +1,14 @@
+.result {
+  flex: 1;
+  display: flex;
+
+  >p {
+    margin: auto auto;
+  }
+
+  >ul {
+    width: 100%;
+    padding-top: 12px;
+    overflow-y: auto;
+  }
+}
