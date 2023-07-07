@@ -1,26 +1,38 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
 import {
   IUser,
   changeFollowingCount,
+  decrementFolloersCount,
+  selectOtherUser,
   selectUserId,
 } from "../../../../app/slices/user";
-import appAxios from "../../../../appAxios";
-import { FollowButton, UserIdentity } from "../../../../components";
 import { followDataType } from "../FollowModal";
+import appAxios from "../../../../appAxios";
+import {
+  DiscardModal,
+  LoadingButton,
+  UserIdentity,
+} from "../../../../components";
 import scss from "./FollowItem.module.scss";
 
 type FollowItemProps = {
+  type: "followers" | "following";
   item: IUser;
   setFollowData: React.Dispatch<React.SetStateAction<followDataType | null>>;
 };
 
 export const FollowItem: React.FC<FollowItemProps> = memo(
-  ({ item, setFollowData }) => {
+  ({ item, type, setFollowData }) => {
     console.log("FollowItem", item.username);
 
     const dispatch = useAppDispatch();
     const userId = useAppSelector(selectUserId);
+    const otherUser = useAppSelector(selectOtherUser).user;
+    const [showDiscard, setShowDiscard] = useState(false);
+    const [removed, setRemoved] = useState(false);
+
+    const areMyFollowers = !otherUser && type === "followers";
 
     const changeStatus = (
       id: string,
@@ -55,20 +67,33 @@ export const FollowItem: React.FC<FollowItemProps> = memo(
       });
     };
 
-    const handleFollow = async (id: string) => {
+    const toggleFollow = async () => {
       try {
-        changeStatus(id, "loading");
+        changeStatus(item._id, "loading");
         if (item.followData.followed) {
-          await appAxios.delete("/follow/" + id);
+          await appAxios.delete("/follow/" + item._id);
           dispatch(changeFollowingCount(-1));
         } else {
-          await appAxios.post("/follow/" + id);
+          await appAxios.post("/follow/" + item._id);
           dispatch(changeFollowingCount(1));
         }
-        changeStatus(id, "idle", !item.followData.followed);
+        changeStatus(item._id, "idle", !item.followData.followed);
       } catch (error) {
         console.error(error);
-        changeStatus(id, "idle");
+        changeStatus(item._id, "idle");
+      }
+    };
+
+    const handleRemoveFollower = async () => {
+      try {
+        changeStatus(item._id, "loading");
+        await appAxios.delete("/follow/follower/" + item._id);
+        dispatch(decrementFolloersCount());
+        setRemoved(true);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        changeStatus(item._id, "idle");
       }
     };
 
@@ -79,11 +104,45 @@ export const FollowItem: React.FC<FollowItemProps> = memo(
           fullname={item.fullname}
           avatarDest={item.avatarDest}
           followsMe={item.followData.following}
+          handleFollow={
+            areMyFollowers && !item.followData.followed
+              ? toggleFollow
+              : undefined
+          }
         />
         {userId !== item._id && (
-          <FollowButton user={item} onClick={() => handleFollow(item._id)}>
-            {item.followData.followed ? "" : <p>Follow</p>}
-          </FollowButton>
+          <LoadingButton
+            isLoading={item.followData.status === "loading"}
+            gray={item.followData.followed || areMyFollowers}
+            disabled={removed}
+            onClick={
+              item.followData.followed
+                ? () => setShowDiscard(true)
+                : toggleFollow
+            }
+          >
+            {areMyFollowers
+              ? `Remove${removed ? "d" : ""}`
+              : `Follow${item.followData.followed ? "ing" : ""}`}
+          </LoadingButton>
+        )}
+        {showDiscard && (
+          <DiscardModal
+            title={
+              areMyFollowers
+                ? "Remove follower?"
+                : `Unfollow @${item.username}?`
+            }
+            text={
+              areMyFollowers
+                ? `FInstagram won't tell ${item.username} they were removed from your followers.`
+                : undefined
+            }
+            acceptText={areMyFollowers ? "Remove" : "Unfollow"}
+            onAccept={areMyFollowers ? handleRemoveFollower : toggleFollow}
+            onClose={() => setShowDiscard(false)}
+            avatarDest={item.avatarDest || ""}
+          />
         )}
       </li>
     );

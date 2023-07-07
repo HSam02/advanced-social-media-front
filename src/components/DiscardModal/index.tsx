@@ -1,10 +1,11 @@
-import { ModalBackground } from "../AppComponents";
+import { Avatar, ModalBackground } from "../AppComponents";
 import scss from "./DiscardModal.module.scss";
 
 type DiscardModalProps = {
   title: string;
-  text: string;
+  text?: string;
   acceptText: string;
+  avatarDest?: string;
   cancelText?: string;
   onClose: () => void;
   onAccept: () => void;
@@ -14,6 +15,7 @@ export const DiscardModal: React.FC<DiscardModalProps> = ({
   title,
   text,
   acceptText,
+  avatarDest,
   cancelText,
   onClose,
   onAccept,
@@ -21,6 +23,7 @@ export const DiscardModal: React.FC<DiscardModalProps> = ({
   return (
     <ModalBackground onClose={onClose}>
       <div className={scss.discard}>
+        {avatarDest !== undefined && <Avatar dest={avatarDest} size="88px" />}
         <h6>{title}</h6>
         <p>{text}</p>
         <ul>

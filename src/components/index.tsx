@@ -2,7 +2,7 @@ export {
   Avatar,
   AppButton,
   TextButton,
-  FollowButton,
+  LoadingButton,
   AppSlider,
   ArrowIconButton,
   MediaBox,
