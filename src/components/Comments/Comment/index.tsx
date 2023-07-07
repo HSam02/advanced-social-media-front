@@ -17,7 +17,7 @@ export const Comment: React.FC<commentProps> = memo(({ comment }) => {
     <>
       <div className={scss.comment}>
         <div className={scss.avatar}>
-          <Avatar size="32px" dest={comment.user.avatarDest} />
+          <Avatar size={32} dest={comment.user.avatarDest} />
         </div>
         <CommentContent comment={comment} />
         <LikeButton id={comment._id} liked={comment.liked} />

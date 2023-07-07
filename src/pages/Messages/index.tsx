@@ -18,7 +18,7 @@ export const Messages: React.FC = () => {
               .fill("")
               .map((el, i) => (
                 <li key={i}>
-                  <Avatar size="56px" />
+                  <Avatar size={56} />
                   <div className={scss.chat__info}>
                     <p>nickname</p>
                     <span>last action &#183; 4h</span>
@@ -30,7 +30,7 @@ export const Messages: React.FC = () => {
         <div className={scss.chat}>
           <div className={scss.chat__title}>
             {/* <div>
-              <Avatar size="24px" />
+              <Avatar size={24} />
               <p>nickname</p>
             </div> */}
             <p>Details</p>
@@ -44,7 +44,7 @@ export const Messages: React.FC = () => {
                   <li key={i}>
                     {i % 2 === 0 ? (
                       <div className={scss.stranger__message}>
-                        <Avatar size="24px" />
+                        <Avatar size={24} />
                         <p>Stranger message</p>
                       </div>
                     ) : (
@@ -82,7 +82,7 @@ export const Messages: React.FC = () => {
                   .fill("")
                   .map((_, i) => (
                     <li key={i}>
-											<Avatar size="56px" />
+											<Avatar size={56} />
 											<span>
 												<p>nickname</p>
 												<span>full name</span>

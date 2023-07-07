@@ -1,11 +1,12 @@
 import { useState, memo } from "react";
 import { NavLink } from "react-router-dom";
 import { Avatar } from "../Avatar";
-import scss from "./UserIdentity.module.scss";
 import { TextButton } from "../TextButton";
 import { LoadingIcon } from "../../icons";
+import scss from "./UserIdentity.module.scss";
 
 type UserIdentityProps = {
+  avatarSize?: number;
   avatarDest?: string;
   username: string;
   fullname?: string;
@@ -14,7 +15,7 @@ type UserIdentityProps = {
 };
 
 export const UserIdentity: React.FC<UserIdentityProps> = memo(
-  ({ avatarDest, username, fullname, followsMe, handleFollow }) => {
+  ({ avatarSize, avatarDest, username, fullname, followsMe, handleFollow }) => {
     console.log("UserIdentity", username);
     const [isFollowLoading, setIsFollowLoading] = useState(false);
 
@@ -33,7 +34,7 @@ export const UserIdentity: React.FC<UserIdentityProps> = memo(
 
     return (
       <div className={scss.identity}>
-        <Avatar dest={avatarDest} size="44px" />
+        <Avatar dest={avatarDest} size={avatarSize} />
         <div className={scss.userInfo}>
           <h5>
             <NavLink to={`/${username}`}>{username}</NavLink>

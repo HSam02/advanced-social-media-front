@@ -3,7 +3,7 @@ import scss from "./Avatar.module.scss";
 
 type AvatarProps = {
   dest?: string;
-  size?: string;
+  size?: number;
 };
 
 export const Avatar: React.FC<AvatarProps> = memo(({ dest, size }) => {
@@ -14,7 +14,10 @@ export const Avatar: React.FC<AvatarProps> = memo(({ dest, size }) => {
     : process.env.PUBLIC_URL + "/assets/avatar.jpg";
 
   return (
-    <div style={{ width: size, height: size }} className={scss.avatar}>
+    <div
+      style={size ? { width: size + "px", height: size + "px" } : undefined}
+      className={scss.avatar}
+    >
       <img src={imageUrl} alt="" />
     </div>
   );

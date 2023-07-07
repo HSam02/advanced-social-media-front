@@ -23,7 +23,7 @@ export const DiscardModal: React.FC<DiscardModalProps> = ({
   return (
     <ModalBackground onClose={onClose}>
       <div className={scss.discard}>
-        {avatarDest !== undefined && <Avatar dest={avatarDest} size="88px" />}
+        {avatarDest !== undefined && <Avatar dest={avatarDest} size={88} />}
         <h6>{title}</h6>
         <p>{text}</p>
         <ul>

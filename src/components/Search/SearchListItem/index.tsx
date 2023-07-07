@@ -52,7 +52,7 @@ export const SearchListItem: React.FC<SearchListItemProps> = memo(
         className={`${scss.listItem} ${isLoading ? scss.loading : ""}`}
         onClick={handleGoToUser}
       >
-        <Avatar dest={searchItem.avatarDest} size="44px" />
+        <Avatar dest={searchItem.avatarDest} size={44} />
         <div>
           <h5>{searchItem.username}</h5>
           {searchItem.fullname && <h6>{searchItem.fullname}</h6>}

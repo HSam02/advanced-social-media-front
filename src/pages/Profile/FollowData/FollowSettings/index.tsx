@@ -27,7 +27,7 @@ export const FollowSettings: React.FC<FollowSettingsType> = ({
     <ModalBackground onClose={onClose}>
       <div className={scss.box}>
         <div className={scss.userInfo}>
-          <Avatar dest={user.avatarDest} size="56px" />
+          <Avatar dest={user.avatarDest} size={56} />
           <h4>{user.username}</h4>
         </div>
         <ul className={scss.settingsList}>

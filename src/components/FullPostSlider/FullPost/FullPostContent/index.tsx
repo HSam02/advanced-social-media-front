@@ -28,7 +28,7 @@ export const FullPostContent: React.FC<FullPostContentProps> = ({ post }) => {
         <div className={`${scss.comments} ${scss.container}`}>
           {post.text && (
             <li className={scss.postDescription}>
-              <Avatar size="32px" dest={post.user.avatarDest} />
+              <Avatar size={32} dest={post.user.avatarDest} />
               <pre>
                 <span>{post.user.username}</span>
                 {post.text}

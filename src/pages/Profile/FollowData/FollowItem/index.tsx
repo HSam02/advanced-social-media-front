@@ -102,6 +102,7 @@ export const FollowItem: React.FC<FollowItemProps> = memo(
         <UserIdentity
           username={item.username}
           fullname={item.fullname}
+          avatarSize={44}
           avatarDest={item.avatarDest}
           followsMe={item.followData.following}
           handleFollow={

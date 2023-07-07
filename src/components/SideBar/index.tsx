@@ -109,7 +109,7 @@ export const SideBar: React.FC = () => {
               }
             >
               <NavLink to={`/${user?.username}`}>
-                <Avatar size="28px" dest={user?.avatarDest} />
+                <Avatar size={28} dest={user?.avatarDest} />
               </NavLink>
             </li>
           </ul>

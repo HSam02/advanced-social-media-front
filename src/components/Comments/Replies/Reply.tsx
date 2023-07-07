@@ -16,7 +16,7 @@ export const Reply: React.FC<replyProps> = memo(({ reply }) => {
     <>
       <div className={scss.comment}>
         <div className={scss.avatar}>
-          <Avatar size="32px" dest={reply.user.avatarDest} />
+          <Avatar size={32} dest={reply.user.avatarDest} />
         </div>
         <CommentContent comment={reply} />
         <LikeButton id={reply._id} liked={reply.liked} />

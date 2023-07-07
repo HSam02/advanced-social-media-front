@@ -19,7 +19,7 @@ export const FormData: React.FC<FormDataProps> = memo(
     return (
       <div className={scss.formData}>
         <div className={scss.user}>
-          <Avatar dest={user?.avatarDest} size="28px" />
+          <Avatar dest={user?.avatarDest} size={28} />
           <h3>{user?.username}</h3>
         </div>
         <textarea

@@ -73,7 +73,7 @@ export const ProfileAvatar: React.FC<ProfileAvatarProps> = memo(({ dest }) => {
         style={{ pointerEvents: isAvatarLoading ? "none" : undefined }}
         onClick={handleClickAvatar}
       >
-        <Avatar size="150px" dest={dest} />
+        <Avatar size={150} dest={dest} />
         {isAvatarLoading && (
           <div className={scss.loading}>
             <LoadingIcon />

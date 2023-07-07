@@ -64,7 +64,7 @@ export const Profile: React.FC = () => {
   return (
     <div className={scss.profile}>
       <div className={scss.user}>
-        <Avatar dest={user.avatarDest} size="150px" />
+        <Avatar dest={user.avatarDest} size={150} />
         <div className={scss.info}>
           <div>
             <p>{user.username}</p>
