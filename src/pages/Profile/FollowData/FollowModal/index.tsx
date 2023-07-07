@@ -38,7 +38,7 @@ export const FollowModal: React.FC<FollowersModalProps> = ({
         setStatus("loading");
         const lastId = followData?.follows.at(-1)?._id;
         const { data } = await appAxios.get<followDataType>(
-          `/follow/${type}/${username}?limit=7${
+          `/follow/${type}/${username}?limit=20${
             lastId ? `&lastId=${lastId}` : ""
           }`
         );
@@ -61,7 +61,7 @@ export const FollowModal: React.FC<FollowersModalProps> = ({
       try {
         setStatus("loading");
         const { data } = await appAxios.get<followDataType>(
-          `/follow/${type}/${username}?limit=7`
+          `/follow/${type}/${username}?limit=20`
         );
         data.follows.forEach((follow) => (follow.followData.status = "idle"));
         setFollowData((prev) =>

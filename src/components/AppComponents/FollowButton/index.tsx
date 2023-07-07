@@ -31,7 +31,7 @@ export const FollowButton: React.FC<FollowButtonProps> = ({
         {children ? (
           children
         ) : user.followData.followed ? (
-          <p>Unfollow</p>
+          <p>Following</p>
         ) : (
           <p>Follow{user.followData.following ? " Back" : ""}</p>
         )}
