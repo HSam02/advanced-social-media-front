@@ -7,9 +7,24 @@
   margin-left: 12px;
 
   >h5 {
+    display: flex;
+    align-items: center;
     color: #000;
     font-weight: 500;
     cursor: pointer;
+
+    >* {
+      margin-right: 5px;
+    }
+
+    >div {
+      display: inline-block;
+      font-size: 12px;
+    }
+
+    >svg {
+      width: 12px;
+    }
   }
 
   >h6 {

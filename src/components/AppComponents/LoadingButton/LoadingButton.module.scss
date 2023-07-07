@@ -1,4 +1,4 @@
-.followBtn {
+.buttonInner {
   position: relative;
 
   >svg {
@@ -11,7 +11,7 @@
   }
 }
 
-.followLoading {
+.loading {
   p {
     opacity: 0;
   }

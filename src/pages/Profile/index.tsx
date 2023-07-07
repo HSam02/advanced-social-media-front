@@ -11,7 +11,7 @@ import {
   selectUser,
 } from "../../app/slices/user";
 import { PostsFilter } from "./PostsFilter";
-import { AppButton, Avatar, FollowButton } from "../../components";
+import { AppButton, Avatar, LoadingButton } from "../../components";
 import {
   DotsIcon,
   LoadingIcon,
@@ -75,24 +75,26 @@ export const Profile: React.FC = () => {
               </>
             ) : (
               <>
-                {user.followData.followed ? (
-                  <FollowButton
-                    user={user}
-                    onClick={() => setActiveModal("settings")}
-                  >
+                <LoadingButton
+                  isLoading={user.followData.status === "loading"}
+                  gray={user.followData.followed}
+                  onClick={
+                    user.followData.followed
+                      ? () => setActiveModal("settings")
+                      : () => dispatch(followUserAsync())
+                  }
+                >
+                  {user.followData.followed ? (
                     <div style={{ display: "flex" }}>
-                      <p>Following</p>
+                      Following
                       <span className={scss.followingArrowIcon}>
                         <VerticalArrowIcon />
                       </span>
                     </div>
-                  </FollowButton>
-                ) : (
-                  <FollowButton
-                    user={user}
-                    onClick={() => dispatch(followUserAsync())}
-                  />
-                )}
+                  ) : (
+                    `Follow${user.followData.following ? " back" : ""}`
+                  )}
+                </LoadingButton>
                 <AppButton gray>Message</AppButton>
                 <DotsIcon />
               </>
@@ -116,11 +118,8 @@ export const Profile: React.FC = () => {
       {activeModal === "settings" && (
         <FollowSettings user={user} onClose={() => setActiveModal(null)} />
       )}
-      {activeModal === "followers" && (
-        <FollowModal type="followers" onClose={() => setActiveModal(null)} />
-      )}
-      {activeModal === "following" && (
-        <FollowModal type="following" onClose={() => setActiveModal(null)} />
+      {(activeModal === "followers" || activeModal === "following") && (
+        <FollowModal type={activeModal} onClose={() => setActiveModal(null)} />
       )}
       <div>
         <PostsFilter />

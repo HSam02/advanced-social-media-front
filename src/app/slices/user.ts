@@ -202,6 +202,11 @@ export const userSlice = createSlice({
         state.user.followData.followingCount += action.payload;
       }
     },
+    decrementFolloersCount: (state) => {
+      if (state.user) {
+        state.user.followData.followersCount--;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -282,6 +287,7 @@ export const {
   changePostsCount,
   clearOtherUser,
   changeFollowingCount,
+  decrementFolloersCount,
 } = userSlice.actions;
 
 export const selectUser = (state: RootState) => state.user;

@@ -92,6 +92,7 @@ export const FollowModal: React.FC<FollowersModalProps> = ({
                   <FollowItem
                     key={follow._id}
                     item={follow}
+                    type={type}
                     setFollowData={setFollowData}
                   />
                 ))}
