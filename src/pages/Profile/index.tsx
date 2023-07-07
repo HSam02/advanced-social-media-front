@@ -21,6 +21,7 @@ import {
 import { FollowSettings } from "./FollowData/FollowSettings";
 import { FollowModal } from "./FollowData/FollowModal";
 import scss from "./Profile.module.scss";
+import { ProfileAvatar } from "./ProfileAvatar";
 
 export const Profile: React.FC = () => {
   console.log("Profile");
@@ -64,7 +65,10 @@ export const Profile: React.FC = () => {
   return (
     <div className={scss.profile}>
       <div className={scss.user}>
-        <Avatar dest={user.avatarDest} size={150} />
+        <ProfileAvatar
+          dest={user.avatarDest}
+          editable={username === userData?.username}
+        />
         <div className={scss.info}>
           <div>
             <p>{user.username}</p>

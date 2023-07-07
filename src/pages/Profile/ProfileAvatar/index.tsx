@@ -8,91 +8,98 @@ import { ChangeAvatarModal } from "./ChangeAvatarModal";
 import scss from "./ProfileAvatar.module.scss";
 
 type ProfileAvatarProps = {
-  dest: string;
+  dest?: string;
+  editable?: boolean;
 };
 
-export const ProfileAvatar: React.FC<ProfileAvatarProps> = memo(({ dest }) => {
-  console.log("ProfileAvatar");
+export const ProfileAvatar: React.FC<ProfileAvatarProps> = memo(
+  ({ dest, editable }) => {
+    console.log("ProfileAvatar");
 
-  const dispatch = useAppDispatch();
-  const [isAvatarLoading, setIsAvatarLoading] = useState(false);
-  const [showChangeAvatarModal, setShowChangeAvatarModal] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+    const dispatch = useAppDispatch();
+    const [isAvatarLoading, setIsAvatarLoading] = useState(false);
+    const [showChangeAvatarModal, setShowChangeAvatarModal] = useState(false);
+    const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleClickAvatar = () => {
-    if (!dest) {
-      return inputRef.current?.click();
-    }
-    setShowChangeAvatarModal(true);
-  };
-
-  const handleFileChange = async (evt: React.ChangeEvent<HTMLInputElement>) => {
-    try {
-      setIsAvatarLoading(true);
-      const file = inputRef.current?.files![0];
-      if (!file) {
-        return;
+    const handleClickAvatar = () => {
+      if (!dest) {
+        return inputRef.current?.click();
       }
+      setShowChangeAvatarModal(true);
+    };
 
-      const formData = new FormData();
-      formData.append("image", file);
+    const handleFileChange = async (
+      evt: React.ChangeEvent<HTMLInputElement>
+    ) => {
+      try {
+        setIsAvatarLoading(true);
+        const file = inputRef.current?.files![0];
+        if (!file) {
+          return;
+        }
 
-      const { data } = await appAxios.post<string>("/auth/avatar", formData);
+        const formData = new FormData();
+        formData.append("image", file);
 
-      dispatch(updateUserAvatar(data));
-      setIsAvatarLoading(false);
-    } catch (error) {
-      console.error(error);
-      setIsAvatarLoading(false);
-      alert("Avatar didn't update");
-    }
-    evt.target.value = "";
-  };
+        const { data } = await appAxios.post<string>("/auth/avatar", formData);
 
-  const handleRemoveAvatar = async () => {
-    try {
-      setIsAvatarLoading(true);
-      await appAxios.delete("/auth/avatar");
-      dispatch(updateUserAvatar(""));
-      setIsAvatarLoading(false);
-    } catch (error) {
-      console.error(error);
-      setIsAvatarLoading(false);
-      alert("Avatar didn't remove");
-    }
-  };
+        dispatch(updateUserAvatar(data));
+        setIsAvatarLoading(false);
+      } catch (error) {
+        console.error(error);
+        setIsAvatarLoading(false);
+        alert("Avatar didn't update");
+      }
+      evt.target.value = "";
+    };
 
-  const handleCloseChangeAvatarModal = () => {
-    setShowChangeAvatarModal(false);
-  };
+    const handleRemoveAvatar = async () => {
+      try {
+        setIsAvatarLoading(true);
+        await appAxios.delete("/auth/avatar");
+        dispatch(updateUserAvatar(""));
+        setIsAvatarLoading(false);
+      } catch (error) {
+        console.error(error);
+        setIsAvatarLoading(false);
+        alert("Avatar didn't remove");
+      }
+    };
 
-  return (
-    <>
-      <div
-        className={scss.avatar}
-        style={{ pointerEvents: isAvatarLoading ? "none" : undefined }}
-        onClick={handleClickAvatar}
-      >
-        <Avatar size={150} dest={dest} />
-        {isAvatarLoading && (
-          <div className={scss.loading}>
-            <LoadingIcon />
-          </div>
+    const handleCloseChangeAvatarModal = () => {
+      setShowChangeAvatarModal(false);
+    };
+
+    return (
+      <>
+        <div
+          className={scss.avatar}
+          style={{
+            pointerEvents: isAvatarLoading || !editable ? "none" : undefined,
+          }}
+          onClick={handleClickAvatar}
+        >
+          <Avatar size={150} dest={dest} />
+          {isAvatarLoading && (
+            <div className={scss.loading}>
+              <LoadingIcon />
+            </div>
+          )}
+          <input
+            type="file"
+            ref={inputRef}
+            onChange={handleFileChange}
+            accept="image/png, image/jpeg"
+          />
+        </div>
+        {showChangeAvatarModal && (
+          <ChangeAvatarModal
+            inputRef={inputRef}
+            onClose={handleCloseChangeAvatarModal}
+            handleRemoveAvatar={handleRemoveAvatar}
+          />
         )}
-        <input
-          type="file"
-          ref={inputRef}
-          onChange={handleFileChange}
-          accept="image/png, image/jpeg"
-        />
-      </div>
-      {showChangeAvatarModal && (
-        <ChangeAvatarModal
-          inputRef={inputRef}
-          onClose={handleCloseChangeAvatarModal}
-          handleRemoveAvatar={handleRemoveAvatar}
-        />
-      )}
-    </>
-  );
-});
+      </>
+    );
+  }
+);
