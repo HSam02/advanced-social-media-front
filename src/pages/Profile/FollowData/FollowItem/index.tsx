@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
 import {
   IUser,
   changeFollowingCount,
-  decrementFolloersCount,
+  changeFollowersCount,
   selectOtherUser,
   selectUserId,
 } from "../../../../app/slices/user";
@@ -88,7 +88,7 @@ export const FollowItem: React.FC<FollowItemProps> = memo(
       try {
         changeStatus(item._id, "loading");
         await appAxios.delete("/follow/follower/" + item._id);
-        dispatch(decrementFolloersCount());
+        dispatch(changeFollowersCount(-1));
         setRemoved(true);
       } catch (error) {
         console.error(error);

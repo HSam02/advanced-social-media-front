@@ -9,13 +9,24 @@ type UserIdentityProps = {
   avatarSize?: number;
   avatarDest?: string;
   username: string;
+  isLoading?: boolean;
   fullname?: string;
   followsMe?: boolean;
   handleFollow?: () => Promise<void>;
+  handleFollowSync?: () => void;
 };
 
 export const UserIdentity: React.FC<UserIdentityProps> = memo(
-  ({ avatarSize, avatarDest, username, fullname, followsMe, handleFollow }) => {
+  ({
+    avatarSize,
+    avatarDest,
+    username,
+    fullname,
+    followsMe,
+    isLoading,
+    handleFollow,
+    handleFollowSync,
+  }) => {
     console.log("UserIdentity", username);
     const [isFollowLoading, setIsFollowLoading] = useState(false);
 
@@ -38,13 +49,15 @@ export const UserIdentity: React.FC<UserIdentityProps> = memo(
         <div className={scss.userInfo}>
           <h5>
             <NavLink to={`/${username}`}>{username}</NavLink>
-            {handleFollow && (
+            {(handleFollow || handleFollowSync) && (
               <>
                 <span>&#183;</span>
-                {isFollowLoading ? (
+                {isFollowLoading || isLoading ? (
                   <LoadingIcon />
                 ) : (
-                  <TextButton onClick={handleClickFollow}>Follow</TextButton>
+                  <TextButton onClick={handleFollowSync || handleClickFollow}>
+                    Follow
+                  </TextButton>
                 )}
               </>
             )}

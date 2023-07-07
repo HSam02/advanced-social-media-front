@@ -10,7 +10,7 @@ import appAxios from "../../appAxios";
 import { loginDataType } from "../../pages/Login";
 import { registerDataType } from "../../pages/Register";
 import { RootState } from "../store";
-import { IPost } from "./posts";
+import { IPost, toggleFollowedStatus } from "./posts";
 
 export interface ISavedPost extends IPost {
   deleted?: boolean;
@@ -161,11 +161,14 @@ export const unfollowUserAsync = createAsyncThunk<
   undefined,
   undefined,
   { rejectValue: string }
->("user/unfollowUser", async (_, { rejectWithValue, getState }) => {
+>("user/unfollowUser", async (_, { rejectWithValue, getState, dispatch }) => {
   try {
-    await appAxios.delete(
-      "/follow/" + (getState() as RootState).user.otherUser.user?._id
-    );
+    const userId = (getState() as RootState).user.otherUser.user?._id;
+    if (!userId) {
+      return;
+    }
+    await appAxios.delete("/follow/" + userId);
+    dispatch(toggleFollowedStatus(userId));
   } catch (error: any) {
     return rejectWithValue(error.response?.data.message || error.message || "");
   }
@@ -202,9 +205,15 @@ export const userSlice = createSlice({
         state.user.followData.followingCount += action.payload;
       }
     },
-    decrementFolloersCount: (state) => {
+    changeFollowersCount: (state, action: PayloadAction<number>) => {
       if (state.user) {
-        state.user.followData.followersCount--;
+        state.user.followData.followersCount += action.payload;
+      }
+    },
+    followOtherUserSync: (state) => {
+      if (state.otherUser.user) {
+        state.otherUser.user.followData.followed = true;
+        state.otherUser.user.followData.followersCount++;
       }
     },
   },
@@ -287,7 +296,8 @@ export const {
   changePostsCount,
   clearOtherUser,
   changeFollowingCount,
-  decrementFolloersCount,
+  changeFollowersCount,
+  followOtherUserSync,
 } = userSlice.actions;
 
 export const selectUser = (state: RootState) => state.user;

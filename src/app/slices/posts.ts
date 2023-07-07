@@ -6,7 +6,10 @@ import {
 } from "@reduxjs/toolkit";
 import appAxios from "../../appAxios";
 import { RootState } from "../store";
-import { IUser } from "./user";
+import {
+  IUser,
+  followOtherUserSync,
+} from "./user";
 import { getTimeAgo } from "../../utils/getTimeAgo";
 
 export type mediaType = {
@@ -141,6 +144,28 @@ export const getUserSavedPostsAsync = createAsyncThunk<
     return rejectWithValue(error.response?.data.message || error.message || "");
   }
 });
+
+export const followPostUserAsync = createAsyncThunk<
+  undefined,
+  string,
+  { rejectValue: string }
+>(
+  "posts/followPostUserAsync",
+  async (userId, { rejectWithValue, dispatch, getState }) => {
+    try {
+      await appAxios.post("/follow/" + userId);
+      dispatch(toggleFollowedStatus(userId));
+      if ((getState() as RootState).user.otherUser.user?._id === userId) {
+        dispatch(followOtherUserSync());
+      }
+    } catch (error: any) {
+      console.error(error);
+      return rejectWithValue(
+        error.response?.data.message || error.message || ""
+      );
+    }
+  }
+);
 
 const PostsSlice = createSlice({
   name: "posts",
@@ -352,6 +377,21 @@ const PostsSlice = createSlice({
         })
       );
     },
+    toggleFollowedStatus: (state, action: PayloadAction<string>) => {
+      const userId = action.payload;
+      [
+        state.userPosts?.posts,
+        state.savedPosts?.posts,
+        state.userReels?.posts,
+      ].forEach((array) =>
+        array?.forEach((post) => {
+          if (post.user._id === userId) {
+            post.user.followData.followed = !post.user.followData.followed;
+            post.user.followData.status = "idle";
+          }
+        })
+      );
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -406,6 +446,34 @@ const PostsSlice = createSlice({
           state.savedPosts.status = "loading";
         }
       })
+      .addCase(followPostUserAsync.pending, (state, action) => {
+        const userId = action.meta.arg;
+        [
+          state.userPosts?.posts,
+          state.savedPosts?.posts,
+          state.userReels?.posts,
+        ].forEach((array) =>
+          array?.forEach((post) => {
+            if (post.user._id === userId) {
+              post.user.followData.status = "loading";
+            }
+          })
+        );
+      })
+      .addCase(followPostUserAsync.rejected, (state, action) => {
+        const userId = action.meta.arg;
+        [
+          state.userPosts?.posts,
+          state.savedPosts?.posts,
+          state.userReels?.posts,
+        ].forEach((array) =>
+          array?.forEach((post) => {
+            if (post.user._id === userId) {
+              post.user.followData.status = "idle";
+            }
+          })
+        );
+      })
       .addMatcher(
         isPending(getUserPostsAsync, getUserReelsAsync, getUserSavedPostsAsync),
         (state) => {
@@ -427,6 +495,7 @@ export const {
   clearPostSlice,
   changeCommentsCount,
   updateAvatarPosts,
+  toggleFollowedStatus,
 } = PostsSlice.actions;
 
 export const selectUserPosts = (state: RootState) => state.posts.userPosts;
