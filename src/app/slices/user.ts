@@ -6,7 +6,7 @@ import {
   isPending,
   isRejected,
 } from "@reduxjs/toolkit";
-import appAxios from "../../appAxios";
+import appAxios from "../../utils/appAxios";
 import { loginDataType } from "../../pages/Login";
 import { registerDataType } from "../../pages/Register";
 import { RootState } from "../store";

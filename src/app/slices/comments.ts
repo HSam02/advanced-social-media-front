@@ -2,7 +2,7 @@ import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 import { IUser } from "./user";
 import { getFormattedTime } from "../../utils/getTimeAgo";
-import appAxios from "../../appAxios";
+import appAxios from "../../utils/appAxios";
 
 export interface IComment {
   _id: string;

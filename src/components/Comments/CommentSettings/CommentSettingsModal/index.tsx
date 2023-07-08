@@ -1,6 +1,6 @@
 import { useAppDispatch } from "../../../../app/hooks";
 import { removeCommentOrReply } from "../../../../app/thunks";
-import appAxios from "../../../../appAxios";
+import appAxios from "../../../../utils/appAxios";
 import { ModalBackground } from "../../../AppComponents";
 import scss from "./CommentSettingsModal.module.scss";
 

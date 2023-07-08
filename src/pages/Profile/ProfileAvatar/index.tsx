@@ -1,7 +1,7 @@
 import { useState, useRef, memo } from "react";
 import { useAppDispatch } from "../../../app/hooks";
 import { updateUserAvatar } from "../../../app/thunks";
-import appAxios from "../../../appAxios";
+import appAxios from "../../../utils/appAxios";
 import { Avatar } from "../../../components";
 import { LoadingIcon } from "../../../components/icons";
 import { ChangeAvatarModal } from "./ChangeAvatarModal";

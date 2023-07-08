@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAppDispatch } from "../../../app/hooks";
 import { addLike, removeLike } from "../../../app/slices/comments";
-import appAxios from "../../../appAxios";
+import appAxios from "../../../utils/appAxios";
 import { HeartIcon } from "../../icons";
 import scss from "./LikeButton.module.scss";
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import appAxios from "../../../appAxios";
+import appAxios from "../../../utils/appAxios";
 import { IUser } from "../../../app/slices/user";
 import { LoadingIcon } from "../../icons";
 import { TextButton } from "../../AppComponents";

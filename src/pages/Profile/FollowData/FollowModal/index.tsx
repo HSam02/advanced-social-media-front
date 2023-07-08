@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useScrollEnd } from "../../../../utils/hooks";
 import { IUser } from "../../../../app/slices/user";
-import appAxios from "../../../../appAxios";
+import appAxios from "../../../../utils/appAxios";
 import { ModalBackground, TextButton } from "../../../../components";
 import { CloseIcon, LoadingIcon } from "../../../../components/icons";
 import { FollowItem } from "../FollowItem";

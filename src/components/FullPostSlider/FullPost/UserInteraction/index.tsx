@@ -8,7 +8,7 @@ import {
   unsavePost,
 } from "../../../../app/slices/posts";
 import { selectUser } from "../../../../app/slices/user";
-import appAxios from "../../../../appAxios";
+import appAxios from "../../../../utils/appAxios";
 import { BookMarkIcon, CommentIcon, HeartIcon, PlaneIcon } from "../../../icons";
 import scss from "./UserInteraction.module.scss";
 import TextareaContext from "../../../Comments/TextareaContext";

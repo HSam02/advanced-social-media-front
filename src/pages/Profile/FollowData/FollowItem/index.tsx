@@ -8,7 +8,7 @@ import {
   selectUserId,
 } from "../../../../app/slices/user";
 import { followDataType } from "../FollowModal";
-import appAxios from "../../../../appAxios";
+import appAxios from "../../../../utils/appAxios";
 import {
   DiscardModal,
   LoadingButton,
@@ -97,6 +97,16 @@ export const FollowItem: React.FC<FollowItemProps> = memo(
       }
     };
 
+    const handleFollow = async () => {
+      try {
+        await appAxios.post("/follow/" + item._id);
+        dispatch(changeFollowingCount(1));
+        changeStatus(item._id, "idle", !item.followData.followed);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
     return (
       <li className={scss.followItem}>
         <UserIdentity
@@ -107,7 +117,7 @@ export const FollowItem: React.FC<FollowItemProps> = memo(
           followsMe={item.followData.following}
           handleFollow={
             areMyFollowers && !item.followData.followed
-              ? toggleFollow
+              ? handleFollow
               : undefined
           }
         />

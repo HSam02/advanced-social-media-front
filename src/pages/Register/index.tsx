@@ -4,7 +4,7 @@ import { SubmitHandler } from "react-hook-form/dist/types";
 import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { registerAsync, selectUser } from "../../app/slices/user";
-import appAxios from "../../appAxios";
+import appAxios from "../../utils/appAxios";
 import { AppButton } from "../../components";
 import { CheckIcon, XIcon } from "../../components/icons";
 import scss from "./Register.module.scss";

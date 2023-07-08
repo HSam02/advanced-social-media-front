@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useContext } from "react";
 import { useClickOutside } from "../../utils/hooks";
 import { OnCloseContext } from "../SideBar/utils";
 import { IUser } from "../../app/slices/user";
-import appAxios from "../../appAxios";
+import appAxios from "../../utils/appAxios";
 import { LoadingIcon } from "../icons";
 import { SearchInput } from "./SearchInput";
 import { SearchResult } from "./SearchResult";

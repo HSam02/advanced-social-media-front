@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback } from "react";
-import appAxios from "../../appAxios";
+import appAxios from "../../utils/appAxios";
 import { useAppDispatch } from "../../app/hooks";
 import { addUserPost } from "../../app/thunks";
 import { IPost, mediaType } from "../../app/slices/posts";

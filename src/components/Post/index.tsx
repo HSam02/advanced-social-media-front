@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { MediaSlider } from "../";
 import scss from "./Post.module.scss";
-import appAxios from "../../appAxios";
+import appAxios from "../../utils/appAxios";
 import { IPost } from "../../app/slices/posts";
 import { PostTitle } from "../FullPostSlider/FullPost/FullPostContent/PostTitle";
 import { UserInteraction } from "../FullPostSlider/FullPost/UserInteraction";

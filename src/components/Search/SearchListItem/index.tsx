@@ -1,7 +1,7 @@
 import { useState, useContext, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { OnCloseContext } from "../../SideBar/utils";
-import appAxios from "../../../appAxios";
+import appAxios from "../../../utils/appAxios";
 import { IUser } from "../../../app/slices/user";
 import { CloseIcon } from "../../icons";
 import { recentType } from "../Recent";

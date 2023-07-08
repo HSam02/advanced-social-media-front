@@ -4,7 +4,7 @@ import {
   createSlice,
   isPending,
 } from "@reduxjs/toolkit";
-import appAxios from "../../appAxios";
+import appAxios from "../../utils/appAxios";
 import { RootState } from "../store";
 import {
   IUser,

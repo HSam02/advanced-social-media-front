@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../app/hooks";
 import { addLike } from "../../../../app/slices/posts";
-import appAxios from "../../../../appAxios";
+import appAxios from "../../../../utils/appAxios";
 import scss from "./FullPostLikes.module.scss";
 import { selectUser } from "../../../../app/slices/user";
 

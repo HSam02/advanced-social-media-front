@@ -8,7 +8,7 @@ import TextareaAutosize from "react-textarea-autosize";
 import { useClickOutside } from "../../../utils/hooks";
 import { CloseIcon, EmojiIcon } from "../../icons";
 import scss from "./CommentInput.module.scss";
-import appAxios from "../../../appAxios";
+import appAxios from "../../../utils/appAxios";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import {
   IComment,

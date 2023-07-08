@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { selectUser } from "../../app/slices/user";
 import { IPost, editPost } from "../../app/slices/posts";
-import appAxios from "../../appAxios";
+import appAxios from "../../utils/appAxios";
 import { ModalBackground } from "../AppComponents";
 import { DiscardModal } from "../DiscardModal";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
